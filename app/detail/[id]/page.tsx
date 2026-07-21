@@ -189,24 +189,42 @@ function CheckoutContent() {
                   : '0 0 0 1px rgba(255,255,255,.06), 0 20px 60px rgba(0,0,0,.5)',
                 transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
               }}>
-                {/* macOS title bar */}
-                <div style={{
-                  padding: previewMode === 'mobile' ? '.35rem .65rem' : '.6rem 1rem',
-                  background: '#2c2c2e', borderBottom: '1px solid rgba(255,255,255,.06)',
-                  display: 'flex', alignItems: 'center', gap: '.5rem',
-                  transition: 'padding 0.3s ease',
-                }}>
-                  <div style={{ display: 'flex', gap: previewMode === 'mobile' ? '4px' : '6px' }}>
-                    <div style={{ width: previewMode === 'mobile' ? '8px' : '11px', height: previewMode === 'mobile' ? '8px' : '11px', borderRadius: '50%', background: '#ff5f56', transition: 'all 0.3s ease' }} />
-                    <div style={{ width: previewMode === 'mobile' ? '8px' : '11px', height: previewMode === 'mobile' ? '8px' : '11px', borderRadius: '50%', background: '#ffbd2e', transition: 'all 0.3s ease' }} />
-                    <div style={{ width: previewMode === 'mobile' ? '8px' : '11px', height: previewMode === 'mobile' ? '8px' : '11px', borderRadius: '50%', background: '#28c840', transition: 'all 0.3s ease' }} />
+                {/* Top bar: macOS dots / mobile notch */}
+                {previewMode === 'mobile' ? (
+                  /* Mobile notch/dynamic island */
+                  <div style={{
+                    position: 'relative', height: '32px', background: '#2c2c2e',
+                    borderBottom: '1px solid rgba(255,255,255,.06)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    transition: 'height 0.3s ease',
+                  }}>
+                    <div style={{
+                      width: '120px', height: '24px', background: '#111',
+                      borderRadius: '20px', display: 'flex', alignItems: 'center',
+                      justifyContent: 'center', gap: '6px',
+                    }}>
+                      <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#333' }} />
+                      <div style={{ width: '40px', height: '4px', borderRadius: '2px', background: '#222' }} />
+                      <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#333' }} />
+                    </div>
                   </div>
-                  {previewMode === 'desktop' && (
+                ) : (
+                  /* macOS traffic light dots + title */
+                  <div style={{
+                    padding: '.6rem 1rem', background: '#2c2c2e',
+                    borderBottom: '1px solid rgba(255,255,255,.06)',
+                    display: 'flex', alignItems: 'center', gap: '.6rem',
+                  }}>
+                    <div style={{ display: 'flex', gap: '6px' }}>
+                      <div style={{ width: '11px', height: '11px', borderRadius: '50%', background: '#ff5f56' }} />
+                      <div style={{ width: '11px', height: '11px', borderRadius: '50%', background: '#ffbd2e' }} />
+                      <div style={{ width: '11px', height: '11px', borderRadius: '50%', background: '#28c840' }} />
+                    </div>
                     <div style={{ flex: 1, textAlign: 'center', fontSize: '.72rem', color: 'rgba(255,255,255,.35)', fontFamily: "'-apple-system', 'Helvetica Neue', sans-serif", letterSpacing: '.02em', paddingRight: '42px', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
                       {template.name} — Terima Undangan
                     </div>
-                  )}
-                </div>
+                  </div>
+                )}
                 <iframe ref={desktopRef} srcDoc={templateConfig.html} onLoad={handleIframeLoad}
                   style={{
                     width: '100%',
@@ -244,8 +262,16 @@ function CheckoutContent() {
                 width: '100%', background: '#1c1c1e', borderRadius: '20px', overflow: 'hidden',
                 boxShadow: '0 0 0 1px #1a1a1a, 0 10px 40px rgba(0,0,0,.6)',
               }}>
-                <div style={{ padding: '.35rem .75rem', background: '#2c2c2e', borderBottom: '1px solid rgba(255,255,255,.06)', display: 'flex', alignItems: 'center', gap: '.5rem' }}>
-                  <div style={{ display: 'flex', gap: '5px' }}><div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#ff5f56' }} /><div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#ffbd2e' }} /><div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#28c840' }} /></div>
+                <div style={{
+                  position: 'relative', height: '28px', background: '#2c2c2e',
+                  borderBottom: '1px solid rgba(255,255,255,.06)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                  <div style={{ width: '100px', height: '20px', background: '#111', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px' }}>
+                    <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#333' }} />
+                    <div style={{ width: '30px', height: '3px', borderRadius: '2px', background: '#222' }} />
+                    <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#333' }} />
+                  </div>
                 </div>
                 <div style={{ height: '450px', background: '#0a0807' }}>
                   <iframe ref={desktopRef} srcDoc={templateConfig.html} onLoad={handleIframeLoad} style={{ width: '100%', height: '100%', border: 'none', background: '#0a0807' }} title="Mobile Preview" />
