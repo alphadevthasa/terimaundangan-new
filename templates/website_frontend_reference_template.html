@@ -2,366 +2,262 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Galeri Desain - Elite Architect</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Design Showcase Portfolio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap');
-
+        /* --- ROOT & RESET --- */
         :root {
-            --bg-page: #F8F9FA; /* Sangat terang, abu-abu putih */
-            --bg-surface: #FFFFFF;
-            --text-main: #1A1A1A;
-            --text-muted: #6C757D;
-            --border-color: #E9ECEF;
-            --accent: #212529; /* Hampir hitam */
-            --radius-lg: 16px;
-            --radius-sm: 8px;
+            --bg-color: #0f1115;
+            --surface-color: #1a1d24;
+            --text-main: #ffffff;
+            --text-muted: #8b92a5;
+            --accent: #6366f1;
         }
 
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
         }
 
         body {
-            font-family: 'DM Sans', sans-serif;
-            background-color: var(--bg-page);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-color);
             color: var(--text-main);
-            -webkit-font-smoothing: antialiased;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+            line-height: 1.6;
+            padding: 2rem;
         }
 
-        /* --- NAVBAR GLASSMORPHISM --- */
-        nav {
-            padding: 1.2rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(248, 249, 250, 0.85);
-            backdrop-filter: blur(12px);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .brand {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.4rem;
-            font-weight: 600;
-            color: var(--text-main);
-            letter-spacing: -0.5px;
-        }
-
-        .btn-close {
-            background: var(--bg-surface);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 0.5rem 1.2rem;
-            font-family: inherit;
-            font-weight: 500;
-            font-size: 0.85rem;
-            border-radius: 40px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .btn-close:hover {
-            background: var(--accent);
-            color: var(--bg-surface);
-            border-color: var(--accent);
-        }
-
-        /* --- HEADER SECTION --- */
-        .hero {
+        /* --- HEADER --- */
+        header {
             text-align: center;
-            padding: 4rem 1.5rem 3rem;
+            max-width: 800px;
+            margin: 4rem auto;
         }
 
-        .hero h1 {
-            font-family: 'Playfair Display', serif;
-            font-weight: 400;
-            font-size: clamp(2.5rem, 6vw, 3.5rem);
-            color: var(--text-main);
+        header h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
             margin-bottom: 1rem;
+            letter-spacing: -1px;
         }
 
-        .hero p {
+        header h1 span {
+            color: var(--accent);
+        }
+
+        header p {
             color: var(--text-muted);
             font-size: 1.1rem;
-            max-width: 500px;
-            margin: 0 auto;
-            line-height: 1.6;
         }
 
-        /* --- HORIZONTAL FILTER PILLS --- */
-        .filter-container {
-            padding: 0 1.5rem;
+        /* --- CATEGORY FILTERS --- */
+        .filter-tabs {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1rem;
             margin-bottom: 3rem;
         }
 
-        .filter-track {
-            display: flex;
-            gap: 0.8rem;
-            overflow-x: auto;
-            padding-bottom: 1rem;
-            justify-content: center;
-            scrollbar-width: none; 
-            -ms-overflow-style: none;
-        }
-
-        .filter-track::-webkit-scrollbar {
-            display: none;
-        }
-
         .filter-btn {
-            background: var(--bg-surface);
-            border: 1px solid var(--border-color);
-            color: var(--text-muted);
-            padding: 0.6rem 1.2rem;
-            border-radius: 40px;
-            font-family: 'DM Sans', sans-serif;
+            background-color: var(--surface-color);
+            color: var(--text-main);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 0.6rem 1.5rem;
+            border-radius: 50px;
             font-size: 0.9rem;
-            font-weight: 500;
-            white-space: nowrap;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
         }
 
         .filter-btn:hover {
-            border-color: #adb5bd;
-            color: var(--text-main);
+            border-color: var(--accent);
         }
 
         .filter-btn.active {
-            background: var(--accent);
-            color: var(--bg-surface);
+            background-color: var(--accent);
             border-color: var(--accent);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            color: white;
         }
 
-        /* --- TEMPLATE GRID --- */
-        main {
-            flex: 1;
-            padding: 0 2rem 5rem;
-            max-width: 1200px;
-            margin: 0 auto;
-            width: 100%;
-        }
-
-        .grid {
+        /* --- SHOWCASE GRID --- */
+        .showcase-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 3rem;
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
-        /* --- CLEAN EDITORIAL CARD --- */
-        .card {
-            display: flex;
-            flex-direction: column;
-            gap: 1.2rem;
-            cursor: pointer;
-            group: template;
-        }
-
-        .card-img-box {
+        .showcase-item {
             position: relative;
-            width: 100%;
-            aspect-ratio: 4 / 3;
+            border-radius: 16px;
             overflow: hidden;
-            background: #E9ECEF;
-            border-radius: var(--radius-lg);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.04);
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s ease;
+            background-color: var(--surface-color);
+            transition: transform 0.4s ease, opacity 0.4s ease;
+            cursor: pointer;
         }
 
-        .card:hover .card-img-box {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+        /* Menyembunyikan item yang tidak sesuai filter */
+        .showcase-item.hide {
+            display: none;
         }
 
-        .card-img {
+        .showcase-item img {
             width: 100%;
-            height: 100%;
+            height: 300px;
             object-fit: cover;
-            transition: transform 0.6s ease;
+            transition: transform 0.5s ease;
+            display: block;
         }
 
-        .card:hover .card-img {
-            transform: scale(1.03);
+        .showcase-item:hover img {
+            transform: scale(1.05);
         }
 
-        /* Hover Overlay (Light Frosted) */
-        .card-overlay {
+        .item-overlay {
             position: absolute;
             inset: 0;
-            background: rgba(255, 255, 255, 0.3);
-            backdrop-filter: blur(4px);
-            opacity: 0;
+            background: linear-gradient(to top, rgba(15, 17, 21, 0.9) 0%, rgba(15, 17, 21, 0) 100%);
             display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: opacity 0.4s ease;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 2rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
-        .card:hover .card-overlay {
+        .showcase-item:hover .item-overlay {
             opacity: 1;
         }
 
-        .btn-select {
-            background: var(--accent);
-            color: var(--bg-surface);
-            border: none;
-            padding: 0.8rem 1.8rem;
-            border-radius: 40px;
-            font-family: inherit;
-            font-weight: 500;
-            font-size: 0.95rem;
-            transform: translateY(15px);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        .item-category {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+            font-weight: 700;
         }
 
-        .card:hover .btn-select {
-            transform: translateY(0);
-        }
-
-        .card-info {
-            display: flex;
-            flex-direction: column;
-            gap: 0.3rem;
-            padding: 0 0.5rem;
-        }
-
-        .card-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.4rem;
+        .item-title {
+            font-size: 1.5rem;
             font-weight: 600;
-            color: var(--text-main);
         }
 
-        .card-category {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            font-weight: 500;
-        }
-
-        /* --- RESPONSIVE MOBILE ADJUSTMENTS --- */
+        /* --- RESPONSIVE --- */
         @media (max-width: 768px) {
-            nav { padding: 1rem 1.5rem; }
-            .hero { padding: 3rem 1.5rem 2rem; }
-            .filter-track { justify-content: flex-start; padding-bottom: 0.5rem; }
-            main { padding: 0 1.5rem 4rem; }
-            
-            /* Grid menjadi 1 kolom yang lapang */
-            .grid { gap: 2.5rem; grid-template-columns: 1fr; }
-            
-            /* Hapus overlay di mobile agar tidak repot tap 2 kali */
-            .card-overlay { display: none; }
-            
-            /* Tetapkan efek shadow dasar untuk mobile */
-            .card-img-box {
-                box-shadow: 0 10px 25px rgba(0,0,0,0.06);
-            }
+            header h1 { font-size: 2.5rem; }
+            body { padding: 1rem; }
         }
     </style>
 </head>
 <body>
 
-    <nav>
-        <div class="brand">Architect Studio</div>
-        <button class="btn-close">Kembali</button>
-    </nav>
+    <!-- Header Section -->
+    <header>
+        <h1>Creative <span>Showcase</span></h1>
+        <p>Jelajahi koleksi karya desain digital, mulai dari antarmuka pengguna hingga ilustrasi visual.</p>
+    </header>
 
-    <div class="hero">
-        <h1>Koleksi Template</h1>
-        <p>Pilih fondasi yang sempurna untuk visi Anda. Setiap desain dirancang dengan presisi piksel dan estetika modern.</p>
+    <!-- Filter Tabs -->
+    <div class="filter-tabs">
+        <button class="filter-btn active" data-filter="all">All Work</button>
+        <button class="filter-btn" data-filter="ui-ux">UI/UX Design</button>
+        <button class="filter-btn" data-filter="branding">Branding</button>
+        <button class="filter-btn" data-filter="illustration">Illustration</button>
     </div>
 
-    <div class="filter-container">
-        <div class="filter-track" id="filter-track">
-            <!-- Filter buttons injected via JS -->
+    <!-- Showcase Gallery Grid -->
+    <div class="showcase-grid">
+        
+        <!-- Item 1 -->
+        <div class="showcase-item" data-category="ui-ux">
+            <img src="https://images.unsplash.com/photo-1618761714954-0b8cd0026356?q=80&w=800&auto=format&fit=crop" alt="UI Design">
+            <div class="item-overlay">
+                <span class="item-category">UI/UX Design</span>
+                <h3 class="item-title">Fintech App Interface</h3>
+            </div>
         </div>
+
+        <!-- Item 2 -->
+        <div class="showcase-item" data-category="branding">
+            <img src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?q=80&w=800&auto=format&fit=crop" alt="Branding">
+            <div class="item-overlay">
+                <span class="item-category">Branding</span>
+                <h3 class="item-title">Coffee Shop Identity</h3>
+            </div>
+        </div>
+
+        <!-- Item 3 -->
+        <div class="showcase-item" data-category="illustration">
+            <img src="https://images.unsplash.com/photo-1579762715111-aa2f07328907?q=80&w=800&auto=format&fit=crop" alt="Illustration">
+            <div class="item-overlay">
+                <span class="item-category">Illustration</span>
+                <h3 class="item-title">Abstract Geometry</h3>
+            </div>
+        </div>
+
+        <!-- Item 4 -->
+        <div class="showcase-item" data-category="ui-ux">
+            <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=800&auto=format&fit=crop" alt="Web Design">
+            <div class="item-overlay">
+                <span class="item-category">UI/UX Design</span>
+                <h3 class="item-title">E-Commerce Dashboard</h3>
+            </div>
+        </div>
+
+        <!-- Item 5 -->
+        <div class="showcase-item" data-category="branding">
+            <img src="https://images.unsplash.com/photo-1628422329381-80a5814dc7cc?q=80&w=800&auto=format&fit=crop" alt="Packaging">
+            <div class="item-overlay">
+                <span class="item-category">Branding</span>
+                <h3 class="item-title">Organic Skincare Packaging</h3>
+            </div>
+        </div>
+
+        <!-- Item 6 -->
+        <div class="showcase-item" data-category="illustration">
+            <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=800&auto=format&fit=crop" alt="3D Art">
+            <div class="item-overlay">
+                <span class="item-category">Illustration</span>
+                <h3 class="item-title">Neon Cyberpunk 3D</h3>
+            </div>
+        </div>
+
     </div>
 
-    <main>
-        <div class="grid" id="template-grid">
-            <!-- Template cards injected via JS -->
-        </div>
-    </main>
-
+    <!-- JavaScript for Filtering -->
     <script>
-        const categories = [
-            { id: 'all', name: 'Semua Koleksi' },
-            { id: 'minimalist', name: 'Minimalis' },
-            { id: 'creative', name: 'Agensi Kreatif' },
-            { id: 'commerce', name: 'E-Commerce' },
-            { id: 'personal', name: 'Personal Brand' }
-        ];
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const showcaseItems = document.querySelectorAll('.showcase-item');
 
-        const templates = [
-            { id: 1, title: 'The Oslo', catId: 'minimalist', catName: 'Minimalis', img: 'https://images.unsplash.com/photo-1481481322814-3d66736a4392?auto=format&fit=crop&w=800&q=80' },
-            { id: 2, title: 'Studio Blanc', catId: 'creative', catName: 'Agensi Kreatif', img: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80' },
-            { id: 3, title: 'Aura Boutique', catId: 'commerce', catName: 'E-Commerce', img: 'https://images.unsplash.com/photo-1445205170230-053b83016050?auto=format&fit=crop&w=800&q=80' },
-            { id: 4, title: 'Writer\'s Block', catId: 'personal', catName: 'Personal Brand', img: 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=800&q=80' },
-            { id: 5, title: 'Nordic Space', catId: 'minimalist', catName: 'Minimalis', img: 'https://images.unsplash.com/photo-1452587925148-ce544e77e70d?auto=format&fit=crop&w=800&q=80' },
-            { id: 6, title: 'Urban Edge', catId: 'commerce', catName: 'E-Commerce', img: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=800&q=80' }
-        ];
-
-        let currentCat = 'all';
-
-        const filterTrack = document.getElementById('filter-track');
-        const templateGrid = document.getElementById('template-grid');
-
-        function renderFilters() {
-            filterTrack.innerHTML = '';
-            categories.forEach(cat => {
-                const btn = document.createElement('button');
-                btn.className = `filter-btn ${currentCat === cat.id ? 'active' : ''}`;
-                btn.innerText = cat.name;
-                btn.onclick = () => {
-                    currentCat = cat.id;
-                    renderFilters();
-                    renderTemplates();
-                };
-                filterTrack.appendChild(btn);
-            });
-        }
-
-        function renderTemplates() {
-            templateGrid.innerHTML = '';
-            const filtered = currentCat === 'all' 
-                ? templates 
-                : templates.filter(t => t.catId === currentCat);
-
-            filtered.forEach(t => {
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.onclick = () => alert(`Memuat konfigurasi untuk template: ${t.title}`); 
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // 1. Hapus class 'active' dari semua tombol
+                filterBtns.forEach(button => button.classList.remove('active'));
                 
-                card.innerHTML = `
-                    <div class="card-img-box">
-                        <img src="${t.img}" alt="${t.title}" class="card-img" loading="lazy">
-                        <div class="card-overlay">
-                            <button class="btn-select">Pilih Desain</button>
-                        </div>
-                    </div>
-                    <div class="card-info">
-                        <div class="card-title">${t.title}</div>
-                        <div class="card-category">${t.catName}</div>
-                    </div>
-                `;
-                templateGrid.appendChild(card);
-            });
-        }
+                // 2. Tambahkan class 'active' ke tombol yang diklik
+                btn.classList.add('active');
 
-        // Initialize UI
-        renderFilters();
-        renderTemplates();
+                // 3. Ambil nilai filter (contoh: 'ui-ux', 'branding', atau 'all')
+                const filterValue = btn.getAttribute('data-filter');
+
+                // 4. Sembunyikan atau tampilkan item berdasarkan kategori
+                showcaseItems.forEach(item => {
+                    const itemCategory = item.getAttribute('data-category');
+                    
+                    if (filterValue === 'all' || filterValue === itemCategory) {
+                        item.classList.remove('hide');
+                    } else {
+                        item.classList.add('hide');
+                    }
+                });
+            });
+        });
     </script>
 </body>
 </html>

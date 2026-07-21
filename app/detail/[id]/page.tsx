@@ -303,6 +303,17 @@ function CheckoutContent() {
           overflowY: isMobile ? 'visible' : 'auto',
           height: isMobile ? 'auto' : '100%',
         }}>
+          {/* Template info */}
+          <div style={{ padding: '1.5rem', borderBottom: '1px solid rgba(201,169,97,.08)' }}>
+            <div style={{ fontSize: '.7rem', textTransform: 'uppercase', letterSpacing: '.1em', color: 'rgba(245,236,217,.35)', marginBottom: '.35rem' }}>{template.type}</div>
+            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.4rem', color: '#c9a961', fontStyle: 'italic', margin: '0 0 .75rem', lineHeight: 1.2 }}>{template.name}</h2>
+            <p style={{ fontSize: '.82rem', color: 'rgba(245,236,217,.6)', lineHeight: 1.7, margin: '0 0 1rem' }}>{template.description}</p>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '.75rem', borderTop: '1px solid rgba(201,169,97,.08)' }}>
+              <span style={{ fontSize: '.75rem', color: 'rgba(245,236,217,.4)' }}>Harga</span>
+              <span style={{ fontSize: '1.1rem', color: '#c9a961', fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic', fontWeight: 600 }}>Rp 150.000</span>
+            </div>
+          </div>
+
           {/* Features list */}
           <div style={{ padding: '1.5rem', borderBottom: '1px solid rgba(201,169,97,.08)' }}>
             <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '.95rem', color: '#c9a961', marginBottom: '1rem', fontStyle: 'italic', letterSpacing: '.02em' }}><i className="fas fa-crown" style={{fontSize:'.8rem',marginRight:'.35rem'}}></i> Features Included</h3>
