@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Editor Undangan - Sienna & Arka</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500&family=Italiana&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+  :root {
+    --bg: #0a0807;
+    --bg-2: #14110d;
+    --bg-3: #1d1813;
+    --cream: #f5ecd9;
+    --cream-dim: #d4cab3;
+    --gold: #c9a961;
+    --gold-bright: #e2c478;
+    --gold-deep: #8a6f33;
+    --muted: rgba(245, 236, 217, 0.5);
+    --line: rgba(201, 169, 97, 0.2);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg-2);
+    color: var(--cream);
+    font-family: 'Jost', sans-serif;
+    overflow: hidden;
+    height: 100vh;
+  }
+
+  .editor-layout {
+    display: grid;
+    grid-template-columns: 420px 1fr;
+    height: 100vh;
+  }
+
+  /* ============ FORM PANEL (KIRI) ============ */
+  .form-panel {
+    background: var(--bg);
+    border-right: 1px solid var(--line);
+    overflow-y: auto;
+    padding: 2rem;
+    scrollbar-width: thin;
+    scrollbar-color: var(--gold) var(--bg);
+  }
+  .form-panel::-webkit-scrollbar { width: 6px; }
+  .form-panel::-webkit-scrollbar-track { background: var(--bg); }
+  .form-panel::-webkit-scrollbar-thumb { background: var(--gold-deep); border-radius: 3px; }
+
+  .editor-header {
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 1.5rem;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .editor-header h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 1.8rem;
+    color: var(--gold);
+    margin: 0;
+  }
+  .editor-header .badge {
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    color: var(--cream-dim);
+    text-transform: uppercase;
+    border: 1px solid var(--line);
+    padding: 0.3rem 0.8rem;
+    border-radius: 2px;
+  }
+
+  .form-section { margin-bottom: 2.5rem; }
+  .form-section-title {
+    font-size: 0.7rem;
+    letter-spacing: 0.4em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+  .form-section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--line);
+  }
+
+  .form-group { margin-bottom: 1.2rem; }
+  .form-group label {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--cream-dim);
+    margin-bottom: 0.4rem;
+    letter-spacing: 0.05em;
+  }
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    width: 100%;
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    color: var(--cream);
+    padding: 0.6rem 0.8rem;
+    font-family: 'Jost', sans-serif;
+    font-size: 0.85rem;
+    border-radius: 2px;
+    transition: all 0.3s;
+    outline: none;
+  }
+  .form-group input:focus,
+  .form-group textarea:focus,
+  .form-group select:focus {
+    border-color: var(--gold);
+    background: rgba(20, 17, 13, 0.8);
+  }
+  .form-group textarea { resize: vertical; min-height: 60px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+  /* ============ PREVIEW PANEL (KANAN) ============ */
+  .preview-panel {
+    background: radial-gradient(circle at center, #1d1813 0%, #0a0807 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .preview-panel::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: 
+      linear-gradient(rgba(201, 169, 97, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(201, 169, 97, 0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+  }
+
+  /* Toolbar Atas */
+  .preview-toolbar {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 20;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+  .device-switch {
+    display: flex;
+    background: rgba(10, 8, 7, 0.8);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--line);
+    border-radius: 30px;
+    padding: 4px;
+  }
+  .device-btn {
+    background: transparent;
+    border: none;
+    color: var(--cream-dim);
+    padding: 0.5rem 1.2rem;
+    border-radius: 24px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s;
+    font-family: 'Jost', sans-serif;
+  }
+  .device-btn.active {
+    background: var(--gold);
+    color: var(--bg);
+  }
+  .device-btn:not(.active):hover { color: var(--gold); }
+
+  /* Mockup Frame */
+  .mockup-frame {
+    transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+    position: relative;
+    background: #000;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.8), 0 0 100px rgba(201, 169, 97, 0.1);
+  }
+
+  /* Mode Mobile */
+  .mockup-frame.mobile-mode {
+    width: 375px;
+    height: 720px;
+    border-radius: 40px;
+    border: 8px solid #1a1a1a;
+  }
+  .mockup-frame.mobile-mode .browser-bar { display: none; }
+  .mockup-frame.mobile-mode .phone-notch {
+    position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    width: 150px; height: 24px; background: #000;
+    border-bottom-left-radius: 14px; border-bottom-right-radius: 14px; z-index: 100;
+  }
+
+  /* Mode Desktop */
+  .mockup-frame.desktop-mode {
+    width: 100%;
+    max-width: 1100px;
+    height: 680px;
+    border-radius: 10px;
+    border: 1px solid #2a2a2a;
+  }
+  .mockup-frame.desktop-mode .phone-notch { display: none; }
+  .mockup-frame.desktop-mode .browser-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #14110d;
+    padding: 0.6rem 1rem;
+    border-bottom: 1px solid #2a2a2a;
+  }
+  .mockup-frame.desktop-mode .browser-bar .dots {
+    display: flex; gap: 0.5rem;
+  }
+  .mockup-frame.desktop-mode .browser-bar .dots span {
+    width: 10px; height: 10px; border-radius: 50%;
+  }
+  .mockup-frame.desktop-mode .browser-bar .url-bar {
+    flex: 1; margin: 0 1rem;
+    background: #0a0807; border-radius: 4px; padding: 0.3rem 0.8rem;
+    font-size: 0.75rem; color: var(--cream-dim);
+    display: flex; align-items: center; gap: 0.5rem;
+    border: 1px solid #2a2a2a;
+  }
+  .mockup-frame.desktop-mode .browser-bar i { color: var(--gold); }
+
+  .preview-iframe {
+    width: 100%;
+    flex: 1;
+    border: none;
+    background: var(--bg);
+  }
+  
+  @media (max-width: 1024px) {
+    .editor-layout { grid-template-columns: 350px 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="editor-layout">
+  
+  <!-- ============ KIRI: FORM EDITOR ============ -->
+  <aside class="form-panel">
+    <div class="editor-header">
+      <h1>Editor Undangan</h1>
+      <div class="badge">Live Preview</div>
+    </div>
+
+    <!-- Section: Mempelai -->
+    <div class="form-section">
+      <div class="form-section-title">Data Mempelai</div>
+      
+      <div class="form-group">
+        <label>Nama Panggilan Mempelai Wanita</label>
+        <input type="text" id="bride-name" value="Sienna">
+      </div>
+      <div class="form-group">
+        <label>Nama Lengkap Mempelai Wanita</label>
+        <input type="text" id="bride-full" value="Sienna Pradipta Reswari">
+      </div>
+      <div class="form-group">
+        <label>Orang Tua Mempelai Wanita</label>
+        <textarea id="bride-parents">Bapak Surya Pratama, S.E.<br>& Ibu Lestari Wulandari, S.KM.</textarea>
+      </div>
+      <div class="form-group">
+        <label>URL Foto Mempelai Wanita</label>
+        <input type="text" id="bride-photo" value="https://picsum.photos/seed/bride-sienna-wedding/600/800.jpg">
+      </div>
+
+      <hr style="border-color: var(--line); margin: 1.5rem 0;">
+
+      <div class="form-group">
+        <label>Nama Panggilan Mempelai Pria</label>
+        <input type="text" id="groom-name" value="Arka">
+      </div>
+      <div class="form-group">
+        <label>Nama Lengkap Mempelai Pria</label>
+        <input type="text" id="groom-full" value="Arka Mahesa Wijaya">
+      </div>
+      <div class="form-group">
+        <label>Orang Tua Mempelai Pria</label>
+        <textarea id="groom-parents">Bapak Dr. Wijaya Kusuma, M.Sc.<br>& Ibu Maharani Anggraini, S.Pd.</textarea>
+      </div>
+      <div class="form-group">
+        <label>URL Foto Mempelai Pria</label>
+        <input type="text" id="groom-photo" value="https://picsum.photos/seed/groom-arka-wedding/600/800.jpg">
+      </div>
+    </div>
+
+    <!-- Section: Acara -->
+    <div class="form-section">
+      <div class="form-section-title">Detail Acara</div>
+      
+      <div class="form-group">
+        <label>Tanggal Hitung Mundur (YYYY-MM-DDTHH:MM:SS)</label>
+        <input type="text" id="countdown-date" value="2025-12-20T08:00:00+07:00">
+      </div>
+      <div class="form-group">
+        <label>Tanggal di Hero (Text)</label>
+        <input type="text" id="hero-date" value="20 . 12 . 2025">
+      </div>
+
+      <div class="form-group">
+        <label>Akad Nikah - Tanggal</label>
+        <input type="text" id="akad-date" value="Sabtu, 20 Desember 2025">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Waktu Akad</label>
+          <input type="text" id="akad-time" value="08.00 — 10.00 WIB">
+        </div>
+        <div class="form-group">
+          <label>Lokasi Maps Akad</label>
+          <input type="text" id="akad-maps" value="Masjid Agung Al-Azhar Jakarta">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Tempat Akad</label>
+        <textarea id="akad-place">Masjid Agung Al-Azhar<br>Jakarta Selatan</textarea>
+      </div>
+
+      <hr style="border-color: var(--line); margin: 1.5rem 0;">
+
+      <div class="form-group">
+        <label>Resepsi - Tanggal</label>
+        <input type="text" id="resepsi-date" value="Sabtu, 20 Desember 2025">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Waktu Resepsi</label>
+          <input type="text" id="resepsi-time" value="11.00 — 14.00 WIB">
+        </div>
+        <div class="form-group">
+          <label>Lokasi Maps Resepsi</label>
+          <input type="text" id="resepsi-maps" value="The Ritz-Carlton Jakarta">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Tempat Resepsi</label>
+        <textarea id="resepsi-place">The Ritz-Carlton Ballroom<br>Jakarta Selatan</textarea>
+      </div>
+    </div>
+
+    <!-- Section: Galeri -->
+    <div class="form-section">
+      <div class="form-section-title">URL Galeri Foto (6)</div>
+      <div class="form-group"><label>Foto 1</label><input type="text" id="gallery-1" value="https://picsum.photos/seed/wedding-gallery-1/600/800.jpg"></div>
+      <div class="form-group"><label>Foto 2</label><input type="text" id="gallery-2" value="https://picsum.photos/seed/wedding-gallery-2/600/800.jpg"></div>
+      <div class="form-group"><label>Foto 3</label><input type="text" id="gallery-3" value="https://picsum.photos/seed/wedding-gallery-3/600/800.jpg"></div>
+      <div class="form-group"><label>Foto 4</label><input type="text" id="gallery-4" value="https://picsum.photos/seed/wedding-gallery-4/600/800.jpg"></div>
+      <div class="form-group"><label>Foto 5</label><input type="text" id="gallery-5" value="https://picsum.photos/seed/wedding-gallery-5/600/800.jpg"></div>
+      <div class="form-group"><label>Foto 6</label><input type="text" id="gallery-6" value="https://picsum.photos/seed/wedding-gallery-6/600/800.jpg"></div>
+    </div>
+
+  </aside>
+
+  <!-- ============ KANAN: PREVIEW & TOGGLE ============ -->
+  <main class="preview-panel">
+    
+    <!-- Tombol Switch Device -->
+    <div class="preview-toolbar">
+      <div class="device-switch">
+        <button class="device-btn active" data-device="mobile">
+          <i class="fas fa-mobile-alt"></i> Mobile
+        </button>
+        <button class="device-btn" data-device="desktop">
+          <i class="fas fa-desktop"></i> Website
+        </button>
+      </div>
+    </div>
+
+    <!-- Frame Mockup -->
+    <div class="mockup-frame mobile-mode" id="previewFrame">
+      <div class="phone-notch"></div>
+      
+      <!-- Bar Browser (Desktop Mode) -->
+      <div class="browser-bar">
+        <div class="dots">
+          <span style="background:#ff5f56"></span>
+          <span style="background:#ffbd2e"></span>
+          <span style="background:#27c93f"></span>
+        </div>
+        <div class="url-bar">
+          <i class="fas fa-lock"></i> sienna-arka-wedding.com
+        </div>
+        <div style="width: 60px; display:flex; justify-content:flex-end; gap:10px; color:var(--cream-dim);">
+          <i class="fas fa-redo"></i>
+        </div>
+      </div>
+      
+      <iframe class="preview-iframe" id="previewIframe" title="Wedding Preview"></iframe>
+    </div>
+
+  </main>
+</div>
+
+<!-- Template berisi kode undangan ASLI lengkap -->
+<template id="invitation-template">
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sienna & Arka</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500&family=Italiana&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+  :root {
+    --bg: #0a0807; --bg-2: #14110d; --bg-3: #1d1813;
+    --cream: #f5ecd9; --cream-dim: #d4cab3;
+    --gold: #c9a961; --gold-bright: #e2c478; --gold-deep: #8a6f33;
+    --muted: rgba(245, 236, 217, 0.5); --line: rgba(201, 169, 97, 0.2);
+  }
+  * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--cream); font-family: 'Jost', sans-serif; font-weight: 300; overflow-x: hidden; margin: 0; line-height: 1.6; letter-spacing: 0.02em; }
+  .font-display { font-family: 'Cormorant Garamond', serif; }
+  .font-italiana { font-family: 'Italiana', serif; }
+
+  .letterbox-top, .letterbox-bottom { position: fixed; left: 0; right: 0; height: 30px; background: #000; z-index: 200; pointer-events: none; transition: height 0.6s ease; }
+  .letterbox-top { top: 0; box-shadow: 0 10px 40px rgba(0,0,0,0.8); }
+  .letterbox-bottom { bottom: 0; box-shadow: 0 -10px 40px rgba(0,0,0,0.8); }
+  .grain { position: fixed; inset: -50%; width: 200%; height: 200%; pointer-events: none; z-index: 150; opacity: 0.06; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); animation: grainShift 0.8s steps(4) infinite; }
+  @keyframes grainShift { 0% { transform: translate(0,0); } 25% { transform: translate(-5%, -5%); } 50% { transform: translate(5%, -3%); } 75% { transform: translate(-3%, 5%); } 100% { transform: translate(0,0); } }
+  .vignette { position: fixed; inset: 0; pointer-events: none; z-index: 140; background: radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.55) 90%, rgba(0,0,0,0.85) 100%); }
+  .light-leak { position: fixed; inset: 0; pointer-events: none; z-index: 130; background: radial-gradient(circle at 20% 30%, rgba(201, 169, 97, 0.08), transparent 40%), radial-gradient(circle at 80% 70%, rgba(201, 169, 97, 0.06), transparent 40%); mix-blend-mode: screen; }
+
+  .hero { position: relative; height: 100vh; min-height: 700px; overflow: hidden; background: var(--bg); }
+  .hero-scene { position: absolute; inset: 0; perspective: 1400px; transform-style: preserve-3d; }
+  .layer { position: absolute; inset: 0; transform-style: preserve-3d; transition: transform 0.8s cubic-bezier(0.23, 1, 0.32, 1); will-change: transform; }
+  .hero-bg { position: absolute; inset: -5%; background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(58, 42, 20, 0.4), transparent 70%), radial-gradient(ellipse 60% 80% at 30% 40%, rgba(40, 30, 18, 0.3), transparent 60%), linear-gradient(180deg, #0a0807 0%, #14110d 50%, #0a0807 100%); }
+  .hero-bg::before { content: ''; position: absolute; inset: 0; background-image: radial-gradient(circle at 20% 20%, rgba(201, 169, 97, 0.04) 0%, transparent 2%), radial-gradient(circle at 80% 60%, rgba(201, 169, 97, 0.03) 0%, transparent 2%), radial-gradient(circle at 40% 80%, rgba(201, 169, 97, 0.04) 0%, transparent 2%); background-size: 300px 300px, 400px 400px, 350px 350px; animation: bgDrift 30s linear infinite; }
+  @keyframes bgDrift { from { transform: translate(0,0); } to { transform: translate(-300px, -300px); } }
+  .light-rays { position: absolute; top: -20%; left: 50%; width: 80%; height: 140%; transform: translateX(-50%); background: conic-gradient(from 180deg at 50% 0%, transparent 0deg, rgba(201, 169, 97, 0.08) 10deg, transparent 20deg, rgba(201, 169, 97, 0.05) 35deg, transparent 50deg, rgba(201, 169, 97, 0.06) 65deg, transparent 80deg); filter: blur(40px); opacity: 0.7; animation: raysSway 12s ease-in-out infinite alternate; }
+  @keyframes raysSway { from { transform: translateX(-50%) rotate(-3deg); opacity: 0.5; } to { transform: translateX(-45%) rotate(3deg); opacity: 0.8; } }
+  .floral { position: absolute; color: var(--gold); pointer-events: none; }
+  .floral-left { top: -5%; left: -8%; width: 35%; height: 110%; opacity: 0.7; }
+  .floral-right { top: -5%; right: -8%; width: 35%; height: 110%; transform: scaleX(-1); opacity: 0.7; }
+  .floral-front { bottom: -10%; left: 50%; transform: translateX(-50%); width: 80%; height: 50%; opacity: 0.4; filter: blur(2px); }
+  .hero-content { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 0 1.5rem; }
+  .hero-eyebrow { font-size: 0.7rem; letter-spacing: 0.6em; color: var(--gold); margin-bottom: 2rem; text-transform: uppercase; opacity: 0; animation: heroFadeIn 1.5s 1.5s forwards; }
+  .hero-name { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-style: italic; font-size: clamp(4rem, 14vw, 13rem); line-height: 0.85; color: var(--cream); text-shadow: 0 0 80px rgba(201, 169, 97, 0.25), 0 0 30px rgba(0,0,0,0.5); letter-spacing: -0.02em; opacity: 0; animation: heroFadeIn 2s 1.8s forwards; }
+  .hero-name .amp { display: block; font-size: 0.4em; color: var(--gold); margin: 0.1em 0; font-style: italic; text-shadow: 0 0 30px rgba(201, 169, 97, 0.5); }
+  .hero-date { font-size: 0.75rem; letter-spacing: 0.5em; color: var(--gold); margin-top: 2.5rem; text-transform: uppercase; opacity: 0; animation: heroFadeIn 1.5s 2.5s forwards; }
+  .hero-divider { width: 1px; height: 50px; background: linear-gradient(to bottom, transparent, var(--gold), transparent); margin: 1.5rem 0; opacity: 0; animation: heroFadeIn 1.5s 2.2s forwards; }
+  @keyframes heroFadeIn { from { opacity: 0; transform: translateY(30px); filter: blur(10px); } to { opacity: 1; transform: translateY(0); filter: blur(0); } }
+  .particle { position: absolute; background: var(--gold-bright); border-radius: 50%; pointer-events: none; box-shadow: 0 0 6px var(--gold); }
+  .scroll-cue { position: absolute; bottom: 60px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 1rem; z-index: 10; opacity: 0; animation: heroFadeIn 1.5s 3s forwards; }
+  .scroll-cue span { font-size: 0.65rem; letter-spacing: 0.4em; color: var(--gold); writing-mode: vertical-rl; text-orientation: mixed; }
+  .scroll-cue .line { width: 1px; height: 60px; background: linear-gradient(to bottom, var(--gold), transparent); position: relative; overflow: hidden; }
+  .scroll-cue .line::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 30%; background: var(--gold-bright); animation: scrollLine 2s ease-in-out infinite; }
+  @keyframes scrollLine { 0% { top: -30%; } 100% { top: 100%; } }
+
+  .music-toggle { position: fixed; top: 50px; right: 20px; width: 40px; height: 40px; border: 1px solid var(--line); background: rgba(10, 8, 7, 0.6); backdrop-filter: blur(10px); color: var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 180; transition: all 0.4s; }
+  .music-toggle:hover { border-color: var(--gold); transform: scale(1.1); }
+  .music-toggle .bars { display: flex; gap: 2px; align-items: center; height: 12px; }
+  .music-toggle .bars span { width: 2px; background: var(--gold); height: 4px; border-radius: 1px; }
+  .music-toggle.playing .bars span { animation: bar 0.8s ease-in-out infinite alternate; }
+  .music-toggle.playing .bars span:nth-child(1) { animation-delay: 0s; } .music-toggle.playing .bars span:nth-child(2) { animation-delay: 0.2s; } .music-toggle.playing .bars span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes bar { from { height: 4px; } to { height: 12px; } }
+
+  .side-nav { position: fixed; left: 30px; top: 50%; transform: translateY(-50%); z-index: 170; display: flex; flex-direction: column; gap: 1.2rem; }
+  .side-nav a { width: 8px; height: 8px; border: 1px solid var(--gold); border-radius: 50%; transition: all 0.4s; position: relative; }
+  .side-nav a.active { background: var(--gold); box-shadow: 0 0 10px var(--gold); }
+  .side-nav a::after { content: attr(data-label); position: absolute; left: 20px; top: 50%; transform: translateY(-50%); font-size: 0.65rem; letter-spacing: 0.3em; color: var(--gold); text-transform: uppercase; opacity: 0; white-space: nowrap; transition: opacity 0.3s; }
+  .side-nav a:hover::after { opacity: 1; }
+
+  section { position: relative; padding: 8rem 2rem; z-index: 5; }
+  .section-eyebrow { font-size: 0.7rem; letter-spacing: 0.5em; color: var(--gold); text-transform: uppercase; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem; justify-content: center; }
+  .section-eyebrow::before, .section-eyebrow::after { content: ''; width: 40px; height: 1px; background: var(--gold); opacity: 0.5; }
+  .section-title { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-style: italic; font-size: clamp(2.5rem, 6vw, 4.5rem); line-height: 1; color: var(--cream); text-align: center; margin-bottom: 1rem; }
+  .reveal { opacity: 0; transform: translateY(40px); transition: opacity 1.2s, transform 1.2s; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-delay-1 { transition-delay: 0.2s; } .reveal-delay-2 { transition-delay: 0.4s; } .reveal-delay-3 { transition-delay: 0.6s; }
+
+  .opening { text-align: center; max-width: 800px; margin: 0 auto; }
+  .opening .bismillah { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 2rem; color: var(--gold); margin-bottom: 2rem; }
+  .opening .verse { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.4rem; line-height: 1.8; color: var(--cream-dim); margin-bottom: 1.5rem; }
+  .opening .verse-trans { font-size: 0.95rem; color: var(--muted); line-height: 1.8; max-width: 600px; margin: 0 auto; }
+  .opening .verse-source { margin-top: 1.5rem; font-size: 0.75rem; letter-spacing: 0.3em; color: var(--gold); text-transform: uppercase; }
+
+  .couple-grid { display: grid; grid-template-columns: 1fr auto 1fr; gap: 3rem; align-items: center; max-width: 1200px; margin: 0 auto; }
+  .couple-card { text-align: center; perspective: 1000px; }
+  .couple-card .photo-wrap { position: relative; width: 280px; height: 360px; margin: 0 auto 2rem; transform-style: preserve-3d; transition: transform 0.8s cubic-bezier(0.23, 1, 0.32, 1); cursor: pointer; }
+  .couple-card .photo-wrap::before { content: ''; position: absolute; inset: -15px; border: 1px solid var(--gold); opacity: 0.3; transform: translateZ(-20px); }
+  .couple-card .photo-wrap::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 50%, rgba(10, 8, 7, 0.8) 100%); z-index: 2; }
+  .couple-card .photo { width: 100%; height: 100%; object-fit: cover; filter: sepia(0.3) contrast(1.05) brightness(0.85); transition: filter 0.6s; }
+  .couple-card:hover .photo-wrap { transform: rotateY(-8deg) rotateX(3deg) translateZ(20px); }
+  .couple-card:hover .photo { filter: sepia(0.1) contrast(1.1) brightness(0.95); }
+  .couple-card .role { font-size: 0.7rem; letter-spacing: 0.4em; color: var(--gold); text-transform: uppercase; margin-bottom: 0.8rem; }
+  .couple-card .name { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 2.5rem; color: var(--cream); margin-bottom: 0.5rem; line-height: 1; }
+  .couple-card .fullname { font-size: 0.75rem; letter-spacing: 0.2em; color: var(--cream-dim); text-transform: uppercase; margin-bottom: 1.5rem; }
+  .couple-card .parents { font-size: 0.85rem; color: var(--muted); line-height: 1.7; }
+  .couple-card .parents .label { color: var(--gold); font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 0.3rem; display: block; }
+  .couple-amp { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 5rem; color: var(--gold); text-shadow: 0 0 30px rgba(201, 169, 97, 0.4); }
+
+  .story { position: relative; }
+  .story-bg-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-family: 'Italiana', serif; font-size: 30vw; color: rgba(201, 169, 97, 0.03); pointer-events: none; white-space: nowrap; z-index: -1; letter-spacing: -0.05em; }
+  .story-quote { text-align: center; max-width: 900px; margin: 0 auto 6rem; position: relative; }
+  .story-quote .mark { font-family: 'Cormorant Garamond', serif; font-size: 8rem; color: var(--gold); opacity: 0.2; line-height: 0.5; margin-bottom: 1rem; }
+  .story-quote p { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.8rem; line-height: 1.5; color: var(--cream); }
+  .story-quote .author { margin-top: 2rem; font-size: 0.75rem; letter-spacing: 0.4em; color: var(--gold); text-transform: uppercase; }
+  .timeline { max-width: 900px; margin: 0 auto; position: relative; }
+  .timeline::before { content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: linear-gradient(to bottom, transparent, var(--gold) 10%, var(--gold) 90%, transparent); opacity: 0.3; }
+  .timeline-item { display: grid; grid-template-columns: 1fr 80px 1fr; gap: 2rem; margin-bottom: 4rem; align-items: center; }
+  .timeline-item:nth-child(even) .timeline-content { grid-column: 3; text-align: left; }
+  .timeline-item:nth-child(odd) .timeline-content { grid-column: 1; text-align: right; }
+  .timeline-content { padding: 1.5rem; }
+  .timeline-content .date { font-size: 0.7rem; letter-spacing: 0.3em; color: var(--gold); text-transform: uppercase; margin-bottom: 0.5rem; }
+  .timeline-content h3 { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.8rem; color: var(--cream); margin-bottom: 0.8rem; }
+  .timeline-content p { font-size: 0.9rem; color: var(--muted); line-height: 1.7; }
+  .timeline-dot { width: 16px; height: 16px; border: 1px solid var(--gold); background: var(--bg); border-radius: 50%; margin: 0 auto; position: relative; z-index: 2; }
+  .timeline-dot::after { content: ''; position: absolute; inset: 4px; background: var(--gold); border-radius: 50%; box-shadow: 0 0 10px var(--gold); }
+
+  .events-bg { position: absolute; inset: 0; background: radial-gradient(ellipse at 30% 50%, rgba(58, 42, 20, 0.2), transparent 50%), radial-gradient(ellipse at 70% 50%, rgba(58, 42, 20, 0.15), transparent 50%); z-index: -1; }
+  .countdown { display: flex; justify-content: center; gap: 2rem; margin-bottom: 5rem; flex-wrap: wrap; }
+  .countdown-item { text-align: center; min-width: 80px; }
+  .countdown-item .num { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 3.5rem; color: var(--gold); line-height: 1; text-shadow: 0 0 20px rgba(201, 169, 97, 0.3); }
+  .countdown-item .label { font-size: 0.65rem; letter-spacing: 0.3em; color: var(--muted); text-transform: uppercase; margin-top: 0.5rem; }
+  .event-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; max-width: 1100px; margin: 0 auto; }
+  .event-card { position: relative; padding: 3rem 2rem; border: 1px solid var(--line); background: linear-gradient(180deg, rgba(20, 17, 13, 0.6), rgba(10, 8, 7, 0.6)); backdrop-filter: blur(10px); text-align: center; transition: all 0.6s; overflow: hidden; }
+  .event-card::before { content: ''; position: absolute; top: 0; left: 50%; width: 60%; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); transform: translateX(-50%); }
+  .event-card::after { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 50% 0%, rgba(201, 169, 97, 0.08), transparent 60%); opacity: 0; transition: opacity 0.6s; }
+  .event-card:hover { transform: translateY(-8px); border-color: var(--gold); }
+  .event-card:hover::after { opacity: 1; }
+  .event-card .icon { font-size: 1.5rem; color: var(--gold); margin-bottom: 1.5rem; opacity: 0.8; }
+  .event-card .type { font-size: 0.7rem; letter-spacing: 0.4em; color: var(--gold); text-transform: uppercase; margin-bottom: 1rem; }
+  .event-card .title { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 2.2rem; color: var(--cream); margin-bottom: 1.5rem; line-height: 1.1; }
+  .event-card .detail { margin-bottom: 1rem; }
+  .event-card .detail .label { font-size: 0.65rem; letter-spacing: 0.3em; color: var(--gold); text-transform: uppercase; margin-bottom: 0.3rem; }
+  .event-card .detail .value { font-size: 0.95rem; color: var(--cream-dim); font-family: 'Cormorant Garamond', serif; }
+  .event-card .location-btn { margin-top: 1.5rem; display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.7rem 1.5rem; border: 1px solid var(--gold); color: var(--gold); font-size: 0.7rem; letter-spacing: 0.3em; text-transform: uppercase; cursor: pointer; transition: all 0.4s; background: transparent; text-decoration: none; }
+  .event-card .location-btn:hover { background: var(--gold); color: var(--bg); }
+
+  .gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; max-width: 1200px; margin: 0 auto; }
+  .gallery-item { position: relative; overflow: hidden; cursor: pointer; aspect-ratio: 3/4; transition: transform 0.6s; }
+  .gallery-item:nth-child(2), .gallery-item:nth-child(5) { aspect-ratio: 3/4; margin-top: 2rem; }
+  .gallery-item img { width: 100%; height: 100%; object-fit: cover; filter: sepia(0.25) contrast(1.05) brightness(0.85); transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1); }
+  .gallery-item::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 50%, rgba(10, 8, 7, 0.7)); opacity: 0; transition: opacity 0.6s; }
+  .gallery-item:hover img { transform: scale(1.1); filter: sepia(0) contrast(1.1) brightness(1); }
+  .gallery-item:hover::after { opacity: 1; } .gallery-item:hover { transform: translateY(-5px); }
+
+  .footer { text-align: center; padding: 6rem 2rem 4rem; position: relative; }
+  .footer .thanks { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: clamp(2rem, 5vw, 3.5rem); color: var(--cream); margin-bottom: 2rem; line-height: 1.2; }
+  .footer .closing { font-size: 0.9rem; color: var(--muted); max-width: 500px; margin: 0 auto 3rem; line-height: 1.8; }
+  .footer .monogram { font-family: 'Italiana', serif; font-size: 3rem; color: var(--gold); margin-bottom: 1rem; }
+  .footer .monogram .amp { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 0.5em; vertical-align: middle; margin: 0 0.1em; }
+  .footer .signatures { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.8rem; color: var(--cream); margin-bottom: 0.5rem; }
+  .footer .families { font-size: 0.75rem; letter-spacing: 0.2em; color: var(--muted); text-transform: uppercase; }
+  .footer .copyright { margin-top: 4rem; font-size: 0.65rem; letter-spacing: 0.3em; color: var(--gold-deep); text-transform: uppercase; }
+
+  @media (max-width: 900px) {
+    .couple-grid { grid-template-columns: 1fr; gap: 4rem; }
+    .couple-amp { font-size: 3rem; }
+    .event-grid { grid-template-columns: 1fr; }
+    .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+    .timeline::before { left: 20px; }
+    .timeline-item { grid-template-columns: 40px 1fr; }
+    .timeline-item:nth-child(even) .timeline-content, .timeline-item:nth-child(odd) .timeline-content { grid-column: 2; text-align: left; }
+    .side-nav { display: none; }
+    .music-toggle { top: 60px; right: 15px; }
+    section { padding: 5rem 1.5rem; }
+    .letterbox-top, .letterbox-bottom { height: 30px; }
+    .scroll-cue { bottom: 50px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="letterbox-top"></div>
+<div class="letterbox-bottom"></div>
+<div class="grain"></div>
+<div class="vignette"></div>
+<div class="light-leak"></div>
+
+<button class="music-toggle" id="musicToggle"><div class="bars"><span></span><span></span><span></span></div></button>
+
+<nav class="side-nav">
+  <a href="#hero" data-label="Beranda" class="active"></a>
+  <a href="#opening" data-label="Ayat"></a>
+  <a href="#couple" data-label="Mempelai"></a>
+  <a href="#story" data-label="Kisah"></a>
+  <a href="#events" data-label="Acara"></a>
+  <a href="#gallery" data-label="Galeri"></a>
+  <a href="#rsvp" data-label="RSVP"></a>
+</nav>
+
+<section class="hero" id="hero">
+  <div class="hero-scene" id="heroScene">
+    <div class="layer" data-depth="0.05"><div class="hero-bg"></div></div>
+    <div class="layer" data-depth="0.15"><div class="light-rays"></div></div>
+    <div class="layer" data-depth="0.25">
+      <svg class="floral floral-left" viewBox="0 0 200 600" preserveAspectRatio="xMidYMid meet"><defs><linearGradient id="leafGrad1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#e2c478"/><stop offset="100%" stop-color="#8a6f33"/></linearGradient></defs><g stroke="url(#leafGrad1)" fill="none" stroke-width="1" stroke-linecap="round"><path d="M100,0 C85,80 115,160 90,240 C75,320 110,400 95,480 C85,540 105,600 100,600"/><path d="M95,60 C65,55 40,70 30,95 C55,92 80,80 95,72 Z" fill="url(#leafGrad1)" opacity="0.7"/><path d="M95,60 C125,55 150,70 160,95 C135,92 110,80 95,72 Z" fill="url(#leafGrad1)" opacity="0.7"/><path d="M90,140 C60,135 35,150 25,175 C50,172 75,160 90,152 Z" fill="url(#leafGrad1)" opacity="0.65"/><path d="M90,140 C120,135 145,150 155,175 C130,172 105,160 90,152 Z" fill="url(#leafGrad1)" opacity="0.65"/><path d="M95,230 C65,225 40,240 30,265 C55,262 80,250 95,242 Z" fill="url(#leafGrad1)" opacity="0.6"/><path d="M95,230 C125,225 150,240 160,265 C135,262 110,250 95,242 Z" fill="url(#leafGrad1)" opacity="0.6"/><circle cx="30" cy="95" r="3" fill="#e2c478" opacity="0.8"/><circle cx="160" cy="95" r="3" fill="#e2c478" opacity="0.8"/></g></svg>
+      <svg class="floral floral-right" viewBox="0 0 200 600" preserveAspectRatio="xMidYMid meet"><g stroke="url(#leafGrad1)" fill="none" stroke-width="1" stroke-linecap="round"><path d="M100,0 C85,80 115,160 90,240 C75,320 110,400 95,480 C85,540 105,600 100,600"/><path d="M95,60 C65,55 40,70 30,95 C55,92 80,80 95,72 Z" fill="url(#leafGrad1)" opacity="0.7"/><path d="M95,60 C125,55 150,70 160,95 C135,92 110,80 95,72 Z" fill="url(#leafGrad1)" opacity="0.7"/><path d="M90,140 C60,135 35,150 25,175 C50,172 75,160 90,152 Z" fill="url(#leafGrad1)" opacity="0.65"/><path d="M90,140 C120,135 145,150 155,175 C130,172 105,160 90,152 Z" fill="url(#leafGrad1)" opacity="0.65"/><path d="M95,230 C65,225 40,240 30,265 C55,262 80,250 95,242 Z" fill="url(#leafGrad1)" opacity="0.6"/><path d="M95,230 C125,225 150,240 160,265 C135,262 110,250 95,242 Z" fill="url(#leafGrad1)" opacity="0.6"/><circle cx="30" cy="95" r="3" fill="#e2c478" opacity="0.8"/><circle cx="160" cy="95" r="3" fill="#e2c478" opacity="0.8"/></g></svg>
+    </div>
+    <div class="layer" data-depth="0.45">
+      <div class="hero-content">
+        <div class="hero-eyebrow">The Wedding of</div>
+        <h1 class="hero-name"><span id="e-bride-name">Sienna</span><span class="amp">&amp;</span><span id="e-groom-name">Arka</span></h1>
+        <div class="hero-divider"></div>
+        <div class="hero-date" id="e-hero-date">20 . 12 . 2025</div>
+      </div>
+    </div>
+    <div class="layer" data-depth="0.7">
+      <svg class="floral floral-front" viewBox="0 0 800 300" preserveAspectRatio="xMidYMid meet"><g stroke="#e2c478" fill="none" stroke-width="1.2" stroke-linecap="round" opacity="0.6"><path d="M0,250 C100,200 200,220 300,180 C400,140 500,160 600,130 C700,100 800,120 800,120"/><path d="M0,280 C150,240 280,260 400,220 C520,180 650,200 800,170"/><path d="M150,225 C140,210 120,205 105,215 C115,225 135,230 150,225 Z" fill="#c9a961" opacity="0.5"/><path d="M280,195 C270,180 250,175 235,185 C245,195 265,200 280,195 Z" fill="#c9a961" opacity="0.5"/><path d="M450,155 C440,140 420,135 405,145 C415,155 435,160 450,155 Z" fill="#c9a961" opacity="0.5"/><path d="M620,125 C610,110 590,105 575,115 C585,125 605,130 620,125 Z" fill="#c9a961" opacity="0.5"/><circle cx="105" cy="215" r="3" fill="#e2c478"/><circle cx="405" cy="145" r="3" fill="#e2c478"/><circle cx="575" cy="115" r="3" fill="#e2c478"/></g></svg>
+    </div>
+    <div class="layer" data-depth="0.9" id="particleLayer"></div>
+  </div>
+  <div class="scroll-cue"><span>SCROLL</span><div class="line"></div></div>
+</section>
+
+<section id="opening">
+  <div class="opening reveal">
+    <div class="bismillah">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ</div>
+    <p class="verse">"Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan untukmu istri-istri dari jenismu sendiri, supaya kamu cenderung dan merasa tenteram kepadanya, dan dijadikan-Nya di antaramu rasa kasih dan sayang."</p>
+    <p class="verse-trans">Sesungguhnya pada yang demikian itu benar-benar terdapat tanda-tanda bagi kaum yang berpikir.</p>
+    <div class="verse-source">— Q.S. Ar-Rum : 21 —</div>
+  </div>
+</section>
+
+<section id="couple">
+  <div class="reveal"><div class="section-eyebrow">The Couple</div><h2 class="section-title">Bersatu dengan Cinta</h2></div>
+  <div class="couple-grid mt-16">
+    <div class="couple-card reveal reveal-delay-1">
+      <div class="photo-wrap"><img id="e-bride-photo" src="https://picsum.photos/seed/bride-sienna-wedding/600/800.jpg" alt="Sienna" class="photo"></div>
+      <div class="role">The Bride</div>
+      <div class="name" id="e-bride-name2">Sienna</div>
+      <div class="fullname" id="e-bride-full">Sienna Pradipta Reswari</div>
+      <div class="parents"><span class="label">Putri Pertama Dari</span><span id="e-bride-parents">Bapak Surya Pratama, S.E.<br>& Ibu Lestari Wulandari, S.KM.</span></div>
+    </div>
+    <div class="couple-amp reveal reveal-delay-2">&amp;</div>
+    <div class="couple-card reveal reveal-delay-3">
+      <div class="photo-wrap"><img id="e-groom-photo" src="https://picsum.photos/seed/groom-arka-wedding/600/800.jpg" alt="Arka" class="photo"></div>
+      <div class="role">The Groom</div>
+      <div class="name" id="e-groom-name2">Arka</div>
+      <div class="fullname" id="e-groom-full">Arka Mahesa Wijaya</div>
+      <div class="parents"><span class="label">Putra Kedua Dari</span><span id="e-groom-parents">Bapak Dr. Wijaya Kusuma, M.Sc.<br>& Ibu Maharani Anggraini, S.Pd.</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="story" class="story">
+  <div class="story-bg-text">FOREVER</div>
+  <div class="story-quote reveal">
+    <div class="mark">"</div>
+    <p>Cinta tidak ditakdirkan untuk dimulai, melainkan untuk bertumbuh. Dari pertemuan, menjadi kenalan, dari kenalan menjadi pengertian, dan dari pengertian menjadi komitmen seumur hidup.</p>
+    <div class="author">— Awal Perjalanan Kami —</div>
+  </div>
+  <div class="timeline">
+    <div class="timeline-item reveal"><div class="timeline-content"><div class="date">Maret 2020</div><h3>Pertemuan Pertama</h3><p>Sebuah pertemuan tak sengaja di sebuah pameran seni kecil di Jakarta. Sebuah obrolan singkat tentang karya seni yang menjadi awal dari segalanya.</p></div><div class="timeline-dot"></div><div></div></div>
+    <div class="timeline-item reveal"><div></div><div class="timeline-dot"></div><div class="timeline-content"><div class="date">Juli 2021</div><h3>Ikatan Janji</h3><p>Setelah setahun lebih saling mengenal, kami memutuskan untuk melangkah serius. Dia adalah tempat pulang yang aku cari selama ini.</p></div></div>
+    <div class="timeline-item reveal"><div class="timeline-content"><div class="date">Februari 2024</div><h3>Lamaran</h3><p>Di tengah hujan rintik dan kota yang menyala, Arka berlutut dan mengajakku menapaki babak baru. Tentu saja, ku-iyakan.</p></div><div class="timeline-dot"></div><div></div></div>
+    <div class="timeline-item reveal"><div></div><div class="timeline-dot"></div><div class="timeline-content"><div class="date">Desember 2025</div><h3>Hari Bahagia</h3><p>Dan kini, di hadapan keluarga, sahabat, dan Tuhan, kami akan mengikat janji suci. Untuk setia, untuk bahagia, untuk selamanya.</p></div></div>
+  </div>
+</section>
+
+<section id="events">
+  <div class="events-bg"></div>
+  <div class="reveal"><div class="section-eyebrow">Save The Date</div><h2 class="section-title">Hitung Mundur</h2></div>
+  <div class="countdown reveal reveal-delay-1" id="countdown">
+    <div class="countdown-item"><div class="num" id="cd-days">00</div><div class="label">Hari</div></div>
+    <div class="countdown-item"><div class="num" id="cd-hours">00</div><div class="label">Jam</div></div>
+    <div class="countdown-item"><div class="num" id="cd-mins">00</div><div class="label">Menit</div></div>
+    <div class="countdown-item"><div class="num" id="cd-secs">00</div><div class="label">Detik</div></div>
+  </div>
+  <div class="event-grid">
+    <div class="event-card reveal reveal-delay-2">
+      <div class="icon"><i class="fas fa-rings-wedding"></i></div>
+      <div class="type">Akad Nikah</div>
+      <h3 class="title">Resepsi Akad</h3>
+      <div class="detail"><div class="label">Hari / Tanggal</div><div class="value" id="e-akad-date">Sabtu, 20 Desember 2025</div></div>
+      <div class="detail"><div class="label">Waktu</div><div class="value" id="e-akad-time">08.00 — 10.00 WIB</div></div>
+      <div class="detail"><div class="label">Tempat</div><div class="value" id="e-akad-place">Masjid Agung Al-Azhar<br>Jakarta Selatan</div></div>
+      <a class="location-btn" id="e-akad-maps" href="https://www.google.com/maps/search/?api=1&query=Masjid%20Agung%20Al-Azhar%20Jakarta" target="_blank"><i class="fas fa-map-marker-alt"></i> Lihat Lokasi</a>
+    </div>
+    <div class="event-card reveal reveal-delay-3">
+      <div class="icon"><i class="fas fa-glass-cheers"></i></div>
+      <div class="type">Resepsi</div>
+      <h3 class="title">Walimatul Ursy</h3>
+      <div class="detail"><div class="label">Hari / Tanggal</div><div class="value" id="e-resepsi-date">Sabtu, 20 Desember 2025</div></div>
+      <div class="detail"><div class="label">Waktu</div><div class="value" id="e-resepsi-time">11.00 — 14.00 WIB</div></div>
+      <div class="detail"><div class="label">Tempat</div><div class="value" id="e-resepsi-place">The Ritz-Carlton Ballroom<br>Jakarta Selatan</div></div>
+      <a class="location-btn" id="e-resepsi-maps" href="https://www.google.com/maps/search/?api=1&query=The%20Ritz-Carlton%20Jakarta" target="_blank"><i class="fas fa-map-marker-alt"></i> Lihat Lokasi</a>
+    </div>
+  </div>
+</section>
+
+<section id="gallery">
+  <div class="reveal"><div class="section-eyebrow">Our Moments</div><h2 class="section-title">Galeri Kenangan</h2></div>
+  <div class="gallery-grid mt-16">
+    <div class="gallery-item reveal"><img id="e-gallery-1" src="https://picsum.photos/seed/wedding-gallery-1/600/800.jpg" alt="Gallery 1"></div>
+    <div class="gallery-item reveal reveal-delay-1"><img id="e-gallery-2" src="https://picsum.photos/seed/wedding-gallery-2/600/800.jpg" alt="Gallery 2"></div>
+    <div class="gallery-item reveal reveal-delay-2"><img id="e-gallery-3" src="https://picsum.photos/seed/wedding-gallery-3/600/800.jpg" alt="Gallery 3"></div>
+    <div class="gallery-item reveal"><img id="e-gallery-4" src="https://picsum.photos/seed/wedding-gallery-4/600/800.jpg" alt="Gallery 4"></div>
+    <div class="gallery-item reveal reveal-delay-1"><img id="e-gallery-5" src="https://picsum.photos/seed/wedding-gallery-5/600/800.jpg" alt="Gallery 5"></div>
+    <div class="gallery-item reveal reveal-delay-2"><img id="e-gallery-6" src="https://picsum.photos/seed/wedding-gallery-6/600/800.jpg" alt="Gallery 6"></div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="reveal">
+    <p class="thanks">Terima Kasih</p>
+    <p class="closing">Atas doa, restu, dan kehadiran Anda dalam hari bahagia kami. Kami menantikan momen istimewa bersama Anda.</p>
+    <div class="monogram">S<span class="amp">&amp;</span>A</div>
+    <div class="signatures" id="e-footer-names">Sienna &amp; Arka</div>
+    <div class="families">Keluarga Besar Pradipta &amp; Wijaya</div>
+    <div class="copyright">Made With Love · 2025</div>
+  </div>
+</footer>
+
+<script>
+  // Parallax
+  const heroScene = document.getElementById('heroScene');
+  const heroLayers = heroScene.querySelectorAll('.layer');
+  let mouseX = 0, mouseY = 0, targetX = 0, targetY = 0, isHeroVisible = true;
+  document.addEventListener('mousemove', (e) => {
+    if (!isHeroVisible) return;
+    targetX = (e.clientX / window.innerWidth - 0.5);
+    targetY = (e.clientY / window.innerHeight - 0.5);
+  });
+  function animateParallax() {
+    mouseX += (targetX - mouseX) * 0.08; mouseY += (targetY - mouseY) * 0.08;
+    heroLayers.forEach(layer => {
+      const depth = parseFloat(layer.dataset.depth);
+      const tx = mouseX * depth * 50; const ty = mouseY * depth * 50; const tz = depth * 30;
+      const rx = -mouseY * depth * 6; const ry = mouseX * depth * 6;
+      layer.style.transform = `translate3d(${tx}px, ${ty}px, ${tz}px) rotateX(${rx}deg) rotateY(${ry}deg)`;
+    });
+    requestAnimationFrame(animateParallax);
+  }
+  animateParallax();
+  window.addEventListener('scroll', () => {
+    const scrolled = window.pageYOffset;
+    if (scrolled < window.innerHeight) {
+      isHeroVisible = true;
+      heroScene.style.opacity = 1 - (scrolled / window.innerHeight) * 1.3;
+      heroScene.style.transform = `translateY(${scrolled * 0.4}px) scale(${1 + (scrolled / window.innerHeight) * 0.1})`;
+    } else { isHeroVisible = false; }
+  });
+
+  // Particles
+  const particleLayer = document.getElementById('particleLayer');
+  for (let i = 0; i < 20; i++) {
+    const p = document.createElement('div'); p.className = 'particle';
+    p.style.width = p.style.height = (Math.random() * 3 + 1) + 'px';
+    p.style.left = Math.random() * 100 + '%'; p.style.top = Math.random() * 100 + '%';
+    p.style.opacity = Math.random() * 0.6 + 0.2;
+    p.style.animation = `floatP ${Math.random() * 10 + 8}s linear infinite`;
+    particleLayer.appendChild(p);
+  }
+  const style = document.createElement('style');
+  style.textContent = `@keyframes floatP { 0% { transform: translate(0, 0); opacity: 0; } 10% { opacity: 0.6; } 90% { opacity: 0.6; } 100% { transform: translate(${Math.random() * 200 - 100}px, -200px); opacity: 0; } }`;
+  document.head.appendChild(style);
+
+  // Reveal on scroll
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+  // Side Nav Active
+  const sideNavLinks = document.querySelectorAll('.side-nav a');
+  const sections = document.querySelectorAll('section[id]');
+  const sectionObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.getAttribute('id');
+        sideNavLinks.forEach(link => link.classList.toggle('active', link.getAttribute('href') === '#' + id));
+      }
+    });
+  }, { threshold: 0.4 });
+  sections.forEach(section => sectionObserver.observe(section));
+
+  // Countdown
+  let weddingDate = new Date('2025-12-20T08:00:00+07:00').getTime();
+  function updateCountdown() {
+    const distance = weddingDate - new Date().getTime();
+    if (distance < 0) return;
+    document.getElementById('cd-days').textContent = String(Math.floor(distance / 86400000)).padStart(2, '0');
+    document.getElementById('cd-hours').textContent = String(Math.floor((distance % 86400000) / 3600000)).padStart(2, '0');
+    document.getElementById('cd-mins').textContent = String(Math.floor((distance % 3600000) / 60000)).padStart(2, '0');
+    document.getElementById('cd-secs').textContent = String(Math.floor((distance % 60000) / 1000)).padStart(2, '0');
+  }
+  updateCountdown(); setInterval(updateCountdown, 1000);
+
+  // Couple Card Tilt
+  document.querySelectorAll('.couple-card .photo-wrap').forEach(card => {
+    card.addEventListener('mousemove', (e) => {
+      const rect = card.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width - 0.5;
+      const y = (e.clientY - rect.top) / rect.height - 0.5;
+      card.style.transform = `rotateY(${x * 16}deg) rotateX(${-y * 12}deg) translateZ(20px)`;
+    });
+    card.addEventListener('mouseleave', () => { card.style.transform = ''; });
+  });
+
+  // Expose update function for parent window
+  window.updateInvitation = function(data) {
+    if (data.brideName) { document.getElementById('e-bride-name').textContent = data.brideName; document.getElementById('e-bride-name2').textContent = data.brideName; }
+    if (data.groomName) { document.getElementById('e-groom-name').textContent = data.groomName; document.getElementById('e-groom-name2').textContent = data.groomName; }
+    if (data.heroDate) document.getElementById('e-hero-date').textContent = data.heroDate;
+    if (data.brideFull) document.getElementById('e-bride-full').textContent = data.brideFull;
+    if (data.groomFull) document.getElementById('e-groom-full').textContent = data.groomFull;
+    if (data.brideParents) document.getElementById('e-bride-parents').innerHTML = data.brideParents;
+    if (data.groomParents) document.getElementById('e-groom-parents').innerHTML = data.groomParents;
+    if (data.bridePhoto) document.getElementById('e-bride-photo').src = data.bridePhoto;
+    if (data.groomPhoto) document.getElementById('e-groom-photo').src = data.groomPhoto;
+    if (data.akadDate) document.getElementById('e-akad-date').textContent = data.akadDate;
+    if (data.akadTime) document.getElementById('e-akad-time').textContent = data.akadTime;
+    if (data.akadPlace) document.getElementById('e-akad-place').innerHTML = data.akadPlace;
+    if (data.akadMaps) document.getElementById('e-akad-maps').href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(data.akadMaps)}`;
+    if (data.resepsiDate) document.getElementById('e-resepsi-date').textContent = data.resepsiDate;
+    if (data.resepsiTime) document.getElementById('e-resepsi-time').textContent = data.resepsiTime;
+    if (data.resepsiPlace) document.getElementById('e-resepsi-place').innerHTML = data.resepsiPlace;
+    if (data.resepsiMaps) document.getElementById('e-resepsi-maps').href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(data.resepsiMaps)}`;
+    if (data.countdownDate) { weddingDate = new Date(data.countdownDate).getTime(); updateCountdown(); }
+    if (data.gallery1) document.getElementById('e-gallery-1').src = data.gallery1;
+    if (data.gallery2) document.getElementById('e-gallery-2').src = data.gallery2;
+    if (data.gallery3) document.getElementById('e-gallery-3').src = data.gallery3;
+    if (data.gallery4) document.getElementById('e-gallery-4').src = data.gallery4;
+    if (data.gallery5) document.getElementById('e-gallery-5').src = data.gallery5;
+    if (data.gallery6) document.getElementById('e-gallery-6').src = data.gallery6;
+    if (data.brideName && data.groomName) document.getElementById('e-footer-names').innerHTML = `${data.brideName} &amp; ${data.groomName}`;
+  };
+</script>
+</body>
+</html>
+</template>
+
+<script>
+  // 1. Render iframe
+  const templateContent = document.getElementById('invitation-template').innerHTML;
+  const iframe = document.getElementById('previewIframe');
+  iframe.addEventListener('load', () => {
+    updatePreview();
+  });
+  iframe.srcdoc = templateContent;
+
+  // 2. Logika Form Binding
+  const inputs = {
+    'bride-name': 'brideName', 'bride-full': 'brideFull', 'bride-parents': 'brideParents', 'bride-photo': 'bridePhoto',
+    'groom-name': 'groomName', 'groom-full': 'groomFull', 'groom-parents': 'groomParents', 'groom-photo': 'groomPhoto',
+    'hero-date': 'heroDate', 'countdown-date': 'countdownDate',
+    'akad-date': 'akadDate', 'akad-time': 'akadTime', 'akad-place': 'akadPlace', 'akad-maps': 'akadMaps',
+    'resepsi-date': 'resepsiDate', 'resepsi-time': 'resepsiTime', 'resepsi-place': 'resepsiPlace', 'resepsi-maps': 'resepsiMaps',
+    'gallery-1': 'gallery1', 'gallery-2': 'gallery2', 'gallery-3': 'gallery3', 'gallery-4': 'gallery4', 'gallery-5': 'gallery5', 'gallery-6': 'gallery6'
+  };
+
+  function updatePreview() {
+    const data = {};
+    for (const [inputId, key] of Object.entries(inputs)) {
+      const el = document.getElementById(inputId);
+      if (el) data[key] = el.value;
+    }
+    if (iframe.contentWindow && iframe.contentWindow.updateInvitation) {
+      iframe.contentWindow.updateInvitation(data);
+    }
+  }
+
+  for (const inputId of Object.keys(inputs)) {
+    const el = document.getElementById(inputId);
+    if (el) el.addEventListener('input', updatePreview);
+  }
+
+  // 3. Logika Switch Device Frame
+  const deviceButtons = document.querySelectorAll('.device-btn');
+  const previewFrame = document.getElementById('previewFrame');
+
+  deviceButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      deviceButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const device = btn.dataset.device;
+      previewFrame.classList.remove('mobile-mode', 'desktop-mode');
+      previewFrame.classList.add(device + '-mode');
+    });
+  });
+</script>
+
+</body>
+</html>

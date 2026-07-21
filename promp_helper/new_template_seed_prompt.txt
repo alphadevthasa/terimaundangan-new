@@ -1,0 +1,1 @@
+Integrasikan @nama_template.html ke list template — ikuti panduan di agent_seed_template.md

@@ -1,0 +1,4 @@
+Saya punya TEMPLATE_AGENT_NEW.md.
+Sekarang saya mau buat dia memiliki tema template yang berbeda, warna yang berbeda dan juga effect serta animasi berbeda. 
+
+bagian mana saja yang harus saya ubah dari template diatas? 

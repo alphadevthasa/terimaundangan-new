@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elite Wedding Invitation Editor</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Italiana&family=Jost:wght@300;400;500&display=swap');
+
+        :root {
+            --bg: #0a0807;
+            --bg-2: #14110d;
+            --gold: #c9a961;
+            --cream: #f5ecd9;
+            --cream-dim: #d4cab3;
+            --muted: rgba(245, 236, 217, 0.5);
+            --line: rgba(201, 169, 97, 0.2);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            display: grid;
+            grid-template-columns: 420px 1fr;
+            height: 100vh;
+            background: var(--bg);
+            color: var(--cream);
+            font-family: 'Jost', sans-serif;
+            overflow: hidden;
+        }
+
+        /* --- EDITOR (LEFT PANE) --- */
+        #editor {
+            background: var(--bg);
+            border-right: 1px solid var(--line);
+            overflow-y: auto;
+            padding: 2rem 1.5rem;
+            position: relative;
+        }
+
+        #editor::-webkit-scrollbar {
+            width: 6px;
+        }
+        #editor::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+        #editor::-webkit-scrollbar-thumb {
+            background: rgba(201, 169, 97, 0.6);
+            border-radius: 3px;
+        }
+
+        .editor-header {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: 2rem;
+            color: var(--gold);
+            border-bottom: 1px solid var(--line);
+            padding-bottom: 1rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        details {
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--line);
+            padding-bottom: 0.5rem;
+        }
+
+        summary {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: 1.1rem;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 0.4em;
+            cursor: pointer;
+            outline: none;
+            list-style: none;
+            padding: 0.5rem 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        summary::-webkit-details-marker { display: none; }
+        summary::after { content: '+'; font-family: 'Jost', sans-serif; font-style: normal; }
+        details[open] summary::after { content: '-'; }
+
+        .input-group { margin-bottom: 1rem; }
+        label {
+            display: block;
+            font-family: 'Jost', sans-serif;
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            color: var(--cream-dim);
+            margin-bottom: 0.4rem;
+            text-transform: uppercase;
+        }
+
+        input, textarea {
+            width: 100%;
+            background: var(--bg-2);
+            border: 1px solid var(--line);
+            color: var(--cream);
+            padding: 0.6rem 0.8rem;
+            border-radius: 2px;
+            font-family: 'Jost', sans-serif;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        textarea { resize: vertical; min-height: 80px; }
+
+        input:focus, textarea:focus {
+            border-color: var(--gold);
+            outline: none;
+            box-shadow: 0 0 15px rgba(201, 169, 97, 0.1);
+        }
+
+        /* --- PREVIEW (RIGHT PANE) --- */
+        #preview-pane {
+            display: flex;
+            flex-direction: column;
+            background: #111;
+            position: relative;
+        }
+
+        .toolbar {
+            height: 60px;
+            background: var(--bg);
+            border-bottom: 1px solid var(--line);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .btn {
+            background: transparent;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+            padding: 0.5rem 1.5rem;
+            font-family: 'Jost', sans-serif;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            border-radius: 2px;
+        }
+
+        .btn:hover {
+            background: var(--gold);
+            color: var(--bg);
+        }
+
+        .iframe-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            overflow: hidden;
+        }
+
+        iframe {
+            background: var(--bg);
+            border: 1px solid var(--line);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        .device-mobile {
+            width: 375px;
+            height: 812px;
+            border-radius: 30px;
+            border: 8px solid #222;
+        }
+
+        .device-desktop {
+            width: 100%;
+            max-width: 1100px;
+            height: 100%;
+            border-radius: 4px;
+            border: 1px solid var(--line);
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- LEFT PANE: EDITOR -->
+    <div id="editor">
+        <div class="editor-header">Editor Undangan</div>
+
+        <form id="editor-form">
+            <!-- 1. Cover -->
+            <details open>
+                <summary>1. Cover</summary>
+                <div class="input-group">
+                    <label>Bride Nickname</label>
+                    <input type="text" id="bride-nick" value="Sophia">
+                </div>
+                <div class="input-group">
+                    <label>Groom Nickname</label>
+                    <input type="text" id="groom-nick" value="Alexander">
+                </div>
+                <div class="input-group">
+                    <label>Wedding Date (Text)</label>
+                    <input type="text" id="date-text" value="Saturday, October 24th, 2026">
+                </div>
+            </details>
+
+            <!-- 2. Countdown -->
+            <details>
+                <summary>2. Countdown</summary>
+                <div class="input-group">
+                    <label>Master Wedding Date</label>
+                    <input type="datetime-local" id="countdown-master" value="2026-10-24T10:00">
+                </div>
+            </details>
+
+            <!-- 3. The Couple -->
+            <details>
+                <summary>3. The Couple</summary>
+                <div class="input-group">
+                    <label>Intro Title</label>
+                    <input type="text" id="couple-title" value="Two Souls, One Heart">
+                </div>
+                <div class="input-group">
+                    <label>Intro Subtitle</label>
+                    <textarea id="couple-sub">We invite you to share in our joy as we exchange our vows and begin our new life together.</textarea>
+                </div>
+            </details>
+
+            <!-- 4. Groom Detail -->
+            <details>
+                <summary>4. The Groom</summary>
+                <div class="input-group"><label>Full Name</label><input type="text" id="groom-full" value="Alexander Pierce"></div>
+                <div class="input-group"><label>Role</label><input type="text" id="groom-role" value="The Groom"></div>
+                <div class="input-group"><label>Photo URL</label><input type="url" id="groom-photo" value="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=400&q=80"></div>
+                <div class="input-group"><label>Father's Name</label><input type="text" id="groom-dad" value="Mr. Robert Pierce"></div>
+                <div class="input-group"><label>Mother's Name</label><input type="text" id="groom-mom" value="Mrs. Elena Pierce"></div>
+            </details>
+
+            <!-- 5. Bride Detail -->
+            <details>
+                <summary>5. The Bride</summary>
+                <div class="input-group"><label>Full Name</label><input type="text" id="bride-full" value="Sophia Laurent"></div>
+                <div class="input-group"><label>Role</label><input type="text" id="bride-role" value="The Bride"></div>
+                <div class="input-group"><label>Photo URL</label><input type="url" id="bride-photo" value="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80"></div>
+                <div class="input-group"><label>Father's Name</label><input type="text" id="bride-dad" value="Mr. Arthur Laurent"></div>
+                <div class="input-group"><label>Mother's Name</label><input type="text" id="bride-mom" value="Mrs. Clara Laurent"></div>
+            </details>
+
+            <!-- 6. Holy Verse -->
+            <details>
+                <summary>6. Holy Verse</summary>
+                <div class="input-group">
+                    <label>Verse Text</label>
+                    <textarea id="verse-text">"And above all these put on love, which binds everything together in perfect harmony."</textarea>
+                </div>
+                <div class="input-group"><label>Source</label><input type="text" id="verse-source" value="Colossians 3:14"></div>
+            </details>
+
+            <!-- 7. Love Story -->
+            <details>
+                <summary>7. Love Story</summary>
+                <div class="input-group"><label>Date 1</label><input type="text" id="story-date-1" value="June 2018"></div>
+                <div class="input-group"><label>Title 1</label><input type="text" id="story-title-1" value="First Meeting"></div>
+                <div class="input-group"><label>Desc 1</label><textarea id="story-desc-1">We met at a small coffee shop in the city.</textarea></div>
+                
+                <div class="input-group"><label>Date 2</label><input type="text" id="story-date-2" value="Dec 2024"></div>
+                <div class="input-group"><label>Title 2</label><input type="text" id="story-title-2" value="The Proposal"></div>
+                <div class="input-group"><label>Desc 2</label><textarea id="story-desc-2">Under the stars, a promise was made to last forever.</textarea></div>
+            </details>
+
+            <!-- 8. Events -->
+            <details>
+                <summary>8. Events</summary>
+                <p style="color:var(--gold);font-size:0.8rem;margin-bottom:0.5rem;font-style:italic;">Akad Nikah / Ceremony</p>
+                <div class="input-group"><label>Date</label><input type="text" id="akad-date" value="Saturday, October 24, 2026"></div>
+                <div class="input-group"><label>Time</label><input type="text" id="akad-time" value="08:00 AM - 10:00 AM"></div>
+                <div class="input-group"><label>Place</label><input type="text" id="akad-place" value="Grand Heritage Mosque"></div>
+                <p style="color:var(--gold);font-size:0.8rem;margin-bottom:0.5rem;font-style:italic;margin-top:1rem;">Resepsi / Reception</p>
+                <div class="input-group"><label>Date</label><input type="text" id="resepsi-date" value="Saturday, October 24, 2026"></div>
+                <div class="input-group"><label>Time</label><input type="text" id="resepsi-time" value="07:00 PM - End"></div>
+                <div class="input-group"><label>Place</label><input type="text" id="resepsi-place" value="The Ritz-Carlton Ballroom"></div>
+            </details>
+
+            <!-- 9. Photo Gallery -->
+            <details>
+                <summary>9. Gallery</summary>
+                <div class="input-group"><label>Photo 1</label><input type="url" id="gal-1" value="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=400&q=80"></div>
+                <div class="input-group"><label>Photo 2</label><input type="url" id="gal-2" value="https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=400&q=80"></div>
+                <div class="input-group"><label>Photo 3</label><input type="url" id="gal-3" value="https://images.unsplash.com/photo-1469334031218-e382a71b716b?auto=format&fit=crop&w=400&q=80"></div>
+                <div class="input-group"><label>Photo 4</label><input type="url" id="gal-4" value="https://images.unsplash.com/photo-1606800052052-a08af7148866?auto=format&fit=crop&w=400&q=80"></div>
+                <div class="input-group"><label>Photo 5</label><input type="url" id="gal-5" value="https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=400&q=80"></div>
+                <div class="input-group"><label>Photo 6</label><input type="url" id="gal-6" value="https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&w=400&q=80"></div>
+            </details>
+
+            <!-- 10. RSVP -->
+            <details>
+                <summary>10. RSVP</summary>
+                <div class="input-group"><label>RSVP Title</label><input type="text" id="rsvp-title" value="Will You Join Us?"></div>
+                <div class="input-group"><label>Description</label><textarea id="rsvp-desc">Please kindly confirm your attendance by October 1st, 2026.</textarea></div>
+            </details>
+
+            <!-- 11. Wedding Gifts -->
+            <details>
+                <summary>11. Gifts</summary>
+                <div class="input-group"><label>Bank Name</label><input type="text" id="bank-name" value="BCA"></div>
+                <div class="input-group"><label>Account Number</label><input type="text" id="bank-acc" value="1234567890"></div>
+                <div class="input-group"><label>Account Holder</label><input type="text" id="bank-holder" value="Alexander Pierce"></div>
+            </details>
+
+            <!-- 12. Live Streaming -->
+            <details>
+                <summary>12. Live Stream</summary>
+                <div class="input-group"><label>Stream Title</label><input type="text" id="stream-title" value="Virtual Wedding"></div>
+                <div class="input-group"><label>Stream Description</label><textarea id="stream-desc">For friends and family who cannot attend physically, join our special day virtually.</textarea></div>
+            </details>
+
+            <!-- 13. Wishes -->
+            <details>
+                <summary>13. Wishes</summary>
+                <div class="input-group"><label>Wishes Title</label><input type="text" id="wishes-title" value="Guest Book"></div>
+                <div class="input-group"><label>Description</label><textarea id="wishes-desc">Leave your warmest wishes and blessings for our marriage.</textarea></div>
+            </details>
+
+            <!-- 14. Music -->
+            <details>
+                <summary>14. Music</summary>
+                <div class="input-group">
+                    <label>Ambient Tone (Web Audio API)</label>
+                    <input type="text" disabled value="Cinematic Drone Active">
+                </div>
+            </details>
+
+            <!-- 15. Closing -->
+            <details>
+                <summary>15. Closing</summary>
+                <div class="input-group"><label>Thank You Text</label><input type="text" id="closing-thanks" value="Terima Kasih"></div>
+                <div class="input-group"><label>Family Signatures</label><input type="text" id="closing-fam" value="The Pierce & Laurent Families"></div>
+            </details>
+
+        </form>
+    </div>
+
+    <!-- RIGHT PANE: PREVIEW -->
+    <div id="preview-pane">
+        <div class="toolbar">
+            <button class="btn" id="toggle-view">Switch to Website View</button>
+        </div>
+        <div class="iframe-container">
+            <iframe id="preview-frame" class="device-mobile" title="Wedding Preview"></iframe>
+        </div>
+    </div>
+
+    <!-- INVITATION TEMPLATE CODE (Injected into Iframe) -->
+    <template id="invitation-template">
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <style>
+                @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Italiana&family=Jost:wght@300;400&display=swap');
+                
+                :root {
+                    --bg: #0a0807;
+                    --bg-card: #14110d;
+                    --gold: #c9a961;
+                    --cream: #f5ecd9;
+                    --line: rgba(201, 169, 97, 0.2);
+                }
+
+                * { box-sizing: border-box; margin: 0; padding: 0; }
+                body { 
+                    background-color: var(--bg); 
+                    color: var(--cream); 
+                    font-family: 'Jost', sans-serif;
+                    overflow-x: hidden;
+                    text-align: center;
+                }
+
+                h1, h2, h3, .serif { font-family: 'Cormorant Garamond', serif; font-weight: normal; }
+                .italiana { font-family: 'Italiana', serif; }
+                
+                section { padding: 5rem 1.5rem; border-bottom: 1px solid var(--line); position: relative; }
+                .gold-text { color: var(--gold); }
+                .uppercase { text-transform: uppercase; letter-spacing: 0.2em; font-size: 0.8rem; }
+                
+                /* 1. Cover */
+                #s-cover { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; background: radial-gradient(circle at center, #1a1611 0%, var(--bg) 100%); }
+                .hero-names { font-size: 4rem; margin: 1rem 0; line-height: 1; text-shadow: 0 0 20px rgba(201,169,97,0.3); }
+                .scroll-cue { position: absolute; bottom: 2rem; border-left: 1px solid var(--gold); height: 50px; animation: pulse 2s infinite; }
+                @keyframes pulse { 0% { opacity: 0; height: 0; } 50% { opacity: 1; height: 50px; } 100% { opacity: 0; height: 50px; } }
+
+                /* 2. Countdown */
+                .timer-grid { display: flex; justify-content: center; gap: 1rem; margin-top: 2rem; }
+                .time-box { background: var(--bg-card); border: 1px solid var(--line); padding: 1rem; width: 70px; }
+                .time-val { font-size: 2rem; color: var(--gold); font-family: 'Cormorant Garamond'; }
+                .time-label { font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; }
+
+                /* Components */
+                .couple-photo { width: 100%; max-width: 300px; height: 400px; object-fit: cover; border-radius: 100rem 100rem 0 0; border: 1px solid var(--line); margin: 1rem auto; padding: 0.5rem; }
+                
+                /* Timeline */
+                .timeline-item { border-left: 1px solid var(--gold); padding-left: 1.5rem; margin-bottom: 2rem; text-align: left; position: relative; max-width: 400px; margin-inline: auto; }
+                .timeline-item::before { content: ''; position: absolute; left: -4px; top: 0; width: 7px; height: 7px; background: var(--gold); border-radius: 50%; }
+
+                /* Cards */
+                .event-card, .gift-card { background: var(--bg-card); border: 1px solid var(--line); padding: 2rem; margin: 1rem auto; max-width: 400px; }
+                
+                /* Gallery Grid */
+                .gallery-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 0.5rem; max-width: 600px; margin: 2rem auto; }
+                .gallery-grid img { width: 100%; aspect-ratio: 1; object-fit: cover; filter: sepia(0.3) brightness(0.8); transition: filter 0.3s; }
+                .gallery-grid img:hover { filter: sepia(0) brightness(1); }
+
+                /* Forms & Buttons */
+                input, textarea { width: 100%; background: transparent; border: none; border-bottom: 1px solid var(--line); color: var(--cream); padding: 0.5rem 0; margin-bottom: 1rem; font-family: 'Jost'; }
+                input:focus, textarea:focus { outline: none; border-bottom-color: var(--gold); }
+                .btn { background: transparent; border: 1px solid var(--gold); color: var(--gold); padding: 0.8rem 2rem; font-family: 'Jost'; text-transform: uppercase; letter-spacing: 0.2em; cursor: pointer; transition: 0.3s; }
+                .btn:hover { background: var(--gold); color: var(--bg); }
+
+                /* Floating Audio */
+                #audio-btn { position: fixed; bottom: 20px; right: 20px; background: var(--bg-card); border: 1px solid var(--gold); color: var(--gold); width: 40px; height: 40px; border-radius: 50%; cursor: pointer; z-index: 100; display: flex; justify-content: center; align-items: center; }
+
+                @media (min-width: 768px) {
+                    .couple-grid { display: flex; justify-content: center; gap: 4rem; }
+                    .event-grid { display: flex; justify-content: center; gap: 2rem; }
+                }
+            </style>
+        </head>
+        <body>
+            <!-- 1. Cover -->
+            <section id="s-cover">
+                <div class="uppercase gold-text">The Wedding Of</div>
+                <div class="hero-names italiana"><span id="e-bride-nick">Bride</span> <br>&<br> <span id="e-groom-nick">Groom</span></div>
+                <div class="uppercase" id="e-date-text" style="margin-top: 2rem; font-size: 0.9rem;">Date</div>
+                <div class="scroll-cue"></div>
+            </section>
+
+            <!-- 2. Countdown -->
+            <section id="s-countdown">
+                <h2 class="serif gold-text" style="font-size: 2rem; font-style: italic;">Counting Down</h2>
+                <div class="timer-grid">
+                    <div class="time-box"><div class="time-val" id="t-days">00</div><div class="time-label">Days</div></div>
+                    <div class="time-box"><div class="time-val" id="t-hours">00</div><div class="time-label">Hrs</div></div>
+                    <div class="time-box"><div class="time-val" id="t-mins">00</div><div class="time-label">Min</div></div>
+                    <div class="time-box"><div class="time-val" id="t-secs">00</div><div class="time-label">Sec</div></div>
+                </div>
+            </section>
+
+            <!-- 3. The Couple -->
+            <section id="s-couple">
+                <h2 class="serif gold-text" style="font-size: 2.5rem;" id="e-couple-title">Title</h2>
+                <p style="max-width: 500px; margin: 1rem auto; line-height: 1.6;" id="e-couple-sub">Subtitle</p>
+                
+                <div class="couple-grid">
+                    <!-- 4. Groom -->
+                    <div>
+                        <img id="e-groom-photo" class="couple-photo" src="" alt="Groom">
+                        <div class="uppercase gold-text" id="e-groom-role">The Groom</div>
+                        <h3 class="italiana" style="font-size: 2rem; margin: 0.5rem 0;" id="e-groom-full">Name</h3>
+                        <p style="font-size: 0.9rem;">Son of <br><span id="e-groom-dad"></span> & <span id="e-groom-mom"></span></p>
+                    </div>
+                    <!-- 5. Bride -->
+                    <div>
+                        <img id="e-bride-photo" class="couple-photo" src="" alt="Bride">
+                        <div class="uppercase gold-text" id="e-bride-role">The Bride</div>
+                        <h3 class="italiana" style="font-size: 2rem; margin: 0.5rem 0;" id="e-bride-full">Name</h3>
+                        <p style="font-size: 0.9rem;">Daughter of <br><span id="e-bride-dad"></span> & <span id="e-bride-mom"></span></p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 6. Holy Verse -->
+            <section id="s-verse">
+                <h2 class="italiana gold-text" style="font-size: 2rem; margin-bottom: 1rem;">Holy Verse</h2>
+                <p class="serif" style="font-size: 1.5rem; font-style: italic; max-width: 600px; margin: 0 auto; line-height: 1.4;" id="e-verse-text">Verse</p>
+                <div class="uppercase" style="margin-top: 1rem; color: var(--gold);" id="e-verse-source">Source</div>
+            </section>
+
+            <!-- 7. Love Story -->
+            <section id="s-story">
+                <h2 class="serif gold-text" style="font-size: 2.5rem; margin-bottom: 2rem;">Our Story</h2>
+                <div class="timeline-item">
+                    <div class="uppercase gold-text" id="e-story-date-1">Date</div>
+                    <h3 class="serif" style="font-size: 1.5rem;" id="e-story-title-1">Title</h3>
+                    <p id="e-story-desc-1">Desc</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="uppercase gold-text" id="e-story-date-2">Date</div>
+                    <h3 class="serif" style="font-size: 1.5rem;" id="e-story-title-2">Title</h3>
+                    <p id="e-story-desc-2">Desc</p>
+                </div>
+            </section>
+
+            <!-- 8. Events -->
+            <section id="s-events">
+                <h2 class="serif gold-text" style="font-size: 2.5rem; margin-bottom: 2rem;">Wedding Events</h2>
+                <div class="event-grid">
+                    <div class="event-card">
+                        <h3 class="italiana" style="font-size: 2rem; margin-bottom: 1rem;">Akad Nikah</h3>
+                        <div class="uppercase gold-text" id="e-akad-date">Date</div>
+                        <p id="e-akad-time" style="margin: 0.5rem 0;">Time</p>
+                        <p id="e-akad-place" class="serif" style="font-size: 1.2rem;">Place</p>
+                    </div>
+                    <div class="event-card">
+                        <h3 class="italiana" style="font-size: 2rem; margin-bottom: 1rem;">Resepsi</h3>
+                        <div class="uppercase gold-text" id="e-resepsi-date">Date</div>
+                        <p id="e-resepsi-time" style="margin: 0.5rem 0;">Time</p>
+                        <p id="e-resepsi-place" class="serif" style="font-size: 1.2rem;">Place</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 9. Photo Gallery -->
+            <section id="s-gallery">
+                <h2 class="serif gold-text" style="font-size: 2.5rem;">Memories</h2>
+                <div class="gallery-grid">
+                    <img id="e-gal-1" src="" alt="Gallery 1">
+                    <img id="e-gal-2" src="" alt="Gallery 2">
+                    <img id="e-gal-3" src="" alt="Gallery 3">
+                    <img id="e-gal-4" src="" alt="Gallery 4">
+                    <img id="e-gal-5" src="" alt="Gallery 5">
+                    <img id="e-gal-6" src="" alt="Gallery 6">
+                </div>
+            </section>
+
+            <!-- 10. RSVP -->
+            <section id="s-rsvp">
+                <h2 class="italiana gold-text" style="font-size: 2.5rem;" id="e-rsvp-title">RSVP</h2>
+                <p style="margin-bottom: 2rem;" id="e-rsvp-desc">Desc</p>
+                <div class="event-card" style="text-align: left;">
+                    <input type="text" placeholder="Your Name">
+                    <input type="number" placeholder="Number of Guests">
+                    <textarea placeholder="Message"></textarea>
+                    <button class="btn" style="width: 100%;">Confirm Attendance</button>
+                </div>
+            </section>
+
+            <!-- 11. Wedding Gifts -->
+            <section id="s-gifts">
+                <h2 class="serif gold-text" style="font-size: 2.5rem;">Wedding Gift</h2>
+                <div class="gift-card">
+                    <h3 class="uppercase" id="e-bank-name">Bank</h3>
+                    <p class="italiana gold-text" style="font-size: 2rem; margin: 0.5rem 0;" id="e-bank-acc">Account</p>
+                    <p class="uppercase" style="font-size: 0.8rem; margin-bottom: 1rem;" id="e-bank-holder">Holder</p>
+                    <button class="btn" onclick="alert('Copied!')">Copy Number</button>
+                </div>
+            </section>
+
+            <!-- 12. Live Streaming -->
+            <section id="s-stream">
+                <h2 class="serif gold-text" style="font-size: 2.5rem;" id="e-stream-title">Live</h2>
+                <p style="margin-bottom: 2rem; max-width: 400px; margin-inline: auto;" id="e-stream-desc">Desc</p>
+                <button class="btn">Join Live Stream</button>
+            </section>
+
+            <!-- 13. Wishes -->
+            <section id="s-wishes">
+                <h2 class="italiana gold-text" style="font-size: 2.5rem;" id="e-wishes-title">Wishes</h2>
+                <p style="margin-bottom: 2rem;" id="e-wishes-desc">Desc</p>
+                <div class="event-card" style="text-align: left;">
+                    <div style="background: rgba(255,255,255,0.02); padding: 1rem; margin-bottom: 1rem; border-left: 2px solid var(--gold);">
+                        <strong class="gold-text">Sarah & John</strong><br>
+                        <span class="serif" style="font-style: italic;">"Wishing you a lifetime of happiness!"</span>
+                    </div>
+                    <input type="text" placeholder="Name">
+                    <textarea placeholder="Your Wish"></textarea>
+                    <button class="btn">Send Wish</button>
+                </div>
+            </section>
+
+            <!-- 15. Closing -->
+            <section id="s-closing" style="padding-bottom: 8rem; border-bottom: none;">
+                <h2 class="italiana" style="font-size: 4rem; margin-bottom: 1rem;" id="e-closing-thanks">Terima Kasih</h2>
+                <div class="gold-text" style="font-family: 'Cormorant Garamond'; font-size: 3rem; font-style: italic;">
+                    <span id="e-bride-nick-close">B</span> & <span id="e-groom-nick-close">G</span>
+                </div>
+                <div class="uppercase" style="margin-top: 2rem; letter-spacing: 0.3em; font-size: 0.8rem;" id="e-closing-fam">Family</div>
+            </section>
+
+            <!-- 14. Audio Toggle -->
+            <button id="audio-btn" onclick="toggleAudio()">♪</button>
+
+            <script>
+                // --- 14. Web Audio API Ambient Drone ---
+                let audioCtx, osc1, osc2, gainNode, isPlaying = false;
+                function initAudio() {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    gainNode = audioCtx.createGain();
+                    gainNode.gain.value = 0.05;
+                    gainNode.connect(audioCtx.destination);
+                    
+                    osc1 = audioCtx.createOscillator();
+                    osc1.type = 'sine';
+                    osc1.frequency.setValueAtTime(110, audioCtx.currentTime); // A2
+                    osc1.connect(gainNode);
+                    
+                    osc2 = audioCtx.createOscillator();
+                    osc2.type = 'triangle';
+                    osc2.frequency.setValueAtTime(164.81, audioCtx.currentTime); // E3
+                    osc2.connect(gainNode);
+                    
+                    osc1.start(); osc2.start();
+                }
+                function toggleAudio() {
+                    if (!audioCtx) initAudio();
+                    if (isPlaying) { audioCtx.suspend(); document.getElementById('audio-btn').style.background = 'var(--bg-card)'; } 
+                    else { audioCtx.resume(); document.getElementById('audio-btn').style.background = 'var(--gold)'; document.getElementById('audio-btn').style.color = 'var(--bg)'; }
+                    isPlaying = !isPlaying;
+                }
+
+                // --- 2. Countdown Logic ---
+                let countdownInterval;
+                function updateCountdown(targetStr) {
+                    clearInterval(countdownInterval);
+                    if(!targetStr) return;
+                    const targetDate = new Date(targetStr).getTime();
+                    
+                    countdownInterval = setInterval(() => {
+                        const now = new Date().getTime();
+                        const distance = targetDate - now;
+                        
+                        if (distance < 0) {
+                            clearInterval(countdownInterval);
+                            ['days', 'hours', 'mins', 'secs'].forEach(id => document.getElementById('t-'+id).innerText = '00');
+                            return;
+                        }
+                        
+                        document.getElementById('t-days').innerText = Math.floor(distance / (1000 * 60 * 60 * 24)).toString().padStart(2, '0');
+                        document.getElementById('t-hours').innerText = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0');
+                        document.getElementById('t-mins').innerText = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
+                        document.getElementById('t-secs').innerText = Math.floor((distance % (1000 * 60)) / 1000).toString().padStart(2, '0');
+                    }, 1000);
+                }
+
+                // --- Live Binding Receiver ---
+                window.addEventListener('message', (e) => {
+                    if(e.data.type === 'UPDATE') {
+                        const data = e.data.payload;
+                        for (const key in data) {
+                            const el = document.getElementById('e-' + key);
+                            if (el) {
+                                if (el.tagName === 'IMG') {
+                                    el.src = data[key];
+                                } else {
+                                    el.innerText = data[key];
+                                }
+                            }
+                        }
+                        // Special duplicate mappings for Closing section
+                        if(data['bride-nick']) document.getElementById('e-bride-nick-close').innerText = data['bride-nick'];
+                        if(data['groom-nick']) document.getElementById('e-groom-nick-close').innerText = data['groom-nick'];
+                        
+                        // Handle Countdown
+                        if(data['countdown-master']) updateCountdown(data['countdown-master']);
+                    }
+                });
+            </script>
+        </body>
+        </html>
+    </template>
+
+    <!-- PARENT WINDOW SCRIPTS -->
+    <script>
+        const editorForm = document.getElementById('editor-form');
+        const iframe = document.getElementById('preview-frame');
+        const template = document.getElementById('invitation-template').innerHTML;
+        const toggleBtn = document.getElementById('toggle-view');
+
+        // Device Toggle Logic
+        let isMobile = true;
+        toggleBtn.addEventListener('click', () => {
+            isMobile = !isMobile;
+            if(isMobile) {
+                iframe.className = 'device-mobile';
+                toggleBtn.innerText = 'Switch to Website View';
+            } else {
+                iframe.className = 'device-desktop';
+                toggleBtn.innerText = 'Switch to Mobile View';
+            }
+        });
+
+        // Initialize Iframe Content
+        iframe.srcdoc = template;
+
+        // Data Collection & Broadcasting
+        function getFormData() {
+            const inputs = document.querySelectorAll('#editor input, #editor textarea');
+            const data = {};
+            inputs.forEach(inp => {
+                data[inp.id] = inp.value;
+            });
+            return data;
+        }
+
+        function broadcastUpdate() {
+            const data = getFormData();
+            // Send data to iframe (use try-catch as iframe might not be fully loaded initially)
+            if(iframe.contentWindow) {
+                iframe.contentWindow.postMessage({ type: 'UPDATE', payload: data }, '*');
+            }
+        }
+
+        // Listen to all inputs inside editor
+        editorForm.addEventListener('input', broadcastUpdate);
+
+        // Ensure initial data is sent once iframe loads
+        iframe.onload = () => {
+            broadcastUpdate();
+        };
+
+    </script>
+</body>
+</html>

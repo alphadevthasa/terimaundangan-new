@@ -1,0 +1,107 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+/// Static pre-made templates (designs users can purchase)
+model Template {
+  id          String   @id @default(uuid())
+  name        String
+  description String   @default("")
+  type        String   @default("wedding")
+  thumbnail   String   @default("")
+  price       String   @default("Free")
+  isPopular   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+/// User's purchased/customized template data
+model Customer {
+  id        String   @id @default(uuid())
+  templateId String? // reference to the static Template
+  name      String   @default("")
+  email     String   @default("")
+  status    String   @default("active")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // 1. Cover
+  brideNick  String @default("Sophia")
+  groomNick  String @default("Alexander")
+  dateText   String @default("Saturday, October 24th, 2026")
+
+  // 2. Countdown
+  countdownMaster String @default("2026-10-24T10:00")
+
+  // 3. The Couple
+  coupleTitle String @default("Two Souls, One Heart")
+  coupleSub   String @default("We invite you to share in our joy as we exchange our vows and begin our new life together.")
+
+  // 4. The Groom
+  groomFull String @default("Alexander Pierce")
+  groomRole String @default("The Groom")
+  groomPhoto String @default("https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=400&q=80")
+  groomDad  String @default("Mr. Robert Pierce")
+  groomMom  String @default("Mrs. Elena Pierce")
+
+  // 5. The Bride
+  brideFull String @default("Sophia Laurent")
+  brideRole String @default("The Bride")
+  bridePhoto String @default("https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80")
+  brideDad  String @default("Mr. Arthur Laurent")
+  brideMom  String @default("Mrs. Clara Laurent")
+
+  // 6. Holy Verse
+  verseText   String @default("\"And above all these put on love, which binds everything together in perfect harmony.\"")
+  verseSource String @default("Colossians 3:14")
+
+  // 7. Love Story
+  storyDate1  String @default("June 2018")
+  storyTitle1 String @default("First Meeting")
+  storyDesc1  String @default("We met at a small coffee shop in the city.")
+  storyDate2  String @default("Dec 2024")
+  storyTitle2 String @default("The Proposal")
+  storyDesc2  String @default("Under the stars, a promise was made to last forever.")
+
+  // 8. Events
+  akadDate   String @default("Saturday, October 24, 2026")
+  akadTime   String @default("08:00 AM - 10:00 AM")
+  akadPlace  String @default("Grand Heritage Mosque")
+  resepsiDate  String @default("Saturday, October 24, 2026")
+  resepsiTime  String @default("07:00 PM - End")
+  resepsiPlace String @default("The Ritz-Carlton Ballroom")
+
+  // 9. Gallery
+  gal1 String @default("https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=400&q=80")
+  gal2 String @default("https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=400&q=80")
+  gal3 String @default("https://images.unsplash.com/photo-1469334031218-e382a71b716b?auto=format&fit=crop&w=400&q=80")
+  gal4 String @default("https://images.unsplash.com/photo-1606800052052-a08af7148866?auto=format&fit=crop&w=400&q=80")
+  gal5 String @default("https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=400&q=80")
+  gal6 String @default("https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&w=400&q=80")
+
+  // 10. RSVP
+  rsvpTitle String @default("Will You Join Us?")
+  rsvpDesc  String @default("Please kindly confirm your attendance by October 1st, 2026.")
+
+  // 11. Gifts
+  bankName   String @default("BCA")
+  bankAcc    String @default("1234567890")
+  bankHolder String @default("Alexander Pierce")
+
+  // 12. Live Stream
+  streamTitle String @default("Virtual Wedding")
+  streamDesc  String @default("For friends and family who cannot attend physically, join our special day virtually.")
+
+  // 13. Wishes
+  wishesTitle String @default("Guest Book")
+  wishesDesc  String @default("Leave your warmest wishes and blessings for our marriage.")
+
+  // 15. Closing
+  closingThanks String @default("Terima Kasih")
+  closingFam    String @default("The Pierce & Laurent Families")
+}

@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Wedding of Arthur & Elena</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Montserrat:wght@300;400;500&display=swap');
+
+        :root {
+            --forest-dark: #0a120c;
+            --forest-base: #142419;
+            --gold: #C9A96E;
+            --cream: #F4F1EA;
+            --overlay: rgba(10, 18, 12, 0.6);
+            --overlay-dark: rgba(10, 18, 12, 0.85);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--forest-dark);
+            color: var(--cream);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        h1, h2, h3, h4, .serif {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 400;
+        }
+
+        /* --- PARALLAX & SECTION BASE --- */
+        .parallax {
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            position: relative;
+        }
+
+        section {
+            padding: 6rem 2rem;
+            position: relative;
+            z-index: 2;
+            background-color: var(--forest-base);
+            text-align: center;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            color: var(--gold);
+            margin-bottom: 3rem;
+            text-transform: capitalize;
+        }
+
+        /* --- FADE IN ANIMATION --- */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 1s ease-out, transform 1s ease-out;
+        }
+        .fade-in.appear {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- COVER --- */
+        #cover {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-image: url('https://images.unsplash.com/photo-1519225421980-715cb0215aed?q=80&w=1920&auto=format&fit=crop');
+            padding: 0 2rem;
+        }
+        #cover::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--overlay);
+        }
+        .cover-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+        }
+        .cover-subtitle {
+            font-size: 1rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            color: var(--cream);
+        }
+        .cover-title {
+            font-size: clamp(3rem, 8vw, 6rem);
+            color: var(--gold);
+            line-height: 1;
+            margin-bottom: 1rem;
+        }
+
+        /* --- COUNTDOWN --- */
+        #countdown-section {
+            background-color: var(--forest-dark);
+            padding: 3rem 1rem;
+        }
+        .countdown-container {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .time-box {
+            background: rgba(201, 169, 110, 0.1);
+            border: 1px solid var(--gold);
+            padding: 1.5rem 1rem;
+            min-width: 90px;
+            border-radius: 8px;
+        }
+        .time-box span {
+            display: block;
+            font-size: 2.5rem;
+            font-family: 'Cormorant Garamond', serif;
+            color: var(--gold);
+        }
+        .time-box small {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* --- HOLY VERSE --- */
+        #holy-verse {
+            background-image: url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=1920&auto=format&fit=crop');
+            padding: 8rem 2rem;
+        }
+        #holy-verse::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--overlay-dark);
+        }
+        .verse-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .verse-text {
+            font-size: 1.5rem;
+            font-style: italic;
+            line-height: 1.8;
+            margin-bottom: 2rem;
+        }
+        .verse-source {
+            font-size: 1rem;
+            color: var(--gold);
+            letter-spacing: 2px;
+        }
+
+        /* --- THE COUPLE --- */
+        .couple-container {
+            display: flex;
+            flex-direction: column;
+            gap: 4rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .person {
+            display: flex;
+            align-items: center;
+            gap: 3rem;
+            text-align: left;
+        }
+        .person.reverse {
+            flex-direction: row-reverse;
+            text-align: right;
+        }
+        .person-img {
+            width: 300px;
+            height: 400px;
+            object-fit: cover;
+            border-radius: 200px 200px 0 0;
+            border: 2px solid var(--gold);
+            padding: 10px;
+        }
+        .person-info h3 {
+            font-size: 2.5rem;
+            color: var(--gold);
+            margin-bottom: 1rem;
+        }
+        .person-info p {
+            line-height: 1.8;
+            color: #b0b8b2;
+        }
+
+        /* --- LOVE STORY --- */
+        #love-story {
+            background-color: var(--forest-dark);
+        }
+        .timeline {
+            max-width: 800px;
+            margin: 0 auto;
+            border-left: 2px solid var(--gold);
+            padding-left: 2rem;
+            text-align: left;
+        }
+        .story-item {
+            margin-bottom: 3rem;
+            position: relative;
+        }
+        .story-item::before {
+            content: '';
+            position: absolute;
+            left: -39px;
+            top: 0;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--gold);
+            border: 4px solid var(--forest-dark);
+        }
+        .story-year {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.5rem;
+            color: var(--gold);
+            margin-bottom: 0.5rem;
+        }
+        .story-title {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        /* --- EVENTS --- */
+        #events {
+            background-image: url('https://images.unsplash.com/photo-1469334031218-e382a71b716b?q=80&w=1920&auto=format&fit=crop');
+        }
+        #events::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--overlay-dark);
+        }
+        .events-grid {
+            position: relative;
+            z-index: 2;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .event-card {
+            background: rgba(20, 36, 25, 0.8);
+            border: 1px solid var(--gold);
+            padding: 3rem 2rem;
+            backdrop-filter: blur(5px);
+        }
+        .event-title {
+            font-size: 2rem;
+            color: var(--gold);
+            margin-bottom: 1rem;
+        }
+        .btn {
+            display: inline-block;
+            background: transparent;
+            color: var(--gold);
+            border: 1px solid var(--gold);
+            padding: 0.8rem 2rem;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 0.8rem;
+            margin-top: 1.5rem;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background: var(--gold);
+            color: var(--forest-dark);
+        }
+
+        /* --- PHOTO GALLERY --- */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .gallery-img {
+            width: 100%;
+            height: 350px;
+            object-fit: cover;
+            filter: grayscale(30%);
+            transition: 0.5s;
+        }
+        .gallery-img:hover {
+            filter: grayscale(0%);
+            transform: scale(1.02);
+        }
+
+        /* --- RSVP & WISHES --- */
+        #rsvp-wishes {
+            background-color: var(--forest-dark);
+        }
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto 4rem;
+            text-align: left;
+        }
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--gold);
+            font-size: 0.9rem;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 1rem;
+            background: var(--forest-base);
+            border: 1px solid rgba(201, 169, 110, 0.3);
+            color: var(--cream);
+            font-family: 'Montserrat', sans-serif;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--gold);
+        }
+        .wishes-board {
+            max-width: 800px;
+            margin: 0 auto;
+            height: 300px;
+            overflow-y: auto;
+            background: var(--forest-base);
+            padding: 2rem;
+            border: 1px solid rgba(201, 169, 110, 0.2);
+            text-align: left;
+        }
+        .wish-item {
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+        }
+        .wish-name {
+            color: var(--gold);
+            font-weight: 500;
+            margin-bottom: 0.3rem;
+        }
+
+        /* --- GIFTS & LIVE STREAM --- */
+        .gifts-stream-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .box-card {
+            border: 1px dashed var(--gold);
+            padding: 3rem 2rem;
+        }
+
+        /* --- CLOSING --- */
+        #closing {
+            height: 80vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-image: url('https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=1920&auto=format&fit=crop');
+        }
+        #closing::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--overlay);
+        }
+        
+        /* --- BACKGROUND MUSIC BUTTON --- */
+        #music-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: var(--gold);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(201, 169, 110, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(201, 169, 110, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(201, 169, 110, 0); }
+        }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 768px) {
+            .person, .person.reverse {
+                flex-direction: column;
+                text-align: center;
+            }
+            .person-img { width: 100%; max-width: 300px; }
+            .timeline { padding-left: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- AUDIO PLAYER -->
+    <audio id="bg-music" loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    </audio>
+    <button id="music-btn" onclick="toggleMusic()">🎵</button>
+
+    <!-- 1. COVER -->
+    <section id="cover" class="parallax">
+        <div class="cover-content fade-in">
+            <p class="cover-subtitle" id="e-cover-subtitle">The Wedding Celebration Of</p>
+            <h1 class="cover-title"><span id="e-groom-name">Arthur</span> & <span id="e-bride-name">Elena</span></h1>
+            <p class="serif" style="font-size: 1.5rem; letter-spacing: 2px;">WE ARE GETTING MARRIED</p>
+        </div>
+    </section>
+
+    <!-- 2. COUNTDOWN -->
+    <section id="countdown-section">
+        <div class="countdown-container fade-in">
+            <div class="time-box"><span id="days">00</span><small>Hari</small></div>
+            <div class="time-box"><span id="hours">00</span><small>Jam</small></div>
+            <div class="time-box"><span id="minutes">00</span><small>Menit</small></div>
+            <div class="time-box"><span id="seconds">00</span><small>Detik</small></div>
+        </div>
+    </section>
+
+    <!-- 3. HOLY VERSE -->
+    <section id="holy-verse" class="parallax">
+        <div class="verse-content fade-in">
+            <p class="verse-text serif" id="e-verse-text">"Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan untukmu isteri-isteri dari jenismu sendiri, supaya kamu cenderung dan merasa tenteram kepadanya, dan dijadikan-Nya diantaramu rasa kasih dan sayang."</p>
+            <p class="verse-source" id="e-verse-source">Ar-Rum: 21</p>
+        </div>
+    </section>
+
+    <!-- 4. THE COUPLE -->
+    <section id="couple">
+        <h2 class="section-title fade-in">The Bride & Groom</h2>
+        <div class="couple-container">
+            <div class="person fade-in">
+                <img id="e-groom-photo" src="https://images.unsplash.com/photo-1595290263309-84d436ec0dd8?q=80&w=600&auto=format&fit=crop" alt="Arthur" class="person-img">
+                <div class="person-info">
+                    <h3 id="e-groom-name2">Arthur Pendragon</h3>
+                    <p id="e-groom-info">Putra dari Bapak Uther & Ibu Igraine.<br>Seorang pria yang menemukan kedamaiannya dalam senyum Elena. Penikmat kopi dan penjelajah alam.</p>
+                </div>
+            </div>
+            <div class="person reverse fade-in">
+                <img id="e-bride-photo" src="https://images.unsplash.com/photo-1543130732-4b8da601004b?q=80&w=600&auto=format&fit=crop" alt="Elena" class="person-img">
+                <div class="person-info">
+                    <h3 id="e-bride-name2">Elena Gilbert</h3>
+                    <p id="e-bride-info">Putri dari Bapak John & Ibu Isobel.<br>Wanita anggun yang mewarnai dunia Arthur. Pecinta seni dan keindahan alam semesta.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. LOVE STORY -->
+    <section id="love-story">
+        <h2 class="section-title fade-in">Our Story</h2>
+        <div class="timeline fade-in">
+            <div class="story-item">
+                <div class="story-year">2018 - Pertemuan Pertama</div>
+                <h4 class="story-title">Di Bawah Hujan Musim Gugur</h4>
+                <p>Kami tidak sengaja bertemu di sebuah kafe kecil dekat hutan kota. Secangkir kopi hangat menjadi awal dari perbincangan panjang kami.</p>
+            </div>
+            <div class="story-item">
+                <div class="story-year">2021 - Bertumbuh Bersama</div>
+                <h4 class="story-title">Perjalanan ke Pegunungan</h4>
+                <p>Melewati berbagai musim bersama, saling mendukung karir dan impian. Di puncak gunung, kami menyadari bahwa kami tidak ingin mendaki sendirian lagi.</p>
+            </div>
+            <div class="story-item">
+                <div class="story-year">2023 - Lamaran</div>
+                <h4 class="story-title">Janji di Tengah Hutan Pinus</h4>
+                <p>Dikelilingi oleh alam yang tenang dan keluarga terdekat, Arthur berlutut dan meminta Elena untuk merajut masa depan bersama selamanya.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. EVENTS -->
+    <section id="events" class="parallax">
+        <div class="events-grid fade-in">
+            <div class="event-card">
+                <h3 class="event-title">Akad Nikah</h3>
+                <p style="margin-bottom: 1rem; color: #b0b8b2;"><span id="e-akad-date">Sabtu, 28 Oktober 2026</span><br><span id="e-akad-time">08:00 - 10:00 WIB</span></p>
+                <p id="e-akad-place"><strong>Pine Forest Camp</strong><br>Lembang, Bandung, Jawa Barat</p>
+                <a id="e-akad-maps" href="https://maps.google.com" class="btn">Google Maps</a>
+            </div>
+            <div class="event-card">
+                <h3 class="event-title">Resepsi</h3>
+                <p style="margin-bottom: 1rem; color: #b0b8b2;"><span id="e-resepsi-date">Sabtu, 28 Oktober 2026</span><br><span id="e-resepsi-time">11:00 - 14:00 WIB</span></p>
+                <p id="e-resepsi-place"><strong>Pine Forest Camp</strong><br>Lembang, Bandung, Jawa Barat</p>
+                <a id="e-resepsi-maps" href="https://maps.google.com" class="btn">Google Maps</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 7. PHOTO GALLERY -->
+    <section id="gallery">
+        <h2 class="section-title fade-in">Moments of Us</h2>
+        <div class="gallery-grid fade-in">
+            <img id="e-gallery-1" src="https://images.unsplash.com/photo-1511895426328-dc8714191300?q=80&w=600&auto=format&fit=crop" class="gallery-img">
+            <img id="e-gallery-2" src="https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=600&auto=format&fit=crop" class="gallery-img">
+            <img id="e-gallery-3" src="https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?q=80&w=600&auto=format&fit=crop" class="gallery-img">
+            <img id="e-gallery-4" src="https://images.unsplash.com/photo-1520854221256-17451cc331bf?q=80&w=600&auto=format&fit=crop" class="gallery-img">
+        </div>
+    </section>
+
+    <!-- 8. GIFTS & LIVE STREAM -->
+    <section id="gifts-stream">
+        <h2 class="section-title fade-in">Gifts & Virtual Attend</h2>
+        <div class="gifts-stream-grid fade-in">
+            <div class="box-card">
+                <h3 class="serif" style="font-size: 2rem; color: var(--gold); margin-bottom: 1rem;">Wedding Gift</h3>
+                <p style="margin-bottom: 1rem; font-size: 0.9rem; line-height: 1.6;">Doa restu Anda merupakan karunia yang sangat berarti. Namun jika Anda ingin memberikan tanda kasih, dapat melalui:</p>
+                <p style="font-family: monospace; font-size: 1.2rem; margin: 1rem 0;"><span id="e-bank-name">BCA</span> <span id="e-bank-acc">1234567890</span></p>
+                <p style="color: var(--gold);" id="e-bank-holder">a.n Arthur Pendragon</p>
+                <button class="btn" onclick="alert('Nomor rekening disalin!')">Salin Rekening</button>
+            </div>
+            <div class="box-card">
+                <h3 class="serif" style="font-size: 2rem; color: var(--gold); margin-bottom: 1rem;">Live Streaming</h3>
+                <p style="margin-bottom: 1rem; font-size: 0.9rem; line-height: 1.6;">Bagi keluarga & sahabat yang tidak dapat hadir secara langsung, kami mengundang Anda untuk bergabung secara virtual.</p>
+                <a href="#" class="btn" style="margin-top: 2.3rem;">Join Zoom / YouTube</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 9. RSVP & WISHES -->
+    <section id="rsvp-wishes">
+        <h2 class="section-title fade-in">RSVP & Wishes</h2>
+        
+        <div class="form-container fade-in">
+            <form onsubmit="event.preventDefault(); alert('Terima kasih, konfirmasi Anda telah terkirim!');">
+                <div class="input-group">
+                    <label>Nama Lengkap</label>
+                    <input type="text" required placeholder="Masukkan nama Anda">
+                </div>
+                <div class="input-group">
+                    <label>Konfirmasi Kehadiran</label>
+                    <select required>
+                        <option value="">Pilih status kehadiran</option>
+                        <option value="Hadir">Ya, Saya akan hadir</option>
+                        <option value="Tidak">Maaf, Saya tidak bisa hadir</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Jumlah Tamu</label>
+                    <select required>
+                        <option value="1">1 Orang</option>
+                        <option value="2">2 Orang</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Pesan & Doa</label>
+                    <textarea rows="4" required placeholder="Tulis doa untuk kedua mempelai"></textarea>
+                </div>
+                <button type="submit" class="btn" style="width: 100%;">Kirim RSVP & Doa</button>
+            </form>
+        </div>
+
+        <div class="wishes-board fade-in">
+            <h3 class="serif" style="color: var(--gold); margin-bottom: 1.5rem; font-size: 1.5rem;">Guest Messages</h3>
+            <div class="wish-item">
+                <div class="wish-name">Sarah & John</div>
+                <div style="font-size: 0.9rem; color: #b0b8b2;">Selamat menempuh hidup baru Arthur & Elena. Semoga bahagia selalu dan dilancarkan semuanya!</div>
+            </div>
+            <div class="wish-item">
+                <div class="wish-name">Michael (Teman Kantor)</div>
+                <div style="font-size: 0.9rem; color: #b0b8b2;">Happy Wedding bro! Finally! Maaf belum bisa hadir, doa terbaik untuk kalian berdua.</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 10. CLOSING -->
+    <section id="closing" class="parallax">
+        <div class="cover-content fade-in">
+            <p class="serif" style="font-size: 1.5rem; margin-bottom: 1rem;" id="e-closing-thanks">Terima Kasih</p>
+            <h1 class="cover-title" id="e-closing-names">Arthur & Elena</h1>
+            <p style="margin-top: 1rem; color: var(--gold); letter-spacing: 2px;">#ArlenEverAfter</p>
+        </div>
+    </section>
+
+    <script>
+        // --- COUNTDOWN LOGIC ---
+        let weddingDate = new Date(2026, 9, 28, 8, 0, 0).getTime(); // 28 Oktober 2026
+
+        const timer = setInterval(function() {
+            const now = new Date().getTime();
+            const distance = weddingDate - now;
+
+            if (distance < 0) {
+                clearInterval(timer);
+                document.getElementById("days").innerText = "00";
+                document.getElementById("hours").innerText = "00";
+                document.getElementById("minutes").innerText = "00";
+                document.getElementById("seconds").innerText = "00";
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById("days").innerText = days.toString().padStart(2, '0');
+            document.getElementById("hours").innerText = hours.toString().padStart(2, '0');
+            document.getElementById("minutes").innerText = minutes.toString().padStart(2, '0');
+            document.getElementById("seconds").innerText = seconds.toString().padStart(2, '0');
+        }, 1000);
+
+        // --- FADE IN ANIMATION PADA SAAT SCROLL ---
+        const faders = document.querySelectorAll('.fade-in');
+        const appearOptions = {
+            threshold: 0.15,
+            rootMargin: "0px 0px -50px 0px"
+        };
+
+        const appearOnScroll = new IntersectionObserver(function(entries, observer) {
+            entries.forEach(entry => {
+                if (!entry.isIntersecting) {
+                    return;
+                } else {
+                    entry.target.classList.add('appear');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, appearOptions);
+
+        faders.forEach(fader => {
+            appearOnScroll.observe(fader);
+        });
+
+        // --- BACKGROUND MUSIC TOGGLE ---
+        const audio = document.getElementById("bg-music");
+        const musicBtn = document.getElementById("music-btn");
+        let isPlaying = false;
+
+        function toggleMusic() {
+            if (isPlaying) {
+                audio.pause();
+                musicBtn.innerText = "🎵";
+            } else {
+                audio.play().catch(error => {
+                    console.log("Audio play failed:", error);
+                });
+                musicBtn.innerText = "⏸️";
+            }
+            isPlaying = !isPlaying;
+        }
+
+        // ===== Update Invitation (called by editor) =====
+        window.updateInvitation = function(data) {
+            if (data.brideName) { document.getElementById('e-bride-name').textContent = data.brideName; document.getElementById('e-bride-name2').textContent = data.brideName; }
+            if (data.groomName) { document.getElementById('e-groom-name').textContent = data.groomName; document.getElementById('e-groom-name2').textContent = data.groomName; }
+            if (data.coverSubtitle) document.getElementById('e-cover-subtitle').textContent = data.coverSubtitle;
+            if (data.bridePhoto) document.getElementById('e-bride-photo').src = data.bridePhoto;
+            if (data.groomPhoto) document.getElementById('e-groom-photo').src = data.groomPhoto;
+            if (data.brideInfo) document.getElementById('e-bride-info').innerHTML = data.brideInfo;
+            if (data.groomInfo) document.getElementById('e-groom-info').innerHTML = data.groomInfo;
+            if (data.verseText) document.getElementById('e-verse-text').textContent = data.verseText;
+            if (data.verseSource) document.getElementById('e-verse-source').textContent = data.verseSource;
+            if (data.akadDate) document.getElementById('e-akad-date').textContent = data.akadDate;
+            if (data.akadTime) document.getElementById('e-akad-time').textContent = data.akadTime;
+            if (data.akadPlace) document.getElementById('e-akad-place').innerHTML = data.akadPlace;
+            if (data.akadMaps) document.getElementById('e-akad-maps').href = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(data.akadMaps);
+            if (data.resepsiDate) document.getElementById('e-resepsi-date').textContent = data.resepsiDate;
+            if (data.resepsiTime) document.getElementById('e-resepsi-time').textContent = data.resepsiTime;
+            if (data.resepsiPlace) document.getElementById('e-resepsi-place').innerHTML = data.resepsiPlace;
+            if (data.resepsiMaps) document.getElementById('e-resepsi-maps').href = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(data.resepsiMaps);
+            if (data.countdownDate) { weddingDate = new Date(data.countdownDate).getTime(); }
+            if (data.gallery1) document.getElementById('e-gallery-1').src = data.gallery1;
+            if (data.gallery2) document.getElementById('e-gallery-2').src = data.gallery2;
+            if (data.gallery3) document.getElementById('e-gallery-3').src = data.gallery3;
+            if (data.gallery4) document.getElementById('e-gallery-4').src = data.gallery4;
+            if (data.bankName) document.getElementById('e-bank-name').textContent = data.bankName;
+            if (data.bankAcc) document.getElementById('e-bank-acc').textContent = data.bankAcc;
+            if (data.bankHolder) document.getElementById('e-bank-holder').textContent = data.bankHolder;
+            if (data.closingThanks) document.getElementById('e-closing-thanks').textContent = data.closingThanks;
+            if (data.closingNames) document.getElementById('e-closing-names').textContent = data.closingNames;
+        };
+
+        // Listen for postMessage from parent (for detail page preview and editor)
+        window.addEventListener('message', function(e) {
+            if (e.data.type === 'UPDATE') {
+                if (window.updateInvitation) window.updateInvitation(e.data.payload);
+            }
+        });
+    </script>
+</body>
+</html>
