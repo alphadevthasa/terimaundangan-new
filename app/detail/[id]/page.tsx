@@ -175,51 +175,52 @@ function CheckoutContent() {
               </button>
             </div>
 
-            {/* Preview area */}
-            <div style={{ flex: 1, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', minHeight: 0, overflow: 'auto', padding: '1rem 0' }}>
-              {previewMode === 'mobile' ? (
-                /* Mobile phone mockup */
-                <div className="preview-fade-in" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '.5rem', flexShrink: 0 }}>
-                  <div style={{
-                    width: '330px', height: '620px', background: '#0a0807',
-                    border: '3px solid #2a2a2a', borderRadius: '24px', overflow: 'hidden',
-                    position: 'relative', boxShadow: '0 0 0 1px #1a1a1a, 0 20px 60px rgba(0,0,0,.6)',
-                  }}>
-                    <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: '100px', height: '16px', background: '#2a2a2a', borderRadius: '0 0 10px 10px', zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
-                      <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#1a1a1a' }} />
-                      <div style={{ width: '30px', height: '3px', borderRadius: '2px', background: '#1a1a1a' }} />
-                    </div>
-                    <iframe ref={mobileRef} srcDoc={templateConfig.html} onLoad={handleIframeLoad} style={{ width: '100%', height: '100%', border: 'none', background: '#0a0807' }} title="Mobile Preview" />
+            {/* Preview area — single iframe with smooth CSS transitions */}
+            <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 0, overflow: 'auto', padding: '1rem 0' }}>
+              <div style={{
+                display: 'flex', flexDirection: 'column',
+                width: previewMode === 'mobile' ? '340px' : '100%',
+                maxWidth: previewMode === 'mobile' ? '340px' : '1100px',
+                background: '#1c1c1e',
+                borderRadius: previewMode === 'mobile' ? '30px' : '10px',
+                overflow: 'hidden',
+                boxShadow: previewMode === 'mobile'
+                  ? '0 0 0 1px #1a1a1a, 0 20px 60px rgba(0,0,0,.6)'
+                  : '0 0 0 1px rgba(255,255,255,.06), 0 20px 60px rgba(0,0,0,.5)',
+                transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+              }}>
+                {/* macOS title bar */}
+                <div style={{
+                  padding: previewMode === 'mobile' ? '.35rem .65rem' : '.6rem 1rem',
+                  background: '#2c2c2e', borderBottom: '1px solid rgba(255,255,255,.06)',
+                  display: 'flex', alignItems: 'center', gap: '.5rem',
+                  transition: 'padding 0.3s ease',
+                }}>
+                  <div style={{ display: 'flex', gap: previewMode === 'mobile' ? '4px' : '6px' }}>
+                    <div style={{ width: previewMode === 'mobile' ? '8px' : '11px', height: previewMode === 'mobile' ? '8px' : '11px', borderRadius: '50%', background: '#ff5f56', transition: 'all 0.3s ease' }} />
+                    <div style={{ width: previewMode === 'mobile' ? '8px' : '11px', height: previewMode === 'mobile' ? '8px' : '11px', borderRadius: '50%', background: '#ffbd2e', transition: 'all 0.3s ease' }} />
+                    <div style={{ width: previewMode === 'mobile' ? '8px' : '11px', height: previewMode === 'mobile' ? '8px' : '11px', borderRadius: '50%', background: '#28c840', transition: 'all 0.3s ease' }} />
                   </div>
-                </div>
-              ) : (
-                /* Desktop macOS window mockup */
-                <div className="preview-fade-in" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '.5rem', width: '100%', maxWidth: '1100px' }}>
-                  <div style={{
-                    width: '100%', background: '#1c1c1e', borderRadius: '10px', overflow: 'hidden',
-                    boxShadow: '0 0 0 1px rgba(255,255,255,.06), 0 20px 60px rgba(0,0,0,.5)',
-                  }}>
-                    {/* macOS title bar */}
-                    <div style={{
-                      padding: '.6rem 1rem', background: '#2c2c2e', borderBottom: '1px solid rgba(255,255,255,.06)',
-                      display: 'flex', alignItems: 'center', gap: '.6rem',
-                    }}>
-                      <div style={{ display: 'flex', gap: '6px' }}>
-                        <div style={{ width: '11px', height: '11px', borderRadius: '50%', background: '#ff5f56' }} />
-                        <div style={{ width: '11px', height: '11px', borderRadius: '50%', background: '#ffbd2e' }} />
-                        <div style={{ width: '11px', height: '11px', borderRadius: '50%', background: '#28c840' }} />
-                      </div>
-                      <div style={{ flex: 1, textAlign: 'center', fontSize: '.72rem', color: 'rgba(255,255,255,.35)', fontFamily: "'-apple-system', 'Helvetica Neue', sans-serif", letterSpacing: '.02em', paddingRight: '42px' }}>
-                        {template.name} — Terima Undangan
-                      </div>
+                  {previewMode === 'desktop' && (
+                    <div style={{ flex: 1, textAlign: 'center', fontSize: '.72rem', color: 'rgba(255,255,255,.35)', fontFamily: "'-apple-system', 'Helvetica Neue', sans-serif", letterSpacing: '.02em', paddingRight: '42px', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                      {template.name} — Terima Undangan
                     </div>
-                    {/* Desktop iframe */}
-                    <div style={{ height: '70vh', minHeight: '500px', maxHeight: '800px', background: '#0a0807' }}>
-                      <iframe ref={desktopRef} srcDoc={templateConfig.html} onLoad={handleIframeLoad} style={{ width: '100%', height: '100%', border: 'none', background: '#0a0807' }} title="Desktop Preview" />
-                    </div>
-                  </div>
+                  )}
                 </div>
-            )}
+                <iframe ref={desktopRef} srcDoc={templateConfig.html} onLoad={handleIframeLoad}
+                  style={{
+                    width: '100%',
+                    height: previewMode === 'mobile' ? '620px' : '70vh',
+                    minHeight: previewMode === 'mobile' ? '620px' : '500px',
+                    maxHeight: previewMode === 'mobile' ? '620px' : '800px',
+                    border: previewMode === 'mobile' ? '3px solid #2a2a2a' : 'none',
+                    borderRadius: previewMode === 'mobile' ? '0 0 28px 28px' : '0',
+                    background: '#0a0807',
+                    transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+                  }}
+                  title="Template Preview"
+                />
+              </div>
             </div>
             </div>
         )}
@@ -239,16 +240,27 @@ function CheckoutContent() {
               </button>
             </div>
             {previewMode === 'mobile' ? (
-              <div className="preview-fade-in" style={{ width: '100%', height: '480px', background: '#0a0807', border: '1px solid rgba(201,169,97,.15)', borderRadius: '8px', overflow: 'hidden', boxShadow: '0 10px 40px rgba(0,0,0,.4)' }}>
-                <iframe ref={mobileRef} srcDoc={templateConfig.html} onLoad={handleIframeLoad} style={{ width: '100%', height: '100%', border: 'none', background: '#0a0807' }} title="Mobile Preview" />
+              <div style={{
+                width: '100%', background: '#1c1c1e', borderRadius: '20px', overflow: 'hidden',
+                boxShadow: '0 0 0 1px #1a1a1a, 0 10px 40px rgba(0,0,0,.6)',
+              }}>
+                <div style={{ padding: '.35rem .75rem', background: '#2c2c2e', borderBottom: '1px solid rgba(255,255,255,.06)', display: 'flex', alignItems: 'center', gap: '.5rem' }}>
+                  <div style={{ display: 'flex', gap: '5px' }}><div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#ff5f56' }} /><div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#ffbd2e' }} /><div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#28c840' }} /></div>
+                </div>
+                <div style={{ height: '450px', background: '#0a0807' }}>
+                  <iframe ref={desktopRef} srcDoc={templateConfig.html} onLoad={handleIframeLoad} style={{ width: '100%', height: '100%', border: 'none', background: '#0a0807' }} title="Mobile Preview" />
+                </div>
               </div>
             ) : (
-              <div className="preview-fade-in" style={{ width: '100%', background: '#1c1c1e', borderRadius: '8px', overflow: 'hidden', boxShadow: '0 0 0 1px rgba(255,255,255,.06), 0 10px 40px rgba(0,0,0,.5)' }}>
+              <div style={{
+                width: '100%', background: '#1c1c1e', borderRadius: '10px', overflow: 'hidden',
+                boxShadow: '0 0 0 1px rgba(255,255,255,.06), 0 10px 40px rgba(0,0,0,.5)',
+              }}>
                 <div style={{ padding: '.5rem .85rem', background: '#2c2c2e', borderBottom: '1px solid rgba(255,255,255,.06)', display: 'flex', alignItems: 'center', gap: '.5rem' }}>
                   <div style={{ display: 'flex', gap: '5px' }}><div style={{ width: '9px', height: '9px', borderRadius: '50%', background: '#ff5f56' }} /><div style={{ width: '9px', height: '9px', borderRadius: '50%', background: '#ffbd2e' }} /><div style={{ width: '9px', height: '9px', borderRadius: '50%', background: '#28c840' }} /></div>
                   <div style={{ flex: 1, textAlign: 'center', fontSize: '.65rem', color: 'rgba(255,255,255,.3)' }}>{template.name}</div>
                 </div>
-                <div style={{ height: '400px', background: '#0a0807' }}>
+                <div style={{ height: '360px', background: '#0a0807' }}>
                   <iframe ref={desktopRef} srcDoc={templateConfig.html} onLoad={handleIframeLoad} style={{ width: '100%', height: '100%', border: 'none', background: '#0a0807' }} title="Desktop Preview" />
                 </div>
               </div>
@@ -319,10 +331,7 @@ function CheckoutContent() {
 export default function CheckoutPage() {
   return (
     <>
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }
-        .preview-fade-in { animation: fadeScale .45s cubic-bezier(.16,1,.3,1); }
-        @keyframes fadeScale { from { opacity: 0; transform: scale(.96) translateY(8px); } to { opacity: 1; transform: scale(1) translateY(0); } }
-      `}</style>
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       <Suspense fallback={
         <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0a0807', color: '#f5ecd9' }}>
           <div style={{ textAlign: 'center' }}>
