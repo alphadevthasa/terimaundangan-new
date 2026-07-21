@@ -8,3 +8,4 @@ tmp/
 public/*.png
 public/.tmp/
 .DS_Store
+scripts/*.mjs
