@@ -33,6 +33,7 @@ export async function PUT(
         ...(body.price !== undefined && { price: body.price }),
         ...(body.isPopular !== undefined && { isPopular: body.isPopular }),
         ...(body.html !== undefined && { html: body.html }),
+        ...(body.defaultData !== undefined && { defaultData: body.defaultData }),
       },
     });
     return NextResponse.json({ template });

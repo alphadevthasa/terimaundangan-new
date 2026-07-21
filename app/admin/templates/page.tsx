@@ -121,6 +121,7 @@ export default function AdminTemplates() {
                   <td style={tdStyle}>{new Date(t.createdAt).toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' })}</td>
                   <td style={tdStyle}>
                     <div style={{ display: 'flex', gap: '.5rem' }}>
+                      <button style={{ ...goldBtn, padding: '.5rem 1rem', fontSize: '.78rem' }} onClick={() => router.push(`/admin/templates/${t.id}/view`)}>View</button>
                       <button style={{ ...goldBtn, padding: '.5rem 1rem', fontSize: '.78rem' }} onClick={() => router.push(`/admin/templates/${t.id}/edit`)}>Edit</button>
                       <button style={redBtn} onClick={() => handleDelete(t.id, t.name)}>Delete</button>
                     </div>

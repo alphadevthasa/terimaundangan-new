@@ -12,7 +12,8 @@ export async function GET(
 
     const config = TEMPLATE_CONFIGS[template.name] || DEFAULT_TEMPLATE_CONFIG;
     let html = template.html || config.html;
-    const d = config.demoData;
+    let d = config.demoData;
+    try { const parsed = JSON.parse(template.defaultData); if (Object.keys(parsed).length) d = parsed; } catch {}
 
     // Inject demo data into cover placeholders server-side
     const coverReplacements: Record<string, string> = {};

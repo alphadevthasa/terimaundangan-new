@@ -19,6 +19,7 @@ model Template {
   price       String   @default("Free")
   isPopular   Boolean  @default(false)
   html        String   @default("") /// Full HTML content (for admin-managed templates)
+  defaultData String   @default("{}") /// JSON: default values for bride/groom names, dates, venue etc.
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   orders      Order[]

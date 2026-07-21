@@ -50,7 +50,9 @@ export default function TemplateDetailPage() {
       if (tmplData.template) {
         setStaticTemplate(tmplData.template);
         const cfg = TEMPLATE_CONFIGS[tmplData.template.name] || DEFAULT_TEMPLATE_CONFIG;
-        setPreviewData(cfg.demoData);
+        let data = cfg.demoData;
+        try { const p = JSON.parse(tmplData.template.defaultData || '{}'); if (Object.keys(p).length) data = p; } catch {}
+        setPreviewData(data);
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to load');

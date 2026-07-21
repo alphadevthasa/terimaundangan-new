@@ -3,60 +3,131 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
-  // Check if templates already exist
   const existing = await prisma.template.count();
-  if (existing > 0) {
+  if (existing === 0) {
+    await prisma.template.createMany({
+      data: [
+        {
+          name: 'Elite Wedding',
+          description: 'Undangan pernikahan elegan dengan tema gold dan dark. Cocok untuk pernikahan formal dan mewah.',
+          type: 'wedding',
+          thumbnail: '',
+          price: 'Free',
+          isPopular: true,
+          defaultData: JSON.stringify({
+            "bride-nick": "Sophia", "groom-nick": "Alexander", "date-text": "Saturday, October 24th, 2026",
+            "countdown-master": "2026-10-24T10:00", "couple-title": "Two Souls, One Heart",
+            "couple-sub": "We invite you to share in our joy as we exchange our vows.",
+            "groom-full": "Alexander Pierce", "groom-role": "The Groom", "groom-dad": "Mr. Robert Pierce", "groom-mom": "Mrs. Elena Pierce",
+            "bride-full": "Sophia Laurent", "bride-role": "The Bride", "bride-dad": "Mr. Arthur Laurent", "bride-mom": "Mrs. Clara Laurent",
+            "verse-text": "\"And above all these put on love, which binds everything together in perfect harmony.\"", "verse-source": "Colossians 3:14",
+            "story-date-1": "June 2018", "story-title-1": "First Meeting", "story-desc-1": "We met at a small coffee shop in the city.",
+            "story-date-2": "Dec 2024", "story-title-2": "The Proposal", "story-desc-2": "Under the stars, a promise was made to last forever.",
+            "akad-date": "Saturday, October 24, 2026", "akad-time": "08:00 AM - 10:00 AM", "akad-place": "Grand Heritage Mosque",
+            "resepsi-date": "Saturday, October 24, 2026", "resepsi-time": "07:00 PM - End", "resepsi-place": "The Ritz-Carlton Ballroom",
+            "bank-name": "BCA", "bank-acc": "1234567890", "bank-holder": "Alexander Pierce",
+            "rsvp-title": "Will You Join Us?", "rsvp-desc": "Please kindly confirm your attendance by October 1st, 2026.",
+            "closing-thanks": "Terima Kasih", "closing-fam": "The Pierce & Laurent Families",
+          }),
+        },
+        {
+          name: 'Honey Wedding',
+          description: 'Undangan pernikahan manis dengan nuansa hangat dan elegan.',
+          type: 'wedding',
+          thumbnail: '',
+          price: 'Free',
+          isPopular: false,
+          defaultData: JSON.stringify({
+            "bride-nick": "Sienna", "groom-nick": "Arka",
+            "date-text": "20 . 12 . 2025", "countdown-master": "2025-12-20T08:00:00+07:00",
+            "bride-full": "Sienna Pradipta Reswari", "groom-full": "Arka Mahesa Wijaya",
+            "akad-date": "Sabtu, 20 Desember 2025", "akad-time": "08.00 — 10.00 WIB", "akad-place": "Masjid Agung Al-Azhar<br>Jakarta Selatan",
+            "resepsi-date": "Sabtu, 20 Desember 2025", "resepsi-time": "11.00 — 14.00 WIB", "resepsi-place": "The Ritz-Carlton Ballroom<br>Jakarta Selatan",
+          }),
+        },
+        {
+          name: 'Java Batik',
+          description: 'Undangan pernikahan tradisional Jawa dengan motif batik dan nuansa keraton.',
+          type: 'wedding',
+          thumbnail: '',
+          price: 'Free',
+          isPopular: false,
+          defaultData: JSON.stringify({
+            "bride-nick": "Sekarwangi", "groom-nick": "Baskoro",
+            "date-text": "Sabtu, 20 Desember 2025", "countdown-master": "2025-12-20T08:00:00+07:00",
+            "bride-full": "Raden Ayu Sekarwangi Putri, S.Ked.", "groom-full": "Raden Mas Baskoro Wicaksono, S.T.",
+            "akad-date": "Sabtu, 20 Desember 2025", "akad-time": "08.00 — 10.00 WIB", "akad-place": "Pendopo Agung Keraton<br>Yogyakarta",
+            "resepsi-date": "Sabtu, 20 Desember 2025", "resepsi-time": "11.00 — 14.00 WIB", "resepsi-place": "Ballroom Hotel Phoenix<br>Yogyakarta",
+            "bank-name": "Bank BCA", "bank-acc": "1234 5678 9012", "bank-holder": "Raden Ayu Sekarwangi",
+            "closing-thanks": "Matur Nuwun", "closing-fam": "Keluarga Besar Raden Mas Baskoro & Raden Ayu Sekarwangi",
+          }),
+        },
+        {
+          name: 'Forest Nature',
+          description: 'Undangan pernikahan bernuansa hutan tropis dengan sentuhan sinematik.',
+          type: 'wedding',
+          thumbnail: '',
+          price: 'Free',
+          isPopular: false,
+          defaultData: JSON.stringify({
+            "bride-nick": "Elena", "groom-nick": "Arthur",
+            "countdown-master": "2026-10-28T08:00:00+07:00",
+            "akad-date": "Sabtu, 28 Oktober 2026", "akad-time": "08:00 - 10:00 WIB", "akad-place": "<strong>Pine Forest Camp</strong><br>Lembang, Bandung",
+            "resepsi-date": "Sabtu, 28 Oktober 2026", "resepsi-time": "11:00 - 14.00 WIB", "resepsi-place": "<strong>Pine Forest Camp</strong><br>Lembang, Bandung",
+            "verse-text": "\"Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan untukmu isteri-isteri dari jenismu sendiri.\"", "verse-source": "Ar-Rum: 21",
+            "closing-thanks": "Terima Kasih",
+          }),
+        },
+        {
+          name: 'West Sumatra',
+          description: 'Undangan pernikahan adat Minangkabau dengan nuansa biru gelap dan emas songket.',
+          type: 'wedding',
+          thumbnail: '',
+          price: 'Free',
+          isPopular: false,
+          defaultData: JSON.stringify({
+            "bride-nick": "Sri", "groom-nick": "Raka",
+            "bride-full": "Sri Wahyuni Zainul", "groom-full": "Raka Pratama Bukhari",
+            "countdown-master": "2025-12-20T08:00:00+07:00",
+            "hero-date": "20 . 12 . 2025",
+          }),
+        },
+      ],
+    });
+    console.log('✅ Static templates seeded successfully!');
+  } else {
     console.log('Templates already seeded, skipping...');
-    return;
+    // Backfill defaultData for existing templates that don't have it
+    const emptyDefaults = await prisma.template.findMany({ where: { defaultData: '{}' } });
+    const defaultsMap: Record<string, string> = {
+      'Elite Wedding': JSON.stringify({"bride-nick":"Sophia","groom-nick":"Alexander","date-text":"Saturday, October 24th, 2026","countdown-master":"2026-10-24T10:00","couple-title":"Two Souls, One Heart","couple-sub":"We invite you to share in our joy as we exchange our vows.","groom-full":"Alexander Pierce","groom-role":"The Groom","groom-dad":"Mr. Robert Pierce","groom-mom":"Mrs. Elena Pierce","bride-full":"Sophia Laurent","bride-role":"The Bride","bride-dad":"Mr. Arthur Laurent","bride-mom":"Mrs. Clara Laurent","verse-text":"\"And above all these put on love, which binds everything together in perfect harmony.\"","verse-source":"Colossians 3:14","story-date-1":"June 2018","story-title-1":"First Meeting","story-desc-1":"We met at a small coffee shop in the city.","story-date-2":"Dec 2024","story-title-2":"The Proposal","story-desc-2":"Under the stars, a promise was made to last forever.","akad-date":"Saturday, October 24, 2026","akad-time":"08:00 AM - 10:00 AM","akad-place":"Grand Heritage Mosque","resepsi-date":"Saturday, October 24, 2026","resepsi-time":"07:00 PM - End","resepsi-place":"The Ritz-Carlton Ballroom","bank-name":"BCA","bank-acc":"1234567890","bank-holder":"Alexander Pierce","rsvp-title":"Will You Join Us?","rsvp-desc":"Please kindly confirm your attendance by October 1st, 2026.","closing-thanks":"Terima Kasih","closing-fam":"The Pierce & Laurent Families"}),
+      'Honey Wedding': JSON.stringify({"bride-nick":"Sienna","groom-nick":"Arka","date-text":"20 . 12 . 2025","countdown-master":"2025-12-20T08:00:00+07:00","bride-full":"Sienna Pradipta Reswari","groom-full":"Arka Mahesa Wijaya","akad-date":"Sabtu, 20 Desember 2025","akad-time":"08.00 — 10.00 WIB","akad-place":"Masjid Agung Al-Azhar<br>Jakarta Selatan","resepsi-date":"Sabtu, 20 Desember 2025","resepsi-time":"11.00 — 14.00 WIB","resepsi-place":"The Ritz-Carlton Ballroom<br>Jakarta Selatan"}),
+      'Java Batik': JSON.stringify({"bride-nick":"Sekarwangi","groom-nick":"Baskoro","date-text":"Sabtu, 20 Desember 2025","countdown-master":"2025-12-20T08:00:00+07:00","bride-full":"Raden Ayu Sekarwangi Putri, S.Ked.","groom-full":"Raden Mas Baskoro Wicaksono, S.T.","akad-date":"Sabtu, 20 Desember 2025","akad-time":"08.00 — 10.00 WIB","akad-place":"Pendopo Agung Keraton<br>Yogyakarta","resepsi-date":"Sabtu, 20 Desember 2025","resepsi-time":"11.00 — 14.00 WIB","resepsi-place":"Ballroom Hotel Phoenix<br>Yogyakarta","bank-name":"Bank BCA","bank-acc":"1234 5678 9012","bank-holder":"Raden Ayu Sekarwangi","closing-thanks":"Matur Nuwun","closing-fam":"Keluarga Besar Raden Mas Baskoro & Raden Ayu Sekarwangi"}),
+      'Forest Nature': JSON.stringify({"bride-nick":"Elena","groom-nick":"Arthur","countdown-master":"2026-10-28T08:00:00+07:00","akad-date":"Sabtu, 28 Oktober 2026","akad-time":"08:00 - 10:00 WIB","akad-place":"<strong>Pine Forest Camp</strong><br>Lembang, Bandung","resepsi-date":"Sabtu, 28 Oktober 2026","resepsi-time":"11:00 - 14.00 WIB","resepsi-place":"<strong>Pine Forest Camp</strong><br>Lembang, Bandung","verse-text":"\"Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan untukmu isteri-isteri dari jenismu sendiri.\"","verse-source":"Ar-Rum: 21","closing-thanks":"Terima Kasih"}),
+      'West Sumatra': JSON.stringify({"bride-nick":"Sri","groom-nick":"Raka","bride-full":"Sri Wahyuni Zainul","groom-full":"Raka Pratama Bukhari","countdown-master":"2025-12-20T08:00:00+07:00","hero-date":"20 . 12 . 2025"}),
+    };
+    for (const t of emptyDefaults) {
+      const d = defaultsMap[t.name];
+      if (d) {
+        await prisma.template.update({ where: { id: t.id }, data: { defaultData: d } });
+        console.log(`  Updated defaultData for ${t.name}`);
+      }
+    }
   }
 
-  // Create static templates
-  await prisma.template.createMany({
-    data: [
-      {
-        name: 'Elite Wedding',
-        description: 'Undangan pernikahan elegan dengan tema gold dan dark. Cocok untuk pernikahan formal dan mewah.',
-        type: 'wedding',
-        thumbnail: '',
-        price: 'Free',
-        isPopular: true,
-      },
-      {
-        name: 'Honey Wedding',
-        description: 'Undangan pernikahan manis dengan nuansa hangat dan elegan. Cocok untuk pernikahan dengan tema klasik modern.',
-        type: 'wedding',
-        thumbnail: '',
-        price: 'Free',
-        isPopular: false,
-      },
-      {
-        name: 'Java Batik',
-        description: 'Undangan pernikahan tradisional Jawa dengan motif batik dan nuansa keraton. Cocok untuk pernikahan adat Jawa yang mewah.',
-        type: 'wedding',
-        thumbnail: '',
-        price: 'Free',
-        isPopular: false,
-      },
-      {
-        name: 'Forest Nature',
-        description: 'Undangan pernikahan bernuansa hutan tropis dengan sentuhan sinematik. Cocok untuk pernikahan outdoor dan pecinta alam.',
-        type: 'wedding',
-        thumbnail: '',
-        price: 'Free',
-        isPopular: false,
-      },
-      {
-        name: 'West Sumatra',
-        description: 'Undangan pernikahan adat Minangkabau dengan nuansa biru gelap dan emas songket. Cocok untuk pernikahan tradisional Minang yang sarat makna.',
-        type: 'wedding',
-        thumbnail: '',
-        price: 'Free',
-        isPopular: false,
-      },
-    ],
-  });
-
-  console.log('✅ Static templates seeded successfully!');
+  const templates = await prisma.template.findMany();
+  const orderCount = await prisma.order.count();
+  if (orderCount === 0 && templates.length > 0) {
+    const orders = [
+      { templateId: templates[0].id, templateName: templates[0].name, customerName: 'Sarah Andini', customerEmail: 'sarah@example.com', amount: 150000, status: 'paid', paymentMethod: 'BCA Virtual Account', paidAt: new Date('2026-07-15T10:30:00Z') },
+      { templateId: templates[1].id, templateName: templates[1].name, customerName: 'Budi Santoso', customerEmail: 'budi@example.com', amount: 150000, status: 'paid', paymentMethod: 'GoPay', paidAt: new Date('2026-07-14T14:20:00Z') },
+      { templateId: templates[2].id, templateName: templates[2].name, customerName: 'Dewi Lestari', customerEmail: 'dewi@example.com', amount: 0, status: 'paid', paymentMethod: '', paidAt: new Date('2026-07-13T08:00:00Z') },
+      { templateId: templates[0].id, templateName: templates[0].name, customerName: 'Rizky Pratama', customerEmail: 'rizky@example.com', amount: 150000, status: 'pending' },
+      { templateId: templates[3].id, templateName: templates[3].name, customerName: 'Maya Indah', customerEmail: 'maya@example.com', amount: 150000, status: 'pending' },
+    ];
+    await prisma.order.createMany({ data: orders });
+    console.log('✅ Demo orders seeded successfully!');
+  }
 }
 
 main()

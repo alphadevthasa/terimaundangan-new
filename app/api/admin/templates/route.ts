@@ -23,6 +23,7 @@ export async function POST(request: Request) {
         price: body.price ?? 'Free',
         isPopular: body.isPopular ?? false,
         html: body.html ?? '',
+        defaultData: body.defaultData ?? '{}',
       },
     });
     return NextResponse.json({ template }, { status: 201 });

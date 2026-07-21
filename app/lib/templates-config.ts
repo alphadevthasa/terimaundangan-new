@@ -42,12 +42,6 @@ export const ELITE_WEDDING_TEMPLATE = `<!DOCTYPE html>
         .autoplay-btn { position: fixed; bottom: 80px; right: 20px; width: 44px; height: 44px; background: rgba(10,8,7,.6); border: 1px solid var(--gold); color: var(--gold); border-radius: 50%; cursor: pointer; z-index: 100; display: flex; align-items: center; justify-content: center; font-size: 1rem; backdrop-filter: blur(8px); box-shadow: 0 4px 15px rgba(0,0,0,.3); transition: all .3s; }
         .autoplay-btn:hover { background: var(--gold); color: var(--bg); transform: scale(1.1); }
         .autoplay-btn.playing { background: linear-gradient(135deg,var(--gold),#b8942e); box-shadow: 0 0 20px rgba(201,169,97,.4); }
-        .autoplay-btn { position: fixed; bottom: 80px; right: 20px; width: 44px; height: 44px; background: rgba(10,8,7,.6); border: 1px solid var(--gold); color: var(--gold); border-radius: 50%; cursor: pointer; z-index: 100; display: flex; align-items: center; justify-content: center; font-size: 1rem; backdrop-filter: blur(8px); box-shadow: 0 4px 15px rgba(0,0,0,.3); transition: all .3s; }
-        .autoplay-btn:hover { background: var(--gold); color: var(--bg); transform: scale(1.1); }
-        .autoplay-btn.playing { background: linear-gradient(135deg,var(--gold),#b8942e); box-shadow: 0 0 20px rgba(201,169,97,.4); }
-        .autoplay-btn { position: fixed; bottom: 80px; right: 20px; width: 44px; height: 44px; background: rgba(10,8,7,.6); border: 1px solid var(--gold); color: var(--gold); border-radius: 50%; cursor: pointer; z-index: 100; display: flex; align-items: center; justify-content: center; font-size: 1rem; backdrop-filter: blur(8px); box-shadow: 0 4px 15px rgba(0,0,0,.3); transition: all .3s; }
-        .autoplay-btn:hover { background: var(--gold); color: var(--bg); transform: scale(1.1); }
-        .autoplay-btn.playing { background: linear-gradient(135deg,var(--gold),#b8942e); box-shadow: 0 0 20px rgba(201,169,97,.4); }
 </head>
 <body>
     <section id="s-cover">
@@ -119,8 +113,6 @@ export const ELITE_WEDDING_TEMPLATE = `<!DOCTYPE html>
         <div class="uppercase" style="margin-top:2rem;letter-spacing:0.3em;font-size:0.8rem;" id="e-closing-fam">Family</div>
     </section>
     <button id="autoplay-btn" class="autoplay-btn" onclick="toggleAutoPlay()" aria-label="Toggle Autoplay"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="6,3 20,12 6,21 6,3"/></svg></button>
-        <button id="autoplay-btn" class="autoplay-btn" onclick="toggleAutoPlay()" aria-label="Toggle Autoplay"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="6,3 20,12 6,21 6,3"/></svg></button>
-        <button id="autoplay-btn" class="autoplay-btn" onclick="toggleAutoPlay()" aria-label="Toggle Autoplay"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="6,3 20,12 6,21 6,3"/></svg></button>
         <button id="audio-btn" onclick="toggleAudio()"><i class="fas fa-music"></i></button>
     <script>
         let audioCtx, osc1, osc2, gainNode, isPlaying = false;
@@ -164,54 +156,6 @@ export const ELITE_WEDDING_TEMPLATE = `<!DOCTYPE html>
             }
         });
     </script>
-
-
-<script>
-var autoSections = ["s-cover","s-countdown","s-couple","s-verse","s-story","s-events","s-gallery","s-rsvp","s-gifts","s-stream","s-wishes","s-closing"];
-var autoInterval = null, autoPlaying = false, autoIdx = 0;
-function toggleAutoPlay() {
-  if (autoPlaying) { clearInterval(autoInterval); autoPlaying = false;
-    document.getElementById('autoplay-btn').classList.remove('playing');
-    document.getElementById('autoplay-btn').innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="6,3 20,12 6,21 6,3"/></svg>';
-    return; }
-  autoPlaying = true; autoIdx = 0;
-  document.getElementById('autoplay-btn').innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="4" width="5" height="16"/><rect x="14" y="4" width="5" height="16"/></svg>';
-  document.getElementById('autoplay-btn').classList.add('playing');
-  var el = document.getElementById(autoSections[0]);
-  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  autoIdx = 1;
-  autoInterval = setInterval(function() {
-    var el = document.getElementById(autoSections[autoIdx]);
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    autoIdx = (autoIdx + 1) % autoSections.length;
-  }, 4000);
-}
-window.addEventListener('beforeunload', function() { if (autoInterval) clearInterval(autoInterval); });
-</script>
-
-
-<script>
-var autoSections = ["s-cover","s-countdown","s-couple","s-verse","s-story","s-events","s-gallery","s-rsvp","s-gifts","s-stream","s-wishes","s-closing"];
-var autoInterval = null, autoPlaying = false, autoIdx = 0;
-function toggleAutoPlay() {
-  if (autoPlaying) { clearInterval(autoInterval); autoPlaying = false;
-    document.getElementById('autoplay-btn').classList.remove('playing');
-    document.getElementById('autoplay-btn').innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="6,3 20,12 6,21 6,3"/></svg>';
-    return; }
-  autoPlaying = true; autoIdx = 0;
-  document.getElementById('autoplay-btn').innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="4" width="5" height="16"/><rect x="14" y="4" width="5" height="16"/></svg>';
-  document.getElementById('autoplay-btn').classList.add('playing');
-  var el = document.getElementById(autoSections[0]);
-  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  autoIdx = 1;
-  autoInterval = setInterval(function() {
-    var el = document.getElementById(autoSections[autoIdx]);
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    autoIdx = (autoIdx + 1) % autoSections.length;
-  }, 4000);
-}
-window.addEventListener('beforeunload', function() { if (autoInterval) clearInterval(autoInterval); });
-</script>
 
 
 <script>
@@ -1984,12 +1928,6 @@ export const FOREST_NATURE_TEMPLATE = `<!DOCTYPE html>
         .autoplay-btn { position: fixed; bottom: 80px; right: 20px; width: 44px; height: 44px; background: rgba(10,8,7,.6); border: 1px solid var(--gold); color: var(--gold); border-radius: 50%; cursor: pointer; z-index: 100; display: flex; align-items: center; justify-content: center; font-size: 1rem; backdrop-filter: blur(8px); box-shadow: 0 4px 15px rgba(0,0,0,.3); transition: all .3s; }
         .autoplay-btn:hover { background: var(--gold); color: var(--bg); transform: scale(1.1); }
         .autoplay-btn.playing { background: linear-gradient(135deg,var(--gold),#b8942e); box-shadow: 0 0 20px rgba(201,169,97,.4); }
-        .autoplay-btn { position: fixed; bottom: 80px; right: 20px; width: 44px; height: 44px; background: rgba(10,8,7,.6); border: 1px solid var(--gold); color: var(--gold); border-radius: 50%; cursor: pointer; z-index: 100; display: flex; align-items: center; justify-content: center; font-size: 1rem; backdrop-filter: blur(8px); box-shadow: 0 4px 15px rgba(0,0,0,.3); transition: all .3s; }
-        .autoplay-btn:hover { background: var(--gold); color: var(--bg); transform: scale(1.1); }
-        .autoplay-btn.playing { background: linear-gradient(135deg,var(--gold),#b8942e); box-shadow: 0 0 20px rgba(201,169,97,.4); }
-        .autoplay-btn { position: fixed; bottom: 80px; right: 20px; width: 44px; height: 44px; background: rgba(10,8,7,.6); border: 1px solid var(--gold); color: var(--gold); border-radius: 50%; cursor: pointer; z-index: 100; display: flex; align-items: center; justify-content: center; font-size: 1rem; backdrop-filter: blur(8px); box-shadow: 0 4px 15px rgba(0,0,0,.3); transition: all .3s; }
-        .autoplay-btn:hover { background: var(--gold); color: var(--bg); transform: scale(1.1); }
-        .autoplay-btn.playing { background: linear-gradient(135deg,var(--gold),#b8942e); box-shadow: 0 0 20px rgba(201,169,97,.4); }
 </head>
 <body>
 
@@ -1998,8 +1936,6 @@ export const FOREST_NATURE_TEMPLATE = `<!DOCTYPE html>
         <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
     </audio>
     <button id="autoplay-btn" class="autoplay-btn" onclick="toggleAutoPlay()" aria-label="Toggle Autoplay"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="6,3 20,12 6,21 6,3"/></svg></button>
-        <button id="autoplay-btn" class="autoplay-btn" onclick="toggleAutoPlay()" aria-label="Toggle Autoplay"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="6,3 20,12 6,21 6,3"/></svg></button>
-        <button id="autoplay-btn" class="autoplay-btn" onclick="toggleAutoPlay()" aria-label="Toggle Autoplay"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="6,3 20,12 6,21 6,3"/></svg></button>
         <button id="music-btn" onclick="toggleMusic()"><i class="fas fa-music"></i></button>
 
     <!-- 1. COVER -->
@@ -2281,54 +2217,6 @@ export const FOREST_NATURE_TEMPLATE = `<!DOCTYPE html>
             }
         });
     </script>
-
-
-<script>
-var autoSections = ["cover","countdown-section","holy-verse","couple","love-story","events","gallery","gifts-stream","rsvp-wishes","closing"];
-var autoInterval = null, autoPlaying = false, autoIdx = 0;
-function toggleAutoPlay() {
-  if (autoPlaying) { clearInterval(autoInterval); autoPlaying = false;
-    document.getElementById('autoplay-btn').classList.remove('playing');
-    document.getElementById('autoplay-btn').innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="6,3 20,12 6,21 6,3"/></svg>';
-    return; }
-  autoPlaying = true; autoIdx = 0;
-  document.getElementById('autoplay-btn').innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="4" width="5" height="16"/><rect x="14" y="4" width="5" height="16"/></svg>';
-  document.getElementById('autoplay-btn').classList.add('playing');
-  var el = document.getElementById(autoSections[0]);
-  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  autoIdx = 1;
-  autoInterval = setInterval(function() {
-    var el = document.getElementById(autoSections[autoIdx]);
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    autoIdx = (autoIdx + 1) % autoSections.length;
-  }, 4000);
-}
-window.addEventListener('beforeunload', function() { if (autoInterval) clearInterval(autoInterval); });
-</script>
-
-
-<script>
-var autoSections = ["cover","countdown-section","holy-verse","couple","love-story","events","gallery","gifts-stream","rsvp-wishes","closing"];
-var autoInterval = null, autoPlaying = false, autoIdx = 0;
-function toggleAutoPlay() {
-  if (autoPlaying) { clearInterval(autoInterval); autoPlaying = false;
-    document.getElementById('autoplay-btn').classList.remove('playing');
-    document.getElementById('autoplay-btn').innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="6,3 20,12 6,21 6,3"/></svg>';
-    return; }
-  autoPlaying = true; autoIdx = 0;
-  document.getElementById('autoplay-btn').innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="4" width="5" height="16"/><rect x="14" y="4" width="5" height="16"/></svg>';
-  document.getElementById('autoplay-btn').classList.add('playing');
-  var el = document.getElementById(autoSections[0]);
-  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  autoIdx = 1;
-  autoInterval = setInterval(function() {
-    var el = document.getElementById(autoSections[autoIdx]);
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    autoIdx = (autoIdx + 1) % autoSections.length;
-  }, 4000);
-}
-window.addEventListener('beforeunload', function() { if (autoInterval) clearInterval(autoInterval); });
-</script>
 
 
 <script>
@@ -2700,18 +2588,10 @@ export const WEST_SUMATRA_TEMPLATE = `<!DOCTYPE html>
         .autoplay-btn { position: fixed; bottom: 80px; right: 20px; width: 44px; height: 44px; background: rgba(10,8,7,.6); border: 1px solid var(--gold); color: var(--gold); border-radius: 50%; cursor: pointer; z-index: 100; display: flex; align-items: center; justify-content: center; font-size: 1rem; backdrop-filter: blur(8px); box-shadow: 0 4px 15px rgba(0,0,0,.3); transition: all .3s; }
         .autoplay-btn:hover { background: var(--gold); color: var(--bg); transform: scale(1.1); }
         .autoplay-btn.playing { background: linear-gradient(135deg,var(--gold),#b8942e); box-shadow: 0 0 20px rgba(201,169,97,.4); }
-        .autoplay-btn { position: fixed; bottom: 80px; right: 20px; width: 44px; height: 44px; background: rgba(10,8,7,.6); border: 1px solid var(--gold); color: var(--gold); border-radius: 50%; cursor: pointer; z-index: 100; display: flex; align-items: center; justify-content: center; font-size: 1rem; backdrop-filter: blur(8px); box-shadow: 0 4px 15px rgba(0,0,0,.3); transition: all .3s; }
-        .autoplay-btn:hover { background: var(--gold); color: var(--bg); transform: scale(1.1); }
-        .autoplay-btn.playing { background: linear-gradient(135deg,var(--gold),#b8942e); box-shadow: 0 0 20px rgba(201,169,97,.4); }
-        .autoplay-btn { position: fixed; bottom: 80px; right: 20px; width: 44px; height: 44px; background: rgba(10,8,7,.6); border: 1px solid var(--gold); color: var(--gold); border-radius: 50%; cursor: pointer; z-index: 100; display: flex; align-items: center; justify-content: center; font-size: 1rem; backdrop-filter: blur(8px); box-shadow: 0 4px 15px rgba(0,0,0,.3); transition: all .3s; }
-        .autoplay-btn:hover { background: var(--gold); color: var(--bg); transform: scale(1.1); }
-        .autoplay-btn.playing { background: linear-gradient(135deg,var(--gold),#b8942e); box-shadow: 0 0 20px rgba(201,169,97,.4); }
 </head>
 <body>
 
 <button id="autoplay-btn" class="autoplay-btn" onclick="toggleAutoPlay()" aria-label="Toggle Autoplay"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="6,3 20,12 6,21 6,3"/></svg></button>
-        <button id="autoplay-btn" class="autoplay-btn" onclick="toggleAutoPlay()" aria-label="Toggle Autoplay"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="6,3 20,12 6,21 6,3"/></svg></button>
-        <button id="autoplay-btn" class="autoplay-btn" onclick="toggleAutoPlay()" aria-label="Toggle Autoplay"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="6,3 20,12 6,21 6,3"/></svg></button>
         <button class="music-toggle" id="musicToggle" aria-label="Toggle Music"><i class="fas fa-music"></i></button>
 
 <!-- ============ 1. COVER (GANJIL - PARALLAX) ============ -->
@@ -3174,54 +3054,6 @@ export const WEST_SUMATRA_TEMPLATE = `<!DOCTYPE html>
       if (window.updateInvitation) window.updateInvitation(e.data.payload);
     }
   });
-
-
-<script>
-var autoSections = ["cover","countdown-sec","couple","verse","story","events","gallery","rsvp","gifts","streaming","wishes","closing"];
-var autoInterval = null, autoPlaying = false, autoIdx = 0;
-function toggleAutoPlay() {
-  if (autoPlaying) { clearInterval(autoInterval); autoPlaying = false;
-    document.getElementById('autoplay-btn').classList.remove('playing');
-    document.getElementById('autoplay-btn').innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="6,3 20,12 6,21 6,3"/></svg>';
-    return; }
-  autoPlaying = true; autoIdx = 0;
-  document.getElementById('autoplay-btn').innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="4" width="5" height="16"/><rect x="14" y="4" width="5" height="16"/></svg>';
-  document.getElementById('autoplay-btn').classList.add('playing');
-  var el = document.getElementById(autoSections[0]);
-  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  autoIdx = 1;
-  autoInterval = setInterval(function() {
-    var el = document.getElementById(autoSections[autoIdx]);
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    autoIdx = (autoIdx + 1) % autoSections.length;
-  }, 4000);
-}
-window.addEventListener('beforeunload', function() { if (autoInterval) clearInterval(autoInterval); });
-</script>
-
-
-<script>
-var autoSections = ["cover","countdown-sec","couple","verse","story","events","gallery","rsvp","gifts","streaming","wishes","closing"];
-var autoInterval = null, autoPlaying = false, autoIdx = 0;
-function toggleAutoPlay() {
-  if (autoPlaying) { clearInterval(autoInterval); autoPlaying = false;
-    document.getElementById('autoplay-btn').classList.remove('playing');
-    document.getElementById('autoplay-btn').innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="6,3 20,12 6,21 6,3"/></svg>';
-    return; }
-  autoPlaying = true; autoIdx = 0;
-  document.getElementById('autoplay-btn').innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="4" width="5" height="16"/><rect x="14" y="4" width="5" height="16"/></svg>';
-  document.getElementById('autoplay-btn').classList.add('playing');
-  var el = document.getElementById(autoSections[0]);
-  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  autoIdx = 1;
-  autoInterval = setInterval(function() {
-    var el = document.getElementById(autoSections[autoIdx]);
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    autoIdx = (autoIdx + 1) % autoSections.length;
-  }, 4000);
-}
-window.addEventListener('beforeunload', function() { if (autoInterval) clearInterval(autoInterval); });
-</script>
 
 
 <script>

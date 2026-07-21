@@ -4,7 +4,7 @@ import { Suspense, useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { TEMPLATE_CONFIGS, DEFAULT_TEMPLATE_CONFIG } from '../../lib/templates-config';
 
-interface StaticTemplate { id: string; name: string; description: string; type: string; thumbnail: string; price: string; isPopular: boolean; html?: string; }
+interface StaticTemplate { id: string; name: string; description: string; type: string; thumbnail: string; price: string; isPopular: boolean; html?: string; defaultData?: string; }
 
 function useMediaQuery(query: string) {
   const [matches, setMatches] = useState(false);
@@ -68,7 +68,8 @@ function CheckoutContent() {
   // Broadcast demo data to both iframes - use template-specific demo data
   const broadcastToIframes = useCallback(() => {
     const config = template ? (TEMPLATE_CONFIGS[template.name] || DEFAULT_TEMPLATE_CONFIG) : DEFAULT_TEMPLATE_CONFIG;
-    const data = config.demoData;
+    let data = config.demoData;
+    try { const p = JSON.parse(template?.defaultData || '{}'); if (Object.keys(p).length) data = p; } catch {}
     [mobileRef, desktopRef].forEach(ref => {
       if (ref.current?.contentWindow) {
         try { ref.current.contentWindow.postMessage({ type: 'UPDATE', payload: data }, '*'); } catch {}
