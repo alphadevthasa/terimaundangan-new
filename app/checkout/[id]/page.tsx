@@ -156,8 +156,8 @@ function CheckoutContent() {
             <span style={{ color: '#0a0807', fontWeight: 600, fontSize: '.85rem' }}>E</span>
           </div>
           <div style={{ minWidth: 0 }}>
-            <span style={{ fontFamily: "'Italiana', serif", fontSize: isMobile ? '1rem' : '1.2rem', color: '#c9a961', marginRight: '.5rem' }}>Terima Undangan</span>
-            <span style={{ fontSize: isMobile ? '.75rem' : '.85rem', color: 'rgba(245,236,217,.6)', fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic' }}>Checkout</span>
+            <span style={{ fontFamily: "'Italiana', serif", fontSize: isMobile ? '1rem' : '1.4rem', color: '#c9a961', marginRight: '.5rem' }}>Terima Undangan</span>
+            <span style={{ fontSize: isMobile ? '.75rem' : '.95rem', color: 'rgba(245,236,217,.6)', fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic' }}>Checkout</span>
           </div>
         </div>
         {hasSession && <button onClick={() => router.push('/dashboard')} style={{ background: 'none', border: '1px solid rgba(201,169,97,.3)', color: '#c9a961', padding: '.4rem .9rem', borderRadius: '4px', fontSize: '.8rem', cursor: 'pointer', flexShrink: 0 }}>Dashboard</button>}
@@ -181,15 +181,15 @@ function CheckoutContent() {
                 </div>
                 <div style={{ padding: isMobile ? '1.25rem' : '1.5rem' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '.5rem', flexWrap: 'wrap', marginBottom: '.35rem' }}>
-                    <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic', fontSize: isMobile ? '1.2rem' : '1.5rem', color: '#c9a961', margin: 0, lineHeight: 1.2 }}>{template.name}</h1>
+                    <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic', fontSize: isMobile ? '1.2rem' : '1.6rem', color: '#c9a961', margin: 0, lineHeight: 1.2 }}>{template.name}</h1>
                   </div>
-                  <p style={{ fontSize: isMobile ? '.8rem' : '.85rem', color: 'rgba(245,236,217,.55)', lineHeight: 1.6, margin: 0 }}>{template.description || 'Wedding invitation template'}</p>
+                  <p style={{ fontSize: isMobile ? '.8rem' : '.9rem', color: isMobile ? 'rgba(245,236,217,.55)' : 'rgba(245,236,217,.6)', lineHeight: 1.6, margin: 0 }}>{template.description || 'Wedding invitation template'}</p>
                 </div>
                 <div style={{ borderTop: '1px solid rgba(201,169,97,.08)', padding: isMobile ? '1.25rem' : '1.5rem' }}>
-                  <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '.85rem', color: '#c9a961', fontStyle: 'italic', marginBottom: '1rem', letterSpacing: '.02em' }}><i className="fas fa-crown" style={{fontSize:'.8rem',marginRight:'.35rem'}}></i> What&apos;s Included</h3>
+                  <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: isMobile ? '.85rem' : '.9rem', color: '#c9a961', fontStyle: 'italic', marginBottom: '1rem', letterSpacing: '.02em' }}><i className="fas fa-crown" style={{fontSize:'.8rem',marginRight:'.35rem'}}></i> What&apos;s Included</h3>
                   <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '.6rem' }}>
                     {FEATURES.map(f => (
-                      <div key={f.label} style={{ display: 'flex', alignItems: 'center', gap: '.5rem', fontSize: '.78rem', color: 'rgba(245,236,217,.7)' }}>
+                      <div key={f.label} style={{ display: 'flex', alignItems: 'center', gap: '.5rem', fontSize: isMobile ? '.78rem' : '.82rem', color: 'rgba(245,236,217,.7)' }}>
                         <span style={{ width: '18px', textAlign: 'center', flexShrink: 0 }}><i className={f.icon} style={{ color: f.color }}></i></span>
                         <span>{f.label}</span>
                       </div>
@@ -235,42 +235,42 @@ function CheckoutContent() {
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
               <div style={{ flex: '1 1 0%', minHeight: 0, overflowY: 'auto', padding: isMobile ? '1rem' : '1.5rem' }}>
                 <div style={{ background: '#1a1611', border: '1px solid rgba(201,169,97,.12)', borderRadius: '12px', padding: isMobile ? '1.25rem' : '1.5rem' }}>
-                  <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '.85rem', color: '#c9a961', fontStyle: 'italic', marginBottom: '.75rem' }}><i className="fas fa-calculator" style={{fontSize:'.75rem',marginRight:'.35rem'}}></i> Price Breakdown</h3>
+                  <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: isMobile ? '.85rem' : '.9rem', color: '#c9a961', fontStyle: 'italic', marginBottom: '.75rem' }}><i className="fas fa-calculator" style={{fontSize:'.75rem',marginRight:'.35rem'}}></i> Price Breakdown</h3>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '.6rem' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '.85rem', color: 'rgba(245,236,217,.7)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: isMobile ? '.85rem' : '.9rem', color: 'rgba(245,236,217,.7)' }}>
                       <span>Template Price</span>
                       <span>Rp {price.toLocaleString('id-ID')}</span>
                     </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '.85rem', color: 'rgba(245,236,217,.7)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: isMobile ? '.85rem' : '.9rem', color: 'rgba(245,236,217,.7)' }}>
                       <span>PPN 11%</span>
                       <span>Rp {fee.toLocaleString('id-ID')}</span>
                     </div>
-                    <div style={{ borderTop: '1px solid rgba(201,169,97,.15)', paddingTop: '.6rem', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', fontSize: '1rem', color: '#c9a961', fontWeight: 500 }}>
+                    <div style={{ borderTop: '1px solid rgba(201,169,97,.15)', paddingTop: '.6rem', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', fontSize: isMobile ? '1rem' : '1.1rem', color: '#c9a961', fontWeight: 500 }}>
                       <span>Total</span>
-                      <span style={{ fontSize: '1.1rem' }}>Rp {total.toLocaleString('id-ID')}</span>
+                      <span style={{ fontSize: isMobile ? '1.1rem' : '1.2rem' }}>Rp {total.toLocaleString('id-ID')}</span>
                     </div>
                   </div>
                 </div>
 
                 <div style={{ background: '#1a1611', border: '1px solid rgba(201,169,97,.12)', borderRadius: '12px', padding: isMobile ? '1.25rem' : '1.5rem', marginTop: '1rem' }}>
-                  <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '.85rem', color: '#c9a961', fontStyle: 'italic', marginBottom: '.75rem', letterSpacing: '.02em' }}><i className="fas fa-user" style={{fontSize:'.75rem',marginRight:'.35rem'}}></i> Your Details</h3>
+                  <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: isMobile ? '.85rem' : '.9rem', color: '#c9a961', fontStyle: 'italic', marginBottom: '.75rem', letterSpacing: '.02em' }}><i className="fas fa-user" style={{fontSize:'.75rem',marginRight:'.35rem'}}></i> Your Details</h3>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '.75rem' }}>
                     <div>
-                      <label style={{ display: 'block', fontSize: '.72rem', color: 'rgba(245,236,217,.5)', marginBottom: '.3rem', letterSpacing: '.05em', textTransform: 'uppercase' }}>Name</label>
+                      <label style={{ display: 'block', fontSize: isMobile ? '.72rem' : '.75rem', color: 'rgba(245,236,217,.5)', marginBottom: '.3rem', letterSpacing: '.05em', textTransform: 'uppercase' }}>Name</label>
                       <input ref={nameRef} type="text" value={customerName}
                         onChange={(e) => { setCustomerName(e.target.value); if (formErrors.name) setFormErrors(prev => ({...prev, name: undefined})); }}
                         placeholder="Your full name"
-                        style={{ width: '100%', padding: '.7rem .85rem', boxSizing: 'border-box', background: '#0a0807', border: `1px solid ${formErrors.name ? '#ef4444' : 'rgba(201,169,97,.15)'}`, color: '#f5ecd9', borderRadius: '6px', fontSize: '.9rem', fontFamily: "'Jost', sans-serif", outline: 'none', transition: 'border-color .2s' }}
+                        style={{ width: '100%', padding: '.7rem .85rem', boxSizing: 'border-box', background: '#0a0807', border: `1px solid ${formErrors.name ? '#ef4444' : 'rgba(201,169,97,.15)'}`, color: '#f5ecd9', borderRadius: '6px', fontSize: isMobile ? '.9rem' : '.95rem', fontFamily: "'Jost', sans-serif", outline: 'none', transition: 'border-color .2s' }}
                         onFocus={(e) => { if (!formErrors.name) e.target.style.borderColor = 'rgba(201,169,97,.5)'; }}
                         onBlur={(e) => { if (!formErrors.name) e.target.style.borderColor = 'rgba(201,169,97,.15)'; }} />
                       {formErrors.name && <span style={{ fontSize: '.7rem', color: '#ef4444', marginTop: '.2rem', display: 'block' }}>{formErrors.name}</span>}
                     </div>
                     <div>
-                      <label style={{ display: 'block', fontSize: '.72rem', color: 'rgba(245,236,217,.5)', marginBottom: '.3rem', letterSpacing: '.05em', textTransform: 'uppercase' }}>Email</label>
+                      <label style={{ display: 'block', fontSize: isMobile ? '.72rem' : '.75rem', color: 'rgba(245,236,217,.5)', marginBottom: '.3rem', letterSpacing: '.05em', textTransform: 'uppercase' }}>Email</label>
                       <input type="email" value={customerEmail}
                         onChange={(e) => { setCustomerEmail(e.target.value); if (formErrors.email) setFormErrors(prev => ({...prev, email: undefined})); }}
                         placeholder="your@email.com"
-                        style={{ width: '100%', padding: '.7rem .85rem', boxSizing: 'border-box', background: '#0a0807', border: `1px solid ${formErrors.email ? '#ef4444' : 'rgba(201,169,97,.15)'}`, color: '#f5ecd9', borderRadius: '6px', fontSize: '.9rem', fontFamily: "'Jost', sans-serif", outline: 'none', transition: 'border-color .2s' }}
+                        style={{ width: '100%', padding: '.7rem .85rem', boxSizing: 'border-box', background: '#0a0807', border: `1px solid ${formErrors.email ? '#ef4444' : 'rgba(201,169,97,.15)'}`, color: '#f5ecd9', borderRadius: '6px', fontSize: isMobile ? '.9rem' : '.95rem', fontFamily: "'Jost', sans-serif", outline: 'none', transition: 'border-color .2s' }}
                         onFocus={(e) => { if (!formErrors.email) e.target.style.borderColor = 'rgba(201,169,97,.5)'; }}
                         onBlur={(e) => { if (!formErrors.email) e.target.style.borderColor = 'rgba(201,169,97,.15)'; }} />
                       {formErrors.email && <span style={{ fontSize: '.7rem', color: '#ef4444', marginTop: '.2rem', display: 'block' }}>{formErrors.email}</span>}
@@ -280,7 +280,7 @@ function CheckoutContent() {
               </div>
               <div style={{ flexShrink: 0, padding: isMobile ? '0 1rem 1rem' : '0 1.5rem 1.5rem', background: '#14110d' }}>
                 <button onClick={() => createInvoice(template)} disabled={isCreating}
-                  style={{ marginTop: '0', padding: '.85rem 2rem', width: '100%', boxSizing: 'border-box', background: 'linear-gradient(135deg,#c9a961,#b8942e)', border: 'none', color: '#0a0807', borderRadius: '6px', fontSize: '1rem', fontWeight: 500, cursor: isCreating ? 'not-allowed' : 'pointer', display: 'inline-flex', alignItems: 'center', gap: '.5rem', transition: 'all .2s', justifyContent: 'center', opacity: isCreating ? 0.7 : 1 }}
+                  style={{ marginTop: '0', padding: isMobile ? '.85rem 2rem' : '.95rem 2rem', width: '100%', boxSizing: 'border-box', background: 'linear-gradient(135deg,#c9a961,#b8942e)', border: 'none', color: '#0a0807', borderRadius: '6px', fontSize: isMobile ? '1rem' : '1.05rem', fontWeight: 500, cursor: isCreating ? 'not-allowed' : 'pointer', display: 'inline-flex', alignItems: 'center', gap: '.5rem', transition: 'all .2s', justifyContent: 'center', opacity: isCreating ? 0.7 : 1 }}
                   onMouseEnter={(e) => { if (!isCreating) { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(201,169,97,.3)'; } }}
                   onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}
                 >

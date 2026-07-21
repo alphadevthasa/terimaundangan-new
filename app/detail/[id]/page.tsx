@@ -114,8 +114,8 @@ function CheckoutContent() {
             <span style={{ color: '#0a0807', fontWeight: 600, fontSize: '.85rem' }}>E</span>
           </div>
           <div>
-            <span style={{ fontFamily: "'Italiana', serif", fontSize: '1.2rem', color: '#c9a961', marginRight: '.75rem' }}>Terima Undangan</span>
-            <span style={{ fontSize: '.85rem', color: 'rgba(245,236,217,.6)', fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic' }}>/ {template.name}</span>
+            <span style={{ fontFamily: "'Italiana', serif", fontSize: isMobile ? '1.2rem' : '1.4rem', color: '#c9a961', marginRight: '.75rem' }}>Terima Undangan</span>
+            <span style={{ fontSize: isMobile ? '.85rem' : '.95rem', color: 'rgba(245,236,217,.6)', fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic' }}>/ {template.name}</span>
           </div>
         </div>
         {hasSession && <button onClick={() => router.push('/dashboard')} style={{ background: 'none', border: '1px solid rgba(201,169,97,.3)', color: '#c9a961', padding: '.4rem 1rem', borderRadius: '4px', fontSize: '.8rem', cursor: 'pointer' }}>Dashboard</button>}
@@ -305,18 +305,18 @@ function CheckoutContent() {
         }}>
           {/* Template info */}
           <div style={{ padding: '1.5rem', borderBottom: '1px solid rgba(201,169,97,.08)' }}>
-            <div style={{ fontSize: '.7rem', textTransform: 'uppercase', letterSpacing: '.1em', color: 'rgba(245,236,217,.35)', marginBottom: '.35rem' }}>{template.type}</div>
-            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.4rem', color: '#c9a961', fontStyle: 'italic', margin: '0 0 .75rem', lineHeight: 1.2 }}>{template.name}</h2>
-            <p style={{ fontSize: '.82rem', color: 'rgba(245,236,217,.6)', lineHeight: 1.7, margin: '0 0 1rem' }}>{template.description}</p>
+            <div style={{ fontSize: isMobile ? '.7rem' : '.75rem', textTransform: 'uppercase', letterSpacing: '.1em', color: 'rgba(245,236,217,.35)', marginBottom: '.35rem' }}>{template.type}</div>
+            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: isMobile ? '1.4rem' : '1.6rem', color: '#c9a961', fontStyle: 'italic', margin: '0 0 .75rem', lineHeight: 1.2 }}>{template.name}</h2>
+            <p style={{ fontSize: isMobile ? '.82rem' : '.9rem', color: isMobile ? 'rgba(245,236,217,.6)' : 'rgba(245,236,217,.65)', lineHeight: 1.7, margin: '0 0 1rem' }}>{template.description}</p>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '.75rem', borderTop: '1px solid rgba(201,169,97,.08)' }}>
-              <span style={{ fontSize: '.75rem', color: 'rgba(245,236,217,.4)' }}>Harga</span>
-              <span style={{ fontSize: '1.1rem', color: '#c9a961', fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic', fontWeight: 600 }}>Rp 150.000</span>
+              <span style={{ fontSize: isMobile ? '.75rem' : '.8rem', color: 'rgba(245,236,217,.4)' }}>Harga</span>
+              <span style={{ fontSize: isMobile ? '1.1rem' : '1.2rem', color: '#c9a961', fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic', fontWeight: 600 }}>Rp 150.000</span>
             </div>
           </div>
 
           {/* Features list */}
           <div style={{ padding: '1.5rem', borderBottom: '1px solid rgba(201,169,97,.08)' }}>
-            <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '.95rem', color: '#c9a961', marginBottom: '1rem', fontStyle: 'italic', letterSpacing: '.02em' }}><i className="fas fa-crown" style={{fontSize:'.8rem',marginRight:'.35rem'}}></i> Features Included</h3>
+            <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: isMobile ? '.9rem' : '1rem', color: '#c9a961', marginBottom: '1rem', fontStyle: 'italic', letterSpacing: '.02em' }}><i className="fas fa-crown" style={{fontSize:isMobile ? '.8rem' : '.9rem',marginRight:'.35rem'}}></i> Features Included</h3>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '.5rem' }}>
               {[
                 { icon: 'fas fa-clock', label: 'Countdown Timer' },
@@ -330,7 +330,7 @@ function CheckoutContent() {
                 { icon: 'fas fa-tv', label: 'Live Streaming' },
                 { icon: 'fas fa-pen', label: 'Guest Book / Wishes' },
               ].map(f => (
-                <div key={f.label} style={{ display: 'flex', alignItems: 'center', gap: '.5rem', fontSize: '.78rem', color: 'rgba(245,236,217,.7)' }}>
+                <div key={f.label} style={{ display: 'flex', alignItems: 'center', gap: '.5rem', fontSize: isMobile ? '.78rem' : '.82rem', color: 'rgba(245,236,217,.7)' }}>
                   <span style={{ width: '18px', textAlign: 'center', flexShrink: 0 }}><i className={f.icon}></i></span>
                   <span>{f.label}</span>
                 </div>
@@ -346,10 +346,10 @@ function CheckoutContent() {
                 {error}
               </div>
             )}
-            <button onClick={handleProceedToCheckout} style={{
-              width: '100%', padding: '.85rem 2rem', background: 'linear-gradient(135deg,#c9a961,#b8942e)',
+              <button onClick={handleProceedToCheckout} style={{
+              width: '100%', padding: isMobile ? '.85rem 2rem' : '.95rem 2rem', background: 'linear-gradient(135deg,#c9a961,#b8942e)',
               border: 'none', color: '#0a0807', borderRadius: '6px',
-              fontSize: '.9rem', fontWeight: 500, cursor: 'pointer',
+              fontSize: isMobile ? '.9rem' : '1rem', fontWeight: 500, cursor: 'pointer',
               transition: 'all .2s', whiteSpace: 'nowrap',
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '.5rem',
             }}

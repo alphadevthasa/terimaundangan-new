@@ -2465,7 +2465,7 @@ export const WEST_SUMATRA_TEMPLATE = `<!DOCTYPE html>
   .footer-families { font-family: 'Cinzel', serif; font-size: 0.7rem; letter-spacing: 0.2em; color: var(--gold); text-transform: uppercase; }
 
   /* Reveal Animation */
-  .reveal { opacity: 0; transform: translateY(40px); transition: opacity 1s ease, transform 1s ease; }
+  .reveal { opacity: 1; transform: translateY(0); transition: opacity 1s ease, transform 1s ease; }
   .reveal.visible { opacity: 1; transform: translateY(0); }
 
   @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
