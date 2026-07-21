@@ -36,6 +36,8 @@ function CheckoutContent() {
   const [error, setError] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
   const [previewMode, setPreviewMode] = useState<'mobile' | 'desktop'>('desktop');
+  const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   // Get template config based on template name
   const templateConfig = template ? (TEMPLATE_CONFIGS[template.name] || DEFAULT_TEMPLATE_CONFIG) : DEFAULT_TEMPLATE_CONFIG;
@@ -44,6 +46,9 @@ function CheckoutContent() {
     setMounted(true);
     const id = params?.id as string;
     if (id) fetchTemplate(id);
+    const handleScroll = () => setScrolled(window.scrollY > 60);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, [params?.id]);
 
   const fetchTemplate = async (id: string) => {
@@ -107,18 +112,63 @@ function CheckoutContent() {
 
   return (
     <div style={{ minHeight: '100vh', background: '#0a0807', color: '#f5ecd9', fontFamily: "'Jost', sans-serif", display: 'flex', flexDirection: 'column' }}>
-      {/* Navbar */}
-      <nav style={{ padding: '.75rem 2rem', borderBottom: '1px solid rgba(201,169,97,.1)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '.75rem', cursor: 'pointer' }} onClick={() => router.push('/')}>
-          <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'linear-gradient(135deg,#c9a961,#8a6d2b)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <span style={{ color: '#0a0807', fontWeight: 600, fontSize: '.85rem' }}>E</span>
+      {/* Navbar — same as homepage */}
+      <nav style={{
+        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
+        background: scrolled ? 'rgba(10,8,7,.95)' : 'transparent',
+        backdropFilter: scrolled ? 'blur(12px)' : 'none',
+        borderBottom: scrolled ? '1px solid rgba(201,169,97,.1)' : '1px solid transparent',
+        transition: 'all .3s ease', padding: isMobile ? '.75rem 1rem' : '.85rem 2rem',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '.75rem', cursor: 'pointer', minWidth: 0 }} onClick={() => router.push('/')}>
+          <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'linear-gradient(135deg,#c9a961,#8a6d2b)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <span style={{ color: '#0a0807', fontWeight: 600, fontSize: '1rem' }}>E</span>
           </div>
-          <div>
-            <span style={{ fontFamily: "'Italiana', serif", fontSize: isMobile ? '1.2rem' : '1.4rem', color: '#c9a961', marginRight: '.75rem' }}>Terima Undangan</span>
-            <span style={{ fontSize: isMobile ? '.85rem' : '.95rem', color: 'rgba(245,236,217,.6)', fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic' }}>/ {template.name}</span>
+          <div style={{ minWidth: 0, display: 'flex', alignItems: 'baseline', gap: '.5rem', flexWrap: 'wrap' }}>
+            <span style={{ fontFamily: "'Italiana', serif", fontSize: isMobile ? '1.25rem' : '1.5rem', color: '#c9a961', fontWeight: 600 }}>Terima Undangan</span>
+            {template && <span style={{ fontSize: isMobile ? '.75rem' : '.9rem', color: 'rgba(245,236,217,.5)', fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic' }}>/ {template.name}</span>}
           </div>
         </div>
-        {hasSession && <button onClick={() => router.push('/dashboard')} style={{ background: 'none', border: '1px solid rgba(201,169,97,.3)', color: '#c9a961', padding: '.4rem 1rem', borderRadius: '4px', fontSize: '.8rem', cursor: 'pointer' }}>Dashboard</button>}
+        <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '.5rem' : '1.5rem' }}>
+          {isMobile ? (
+            <>
+              <button onClick={() => setMenuOpen(!menuOpen)}
+                style={{ width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'none', border: 'none', color: '#c9a961', cursor: 'pointer', fontSize: '1.3rem', position: 'relative', zIndex: 110 }}
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                  {menuOpen ? (
+                    <><line x1="6" y1="6" x2="18" y2="18" /><line x1="18" y1="6" x2="6" y2="18" /></>
+                  ) : (
+                    <><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" /></>
+                  )}
+                </svg>
+              </button>
+              {menuOpen && <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,.5)', zIndex: 100 }} onClick={() => setMenuOpen(false)} />}
+              <div style={{ position: 'fixed', top: '64px', right: '1rem', zIndex: 110, background: '#14110d', border: '1px solid rgba(201,169,97,.15)', borderRadius: '8px', padding: '.5rem', minWidth: '180px', display: menuOpen ? 'flex' : 'none', flexDirection: 'column', gap: '.35rem', boxShadow: '0 16px 48px rgba(0,0,0,.5)' }}>
+                <button onClick={() => { router.push('/login'); setMenuOpen(false); }} style={{ padding: '.65rem 1rem', background: 'transparent', border: 'none', color: 'rgba(245,236,217,.7)', borderRadius: '4px', fontSize: '.85rem', cursor: 'pointer', textAlign: 'left' }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(201,169,97,.1)'} onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                >Login</button>
+                <button onClick={() => { router.push('/signup'); setMenuOpen(false); }} style={{ padding: '.65rem 1rem', background: 'linear-gradient(135deg,#c9a961,#b8942e)', border: 'none', color: '#0a0807', borderRadius: '4px', fontSize: '.85rem', fontWeight: 500, cursor: 'pointer', textAlign: 'left' }}
+                  onMouseEnter={(e) => e.currentTarget.style.opacity = '.9'} onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
+                >Sign Up</button>
+              </div>
+            </>
+          ) : (
+            <>
+              <button onClick={() => router.push('/login')}
+                style={{ padding: '.5rem 1.25rem', background: 'transparent', border: '1px solid rgba(201,169,97,.4)', color: '#c9a961', borderRadius: '4px', fontSize: '.8rem', cursor: 'pointer', transition: 'all .2s', letterSpacing: '.1em' }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(201,169,97,.1)'; e.currentTarget.style.borderColor = '#c9a961'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'rgba(201,169,97,.4)'; }}
+              >Login</button>
+              <button onClick={() => router.push('/signup')}
+                style={{ padding: '.5rem 1.25rem', background: 'linear-gradient(135deg,#c9a961,#b8942e)', border: 'none', color: '#0a0807', borderRadius: '4px', fontSize: '.8rem', fontWeight: 500, cursor: 'pointer', transition: 'all .2s', letterSpacing: '.1em' }}
+                onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 4px 15px rgba(201,169,97,.3)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}
+              >Sign Up</button>
+            </>
+          )}
+        </div>
       </nav>
 
       {status === 'failed' && (
@@ -132,7 +182,7 @@ function CheckoutContent() {
         flex: 1, display: 'flex',
         flexDirection: isMobile ? 'column' : 'row',
         overflow: isMobile ? 'auto' : 'hidden',
-        minHeight: 0,
+        minHeight: 0, paddingTop: isMobile ? '60px' : '72px',
       }}>
         {/* Desktop: side-by-side preview + sidebar. Mobile: stacked */}
         {!isMobile && (
@@ -176,11 +226,12 @@ function CheckoutContent() {
             </div>
 
             {/* Preview area — single iframe with smooth CSS transitions */}
-            <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 0, overflow: 'auto', padding: '1rem 0' }}>
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, overflow: 'auto', padding: '1rem 0' }}>
               <div style={{
-                display: 'flex', flexDirection: 'column',
+                display: 'flex', flexDirection: 'column', flex: 1,
                 width: previewMode === 'mobile' ? '340px' : '100%',
                 maxWidth: previewMode === 'mobile' ? '340px' : '1100px',
+                alignSelf: previewMode === 'mobile' ? 'center' : 'stretch',
                 background: '#1c1c1e',
                 borderRadius: previewMode === 'mobile' ? '30px' : '10px',
                 overflow: 'hidden',
@@ -228,9 +279,8 @@ function CheckoutContent() {
                 <iframe ref={desktopRef} srcDoc={templateConfig.html} onLoad={handleIframeLoad}
                   style={{
                     width: '100%',
-                    height: previewMode === 'mobile' ? '620px' : '70vh',
-                    minHeight: previewMode === 'mobile' ? '620px' : '500px',
-                    maxHeight: previewMode === 'mobile' ? '620px' : '800px',
+                    flex: 1,
+                    minHeight: previewMode === 'mobile' ? '620px' : '400px',
                     border: previewMode === 'mobile' ? '3px solid #2a2a2a' : 'none',
                     borderRadius: previewMode === 'mobile' ? '0 0 28px 28px' : '0',
                     background: '#0a0807',
