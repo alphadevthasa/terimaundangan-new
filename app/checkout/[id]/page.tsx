@@ -60,9 +60,12 @@ function CheckoutContent() {
   const [customerName, setCustomerName] = useState('');
   const [customerEmail, setCustomerEmail] = useState('');
   const [formErrors, setFormErrors] = useState<{name?: string; email?: string}>({});
+  const [hasSession, setHasSession] = useState(false);
   const nameRef = useRef<HTMLInputElement>(null);
 
   const templateId = params?.id as string;
+
+  useEffect(() => { setHasSession(!!localStorage.getItem('session')); }, []);
   const price = template ? PRICE_MAP[template.price] ?? 150000 : 0;
   const fee = Math.round(price * 0.11);
   const total = price + fee;
@@ -157,7 +160,7 @@ function CheckoutContent() {
             <span style={{ fontSize: isMobile ? '.75rem' : '.85rem', color: 'rgba(245,236,217,.6)', fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic' }}>Checkout</span>
           </div>
         </div>
-        <button onClick={() => router.push('/dashboard')} style={{ background: 'none', border: '1px solid rgba(201,169,97,.3)', color: '#c9a961', padding: '.4rem .9rem', borderRadius: '4px', fontSize: '.8rem', cursor: 'pointer', flexShrink: 0 }}>Dashboard</button>
+        {hasSession && <button onClick={() => router.push('/dashboard')} style={{ background: 'none', border: '1px solid rgba(201,169,97,.3)', color: '#c9a961', padding: '.4rem .9rem', borderRadius: '4px', fontSize: '.8rem', cursor: 'pointer', flexShrink: 0 }}>Dashboard</button>}
       </nav>
 
       <div style={{ flex: isMobile ? 'none' : 1, display: 'flex', flexDirection: isMobile ? 'column' : 'row', minHeight: 0 }}>

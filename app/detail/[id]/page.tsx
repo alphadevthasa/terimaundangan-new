@@ -25,13 +25,17 @@ function CheckoutContent() {
   const status = searchParams.get('status');
   const mobileRef = useRef<HTMLIFrameElement>(null);
   const desktopRef = useRef<HTMLIFrameElement>(null);
+  const [hasSession, setHasSession] = useState(false);
 
   const isMobile = useMediaQuery('(max-width: 1023px)');
+
+  useEffect(() => { setHasSession(!!localStorage.getItem('session')); }, []);
 
   const [template, setTemplate] = useState<StaticTemplate | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
+  const [previewMode, setPreviewMode] = useState<'mobile' | 'desktop'>('desktop');
 
   // Get template config based on template name
   const templateConfig = template ? (TEMPLATE_CONFIGS[template.name] || DEFAULT_TEMPLATE_CONFIG) : DEFAULT_TEMPLATE_CONFIG;
@@ -114,14 +118,14 @@ function CheckoutContent() {
             <span style={{ fontSize: '.85rem', color: 'rgba(245,236,217,.6)', fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic' }}>/ {template.name}</span>
           </div>
         </div>
-        <button onClick={() => router.push('/dashboard')} style={{ background: 'none', border: '1px solid rgba(201,169,97,.3)', color: '#c9a961', padding: '.4rem 1rem', borderRadius: '4px', fontSize: '.8rem', cursor: 'pointer' }}>Dashboard</button>
+        {hasSession && <button onClick={() => router.push('/dashboard')} style={{ background: 'none', border: '1px solid rgba(201,169,97,.3)', color: '#c9a961', padding: '.4rem 1rem', borderRadius: '4px', fontSize: '.8rem', cursor: 'pointer' }}>Dashboard</button>}
       </nav>
 
       {status === 'failed' && (
         <div style={{ padding: '.75rem 2rem', background: 'rgba(239,68,68,.1)', borderBottom: '1px solid rgba(239,68,68,.2)', color: '#ef4444', fontSize: '.85rem', textAlign: 'center' }}>
           <i className="fas fa-triangle-exclamation" style={{marginRight:'.35rem'}}></i>Payment was cancelled or failed. Please try again.
-        </div>
-      )}
+          </div>
+        )}
 
       {/* Main: Preview + Checkout */}
       <div style={{
@@ -133,58 +137,123 @@ function CheckoutContent() {
         {/* Desktop: side-by-side preview + sidebar. Mobile: stacked */}
         {!isMobile && (
           <div style={{
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'row',
-            gap: '1.5rem',
-            padding: '1.5rem',
-            overflow: 'auto',
+            flex: 1, display: 'flex', flexDirection: 'column',
+            padding: '1.5rem', minHeight: 0, overflow: 'hidden',
             background: 'radial-gradient(ellipse at center, #1a1611 0%, #0a0807 100%)',
-            alignItems: 'flex-start',
-            justifyContent: 'flex-start',
-            minHeight: 0,
           }}>
-            {/* Mobile Preview — phone mockup */}
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '.5rem' }}>
-              <span style={{ fontSize: '.65rem', color: 'rgba(245,236,217,.35)', textTransform: 'uppercase', letterSpacing: '.15em' }}><i className="fas fa-mobile-screen-button" style={{marginRight:'.25rem'}}></i> Mobile</span>
-              <div style={{
-                width: '330px', height: '620px', background: '#0a0807',
-                border: '3px solid #2a2a2a', borderRadius: '24px', overflow: 'hidden',
-                position: 'relative', boxShadow: '0 0 0 1px #1a1a1a, 0 20px 60px rgba(0,0,0,.6)',
-              }}>
-                <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: '100px', height: '16px', background: '#2a2a2a', borderRadius: '0 0 10px 10px', zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
-                  <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#1a1a1a' }} />
-                  <div style={{ width: '30px', height: '3px', borderRadius: '2px', background: '#1a1a1a' }} />
-                </div>
-                <iframe ref={mobileRef} srcDoc={templateConfig.html} onLoad={handleIframeLoad} style={{ width: '100%', height: '100%', border: 'none', background: '#0a0807' }} title="Mobile Preview" />
-              </div>
+            {/* Tab switcher */}
+            <div style={{ display: 'flex', gap: '.35rem', marginBottom: '1rem', flexShrink: 0 }}>
+              <button onClick={() => setPreviewMode('mobile')}
+                style={{
+                  padding: '.4rem 1rem', borderRadius: '6px', fontSize: '.75rem',
+                  fontFamily: "'Jost', sans-serif", cursor: 'pointer', transition: 'all .2s',
+                  background: previewMode === 'mobile' ? '#c9a961' : 'rgba(201,169,97,.08)',
+                  border: '1px solid rgba(201,169,97,.15)', color: previewMode === 'mobile' ? '#0a0807' : 'rgba(245,236,217,.5)',
+                  fontWeight: previewMode === 'mobile' ? 500 : 400, letterSpacing: '.03em',
+                  display: 'flex', alignItems: 'center', gap: '.4rem',
+                }}
+                onMouseEnter={(e) => { if (previewMode !== 'mobile') { e.currentTarget.style.background = 'rgba(201,169,97,.15)'; e.currentTarget.style.color = '#c9a961'; } }}
+                onMouseLeave={(e) => { if (previewMode !== 'mobile') { e.currentTarget.style.background = 'rgba(201,169,97,.08)'; e.currentTarget.style.color = 'rgba(245,236,217,.5)'; } }}
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><rect x="2" y="3" width="20" height="18" rx="3" stroke="currentColor" strokeWidth="2"/><line x1="10" y1="18" x2="14" y2="18" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
+                Mobile
+              </button>
+              <button onClick={() => setPreviewMode('desktop')}
+                style={{
+                  padding: '.4rem 1rem', borderRadius: '6px', fontSize: '.75rem',
+                  fontFamily: "'Jost', sans-serif", cursor: 'pointer', transition: 'all .2s',
+                  background: previewMode === 'desktop' ? '#c9a961' : 'rgba(201,169,97,.08)',
+                  border: '1px solid rgba(201,169,97,.15)', color: previewMode === 'desktop' ? '#0a0807' : 'rgba(245,236,217,.5)',
+                  fontWeight: previewMode === 'desktop' ? 500 : 400, letterSpacing: '.03em',
+                  display: 'flex', alignItems: 'center', gap: '.4rem',
+                }}
+                onMouseEnter={(e) => { if (previewMode !== 'desktop') { e.currentTarget.style.background = 'rgba(201,169,97,.15)'; e.currentTarget.style.color = '#c9a961'; } }}
+                onMouseLeave={(e) => { if (previewMode !== 'desktop') { e.currentTarget.style.background = 'rgba(201,169,97,.08)'; e.currentTarget.style.color = 'rgba(245,236,217,.5)'; } }}
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><rect x="2" y="3" width="20" height="14" rx="2" stroke="currentColor" strokeWidth="2"/><line x1="8" y1="20" x2="16" y2="20" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/><line x1="12" y1="17" x2="12" y2="20" stroke="currentColor" strokeWidth="2"/></svg>
+                Desktop
+              </button>
             </div>
 
-            {/* Desktop Preview */}
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '.5rem', flex: 1 }}>
-              <span style={{ fontSize: '.65rem', color: 'rgba(245,236,217,.35)', textTransform: 'uppercase', letterSpacing: '.15em' }}><i className="fas fa-desktop" style={{marginRight:'.25rem'}}></i> Desktop</span>
-              <div style={{
-                width: '100%', height: '620px', background: '#0a0807',
-                border: '1px solid rgba(201,169,97,.15)', borderRadius: '8px', overflow: 'hidden',
-                boxShadow: '0 10px 40px rgba(0,0,0,.4)',
-              }}>
-                <iframe ref={desktopRef} srcDoc={templateConfig.html} onLoad={handleIframeLoad} style={{ width: '100%', height: '100%', border: 'none', background: '#0a0807' }} title="Desktop Preview" />
-              </div>
+            {/* Preview area */}
+            <div style={{ flex: 1, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', minHeight: 0, overflow: 'auto', padding: '1rem 0' }}>
+              {previewMode === 'mobile' ? (
+                /* Mobile phone mockup */
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '.5rem', flexShrink: 0 }}>
+                  <div style={{
+                    width: '330px', height: '620px', background: '#0a0807',
+                    border: '3px solid #2a2a2a', borderRadius: '24px', overflow: 'hidden',
+                    position: 'relative', boxShadow: '0 0 0 1px #1a1a1a, 0 20px 60px rgba(0,0,0,.6)',
+                  }}>
+                    <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: '100px', height: '16px', background: '#2a2a2a', borderRadius: '0 0 10px 10px', zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
+                      <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#1a1a1a' }} />
+                      <div style={{ width: '30px', height: '3px', borderRadius: '2px', background: '#1a1a1a' }} />
+                    </div>
+                    <iframe ref={mobileRef} srcDoc={templateConfig.html} onLoad={handleIframeLoad} style={{ width: '100%', height: '100%', border: 'none', background: '#0a0807' }} title="Mobile Preview" />
+                  </div>
+                </div>
+              ) : (
+                /* Desktop macOS window mockup */
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '.5rem', width: '100%', maxWidth: '1100px' }}>
+                  <div style={{
+                    width: '100%', background: '#1c1c1e', borderRadius: '10px', overflow: 'hidden',
+                    boxShadow: '0 0 0 1px rgba(255,255,255,.06), 0 20px 60px rgba(0,0,0,.5)',
+                  }}>
+                    {/* macOS title bar */}
+                    <div style={{
+                      padding: '.6rem 1rem', background: '#2c2c2e', borderBottom: '1px solid rgba(255,255,255,.06)',
+                      display: 'flex', alignItems: 'center', gap: '.6rem',
+                    }}>
+                      <div style={{ display: 'flex', gap: '6px' }}>
+                        <div style={{ width: '11px', height: '11px', borderRadius: '50%', background: '#ff5f56' }} />
+                        <div style={{ width: '11px', height: '11px', borderRadius: '50%', background: '#ffbd2e' }} />
+                        <div style={{ width: '11px', height: '11px', borderRadius: '50%', background: '#28c840' }} />
+                      </div>
+                      <div style={{ flex: 1, textAlign: 'center', fontSize: '.72rem', color: 'rgba(255,255,255,.35)', fontFamily: "'-apple-system', 'Helvetica Neue', sans-serif", letterSpacing: '.02em', paddingRight: '42px' }}>
+                        {template.name} — Terima Undangan
+                      </div>
+                    </div>
+                    {/* Desktop iframe */}
+                    <div style={{ height: '70vh', minHeight: '500px', maxHeight: '800px', background: '#0a0807' }}>
+                      <iframe ref={desktopRef} srcDoc={templateConfig.html} onLoad={handleIframeLoad} style={{ width: '100%', height: '100%', border: 'none', background: '#0a0807' }} title="Desktop Preview" />
+                    </div>
+                  </div>
+                </div>
+            )}
             </div>
-          </div>
+            </div>
         )}
 
-        {/* Mobile: invitation preview without phone frame */}
+        {/* Mobile: stacked with tabs */}
         {isMobile && (
           <div style={{ padding: '1rem 1rem 0', background: 'radial-gradient(ellipse at center, #1a1611 0%, #0a0807 100%)' }}>
-            <div style={{
-              width: '100%', height: '480px', background: '#0a0807',
-              border: '1px solid rgba(201,169,97,.15)', borderRadius: '8px', overflow: 'hidden',
-              boxShadow: '0 10px 40px rgba(0,0,0,.4)',
-            }}>
-              <iframe ref={mobileRef} srcDoc={templateConfig.html} onLoad={handleIframeLoad} style={{ width: '100%', height: '100%', border: 'none', background: '#0a0807' }} title="Mobile Preview" />
+            {/* Tab switcher */}
+            <div style={{ display: 'flex', gap: '.35rem', marginBottom: '.75rem' }}>
+              <button onClick={() => setPreviewMode('mobile')}
+                style={{ padding: '.35rem .85rem', borderRadius: '6px', fontSize: '.7rem', fontFamily: "'Jost', sans-serif", cursor: 'pointer', transition: 'all .2s', background: previewMode === 'mobile' ? '#c9a961' : 'rgba(201,169,97,.08)', border: '1px solid rgba(201,169,97,.15)', color: previewMode === 'mobile' ? '#0a0807' : 'rgba(245,236,217,.5)', fontWeight: previewMode === 'mobile' ? 500 : 400, display: 'flex', alignItems: 'center', gap: '.35rem' }}>
+                📱 Mobile
+              </button>
+              <button onClick={() => setPreviewMode('desktop')}
+                style={{ padding: '.35rem .85rem', borderRadius: '6px', fontSize: '.7rem', fontFamily: "'Jost', sans-serif", cursor: 'pointer', transition: 'all .2s', background: previewMode === 'desktop' ? '#c9a961' : 'rgba(201,169,97,.08)', border: '1px solid rgba(201,169,97,.15)', color: previewMode === 'desktop' ? '#0a0807' : 'rgba(245,236,217,.5)', fontWeight: previewMode === 'desktop' ? 500 : 400, display: 'flex', alignItems: 'center', gap: '.35rem' }}>
+                💻 Desktop
+              </button>
             </div>
-          </div>
+            {previewMode === 'mobile' ? (
+              <div style={{ width: '100%', height: '480px', background: '#0a0807', border: '1px solid rgba(201,169,97,.15)', borderRadius: '8px', overflow: 'hidden', boxShadow: '0 10px 40px rgba(0,0,0,.4)' }}>
+                <iframe ref={mobileRef} srcDoc={templateConfig.html} onLoad={handleIframeLoad} style={{ width: '100%', height: '100%', border: 'none', background: '#0a0807' }} title="Mobile Preview" />
+              </div>
+            ) : (
+              <div style={{ width: '100%', background: '#1c1c1e', borderRadius: '8px', overflow: 'hidden', boxShadow: '0 0 0 1px rgba(255,255,255,.06), 0 10px 40px rgba(0,0,0,.5)' }}>
+                <div style={{ padding: '.5rem .85rem', background: '#2c2c2e', borderBottom: '1px solid rgba(255,255,255,.06)', display: 'flex', alignItems: 'center', gap: '.5rem' }}>
+                  <div style={{ display: 'flex', gap: '5px' }}><div style={{ width: '9px', height: '9px', borderRadius: '50%', background: '#ff5f56' }} /><div style={{ width: '9px', height: '9px', borderRadius: '50%', background: '#ffbd2e' }} /><div style={{ width: '9px', height: '9px', borderRadius: '50%', background: '#28c840' }} /></div>
+                  <div style={{ flex: 1, textAlign: 'center', fontSize: '.65rem', color: 'rgba(255,255,255,.3)' }}>{template.name}</div>
+                </div>
+                <div style={{ height: '400px', background: '#0a0807' }}>
+                  <iframe ref={desktopRef} srcDoc={templateConfig.html} onLoad={handleIframeLoad} style={{ width: '100%', height: '100%', border: 'none', background: '#0a0807' }} title="Desktop Preview" />
+                </div>
+              </div>
+            )}
+            </div>
         )}
 
         {/* Sidebar — always visible */}

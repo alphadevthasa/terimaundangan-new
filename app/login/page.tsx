@@ -68,7 +68,7 @@ export default function AuthPage() {
         </div>
 
         {mode === 'login' ? (
-          <form onSubmit={(e) => { e.preventDefault(); router.push('/dashboard'); }}>
+          <form onSubmit={(e) => { e.preventDefault(); localStorage.setItem('session', 'true'); router.push('/dashboard'); }}>
             <div style={{ marginBottom: '1.25rem' }}>
               <label style={{ display: 'block', fontSize: '0.8rem', color: 'rgba(245, 236, 217, 0.6)', marginBottom: '0.5rem' }}>Email</label>
               <input type="email" required
@@ -101,7 +101,7 @@ export default function AuthPage() {
             >Login</button>
           </form>
         ) : (
-          <form onSubmit={(e) => { e.preventDefault(); router.push('/dashboard'); }}>
+          <form onSubmit={(e) => { e.preventDefault(); localStorage.setItem('session', 'true'); router.push('/dashboard'); }}>
             <div style={{ marginBottom: '1.25rem' }}>
               <label style={{ display: 'block', fontSize: '0.8rem', color: 'rgba(245, 236, 217, 0.6)', marginBottom: '0.5rem' }}>Name</label>
               <input type="text" required

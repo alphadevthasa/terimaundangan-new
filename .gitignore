@@ -4,8 +4,7 @@ node_modules/
 *.db-journal
 .env
 .env.local
-/tmp/
-public/checkout_*.png
-public/landing_*.png
+tmp/
+public/*.png
 public/.tmp/
-.tmp/
+.DS_Store

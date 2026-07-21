@@ -10,6 +10,9 @@ function SuccessContent() {
   const templateId = searchParams.get('templateId');
   const [status, setStatus] = useState<'installing' | 'success' | 'error'>('installing');
   const [countdown, setCountdown] = useState(5);
+  const [hasSession, setHasSession] = useState(false);
+
+  useEffect(() => { setHasSession(!!localStorage.getItem('session')); }, []);
 
   useEffect(() => {
     if (!templateId) {
@@ -115,10 +118,10 @@ function SuccessContent() {
             style={{ padding: '0.75rem 1.5rem', background: 'transparent', border: '1px solid #c9a961', color: '#c9a961', borderRadius: '4px', cursor: 'pointer', marginRight: '0.5rem' }}>
             ← Back to Home
           </button>
-          <button onClick={() => router.push('/dashboard')}
+          {hasSession && <button onClick={() => router.push('/dashboard')}
             style={{ padding: '0.75rem 1.5rem', background: 'linear-gradient(135deg, #c9a961, #b8942e)', border: 'none', color: '#0a0807', borderRadius: '4px', cursor: 'pointer', fontWeight: 500 }}>
             Go to Dashboard
-          </button>
+          </button>}
         </>
       )}
 
