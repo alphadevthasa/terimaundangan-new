@@ -156,46 +156,46 @@ export default function HomePage() {
         overflow: 'hidden',
       }}>
         {[
-          { size: 400, left: '5%', bottom: '-10%', delay: '0s', dur: '14s', opacity: .06 },
-          { size: 280, left: '20%', bottom: '-8%', delay: '2s', dur: '11s', opacity: .08 },
-          { size: 180, right: '10%', bottom: '-5%', delay: '4s', dur: '9s', opacity: .1 },
-          { size: 120, right: '30%', bottom: '-3%', delay: '1s', dur: '7s', opacity: .12 },
-          { size: 250, left: '60%', bottom: '-15%', delay: '3s', dur: '12s', opacity: .07 },
-          { size: 90,  left: '40%', bottom: '-20%', delay: '5s', dur: '6s', opacity: .15 },
-          { size: 60,  right: '20%', bottom: '-10%', delay: '1.5s', dur: '5s', opacity: .2 },
-          { size: 150, left: '75%', bottom: '-12%', delay: '6s', dur: '10s', opacity: .09 },
+          { size: 400, left: '5%', top: '60%', delay: '0s', dur: '12s', variant: 1 },
+          { size: 280, left: '20%', top: '50%', delay: '2.5s', dur: '10s', variant: 2 },
+          { size: 180, right: '10%', top: '55%', delay: '5s', dur: '9s', variant: 3 },
+          { size: 120, right: '30%', top: '45%', delay: '1.5s', dur: '7s', variant: 4 },
+          { size: 250, left: '60%', top: '65%', delay: '3.5s', dur: '11s', variant: 1 },
+          { size: 90,  left: '40%', top: '40%', delay: '6s', dur: '6s', variant: 2 },
+          { size: 60,  right: '20%', top: '35%', delay: '2s', dur: '5s', variant: 3 },
+          { size: 150, left: '75%', top: '55%', delay: '4s', dur: '10s', variant: 4 },
         ].map((b, i) => (
           <div key={i} style={{
             position: 'absolute',
             width: b.size, height: b.size,
-            left: b.left, right: b.right, bottom: b.bottom,
+            left: b.left, right: b.right, top: b.top,
             borderRadius: '50%',
             border: '1px solid rgba(201,169,97,.15)',
-            background: `radial-gradient(circle at 30% 30%, rgba(201,169,97,${b.opacity * .3}), rgba(201,169,97,${b.opacity * .05}) 60%, transparent)`,
-            boxShadow: `inset 0 -20px 40px rgba(201,169,97,${b.opacity * .1}), 0 0 60px rgba(201,169,97,${b.opacity * .05})`,
-            animation: `bubble ${b.dur} ease-in-out infinite ${b.delay}`,
+            background: `radial-gradient(circle at 30% 30%, rgba(201,169,97,.04), rgba(201,169,97,.008) 60%, transparent)`,
+            boxShadow: `inset 0 -20px 40px rgba(201,169,97,.02), 0 0 60px rgba(201,169,97,.01)`,
+            animation: `surface${b.variant} ${b.dur} ease-out infinite ${b.delay}`,
             pointerEvents: 'none',
           }} />
         ))}
 
-        <div style={{ display: 'inline-block', padding: '.35rem 1rem', borderRadius: '100px', background: 'rgba(201,169,97,.1)', border: '1px solid rgba(201,169,97,.2)', fontSize: '.75rem', color: '#c9a961', textTransform: 'uppercase', letterSpacing: '.2em', marginBottom: '2rem' }}>
+        <div style={{ display: 'inline-block', padding: '.35rem 1rem', borderRadius: '100px', background: 'rgba(201,169,97,.1)', border: '1px solid rgba(201,169,97,.2)', fontSize: isMobile ? '.75rem' : '.8rem', color: '#c9a961', textTransform: 'uppercase', letterSpacing: '.2em', marginBottom: '2rem' }}>
           Premium Wedding Invitations
         </div>
 
-        <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 'clamp(3rem,8vw,6rem)', fontStyle: 'italic', color: '#f5ecd9', lineHeight: 1.1, marginBottom: '1.5rem', maxWidth: '800px' }}>
+        <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 'clamp(3rem,8vw,6rem)', fontStyle: 'italic', color: '#f5ecd9', lineHeight: 1.1, marginBottom: '1.5rem', maxWidth: '900px' }}>
           Create Your Perfect{' '}
           <span style={{ background: 'linear-gradient(135deg,#c9a961,#dfc47a,#c9a961)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
             Wedding Invitation
           </span>
         </h1>
 
-        <p style={{ fontSize: '1.1rem', color: 'rgba(245,236,217,.6)', maxWidth: '600px', lineHeight: 1.7, marginBottom: '2.5rem' }}>
+        <p style={{ fontSize: isMobile ? '1.1rem' : '1.25rem', color: isMobile ? 'rgba(245,236,217,.6)' : 'rgba(245,236,217,.7)', maxWidth: '680px', lineHeight: 1.8, marginBottom: '2.5rem' }}>
           Choose from our collection of elegant templates. Customize every detail, share with guests, and manage everything from one dashboard.
         </p>
 
         <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
           <button onClick={() => document.getElementById('templates')?.scrollIntoView({ behavior: 'smooth' })}
-            style={{ padding: '.85rem 2rem', background: 'linear-gradient(135deg,#c9a961,#b8942e)', border: 'none', color: '#0a0807', borderRadius: '4px', fontSize: '.9rem', fontWeight: 500, cursor: 'pointer', transition: 'all .2s', letterSpacing: '.05em' }}
+            style={{ padding: '.85rem 2rem', background: 'linear-gradient(135deg,#c9a961,#b8942e)', border: 'none', color: '#0a0807', borderRadius: '4px', fontSize: isMobile ? '.9rem' : '1rem', fontWeight: 500, cursor: 'pointer', transition: 'all .2s', letterSpacing: '.05em' }}
             onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 30px rgba(201,169,97,.3)'; }}
             onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}
           >Browse Templates ↓</button>
@@ -209,13 +209,13 @@ export default function HomePage() {
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           {/* Header */}
           <div style={{ marginBottom: '2rem' }}>
-            <div style={{ display: 'inline-block', padding: '.25rem .75rem', borderRadius: '100px', background: 'rgba(201,169,97,.1)', border: '1px solid rgba(201,169,97,.2)', fontSize: '.75rem', color: '#c9a961', textTransform: 'uppercase', letterSpacing: '.1em', marginBottom: '.75rem' }}>
+            <div style={{ display: 'inline-block', padding: '.25rem .75rem', borderRadius: '100px', background: 'rgba(201,169,97,.1)', border: '1px solid rgba(201,169,97,.2)', fontSize: isMobile ? '.75rem' : '.8rem', color: '#c9a961', textTransform: 'uppercase', letterSpacing: '.1em', marginBottom: '.75rem' }}>
               {isLoading ? '...' : templates.length} Template{templates.length !== 1 ? 's' : ''} Available
             </div>
-            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 'clamp(1.5rem,3vw,2rem)', fontWeight: 400, color: '#f5ecd9', fontStyle: 'italic', margin: '0 0 .5rem' }}>
+            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: isMobile ? 'clamp(1.5rem,3vw,2rem)' : 'clamp(1.5rem,3vw,2.2rem)', fontWeight: 400, color: '#f5ecd9', fontStyle: 'italic', margin: '0 0 .5rem' }}>
               Choose Your Template
             </h2>
-            <p style={{ fontSize: '.85rem', color: 'rgba(245,236,217,.4)', margin: 0 }}>
+            <p style={{ fontSize: isMobile ? '.85rem' : '.9rem', color: isMobile ? 'rgba(245,236,217,.4)' : 'rgba(245,236,217,.55)', margin: 0 }}>
               Select a template to begin customizing your invitation
             </p>
           </div>
@@ -290,7 +290,7 @@ export default function HomePage() {
                         padding: '.25rem .7rem', borderRadius: '100px',
                         background: 'rgba(10,8,7,.7)', backdropFilter: 'blur(8px)',
                         border: '1px solid rgba(201,169,97,.2)', color: '#c9a961',
-                        fontSize: '.7rem', fontWeight: 500, letterSpacing: '.05em',
+                        fontSize: isMobile ? '.7rem' : '.75rem', fontWeight: 500, letterSpacing: '.05em',
                       }}>
                         Rp 150.000
                       </div>
@@ -310,15 +310,15 @@ export default function HomePage() {
                     {/* Info */}
                     <div style={{ padding: '1.25rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '.5rem', marginBottom: '.35rem' }}>
-                        <span style={{ fontSize: '.7rem', textTransform: 'uppercase', letterSpacing: '.08em', color: 'rgba(245,236,217,.35)', fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic' }}>
+                        <span style={{ fontSize: isMobile ? '.7rem' : '.75rem', textTransform: 'uppercase', letterSpacing: '.08em', color: 'rgba(245,236,217,.35)', fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic' }}>
                           {template.type}
                         </span>
                       </div>
-                      <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.25rem', color: '#c9a961', margin: '0 0 .35rem', fontStyle: 'italic', lineHeight: 1.2 }}>
+                      <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: isMobile ? '1.25rem' : '1.35rem', color: '#c9a961', margin: '0 0 .35rem', fontStyle: 'italic', lineHeight: 1.2 }}>
                         {template.name}
                       </h3>
                       <p style={{
-                        fontSize: '.8rem', color: 'rgba(245,236,217,.55)',
+                        fontSize: isMobile ? '.8rem' : '.85rem', color: isMobile ? 'rgba(245,236,217,.55)' : 'rgba(245,236,217,.65)',
                         lineHeight: 1.5, margin: '0 0 1rem', flex: 1,
                         display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
                       }}>
@@ -327,10 +327,10 @@ export default function HomePage() {
 
                       <button
                         style={{
-                          width: '100%', padding: '.6rem', marginTop: 'auto',
+                          width: '100%', padding: isMobile ? '.6rem' : '.7rem', marginTop: 'auto',
                           background: 'linear-gradient(135deg,#c9a961,#b8942e)',
                           border: 'none', color: '#0a0807', borderRadius: '6px',
-                          fontSize: '.78rem', fontWeight: 500, cursor: 'pointer',
+                          fontSize: isMobile ? '.78rem' : '.85rem', fontWeight: 500, cursor: 'pointer',
                           transition: 'all .2s', letterSpacing: '.03em',
                         }}
                         onClick={(e) => { e.stopPropagation(); router.push(`/detail/${template.id}`); }}
@@ -350,7 +350,7 @@ export default function HomePage() {
 
       {/* Footer */}
       <footer style={{ borderTop: '1px solid rgba(201,169,97,.08)', padding: '2rem', textAlign: 'center' }}>
-        <p style={{ color: 'rgba(245,236,217,.3)', fontSize: '.8rem' }}>
+        <p style={{ color: 'rgba(245,236,217,.3)', fontSize: isMobile ? '.8rem' : '.85rem' }}>
           © 2026 terimaundangan.com
         </p>
       </footer>
@@ -358,7 +358,10 @@ export default function HomePage() {
       <style dangerouslySetInnerHTML={{ __html: `
         @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes bubble { 0%,100% { transform: translateY(0) translateX(0) scale(1); } 25% { transform: translateY(-25vh) translateX(10px) scale(1.04); } 50% { transform: translateY(-45vh) translateX(-8px) scale(.96); } 75% { transform: translateY(-65vh) translateX(15px) scale(1.02); } }
+        @keyframes surface1 { 0% { transform: scale(.15) translateY(80px); opacity: 0; filter: blur(12px); } 25% { transform: scale(.4) translateY(40px) translateX(-20px); opacity: .15; filter: blur(8px); } 50% { transform: scale(.7) translateY(15px) translateX(10px); opacity: .35; filter: blur(4px); } 75% { transform: scale(.9) translateY(5px) translateX(-5px); opacity: .55; filter: blur(1px); } 100% { transform: scale(1) translateY(0) translateX(0); opacity: .65; filter: blur(0); } }
+        @keyframes surface2 { 0% { transform: scale(.15) translateY(80px); opacity: 0; filter: blur(12px); } 25% { transform: scale(.4) translateY(40px) translateX(25px); opacity: .15; filter: blur(8px); } 50% { transform: scale(.7) translateY(15px) translateX(-15px); opacity: .35; filter: blur(4px); } 75% { transform: scale(.9) translateY(5px) translateX(8px); opacity: .55; filter: blur(1px); } 100% { transform: scale(1) translateY(0) translateX(0); opacity: .65; filter: blur(0); } }
+        @keyframes surface3 { 0% { transform: scale(.15) translateY(80px); opacity: 0; filter: blur(12px); } 25% { transform: scale(.4) translateY(35px) translateX(15px); opacity: .15; filter: blur(8px); } 50% { transform: scale(.7) translateY(10px) translateX(-25px); opacity: .35; filter: blur(4px); } 75% { transform: scale(.9) translateY(3px) translateX(12px); opacity: .55; filter: blur(1px); } 100% { transform: scale(1) translateY(0) translateX(0); opacity: .65; filter: blur(0); } }
+        @keyframes surface4 { 0% { transform: scale(.15) translateY(80px); opacity: 0; filter: blur(12px); } 25% { transform: scale(.4) translateY(45px) translateX(-10px); opacity: .15; filter: blur(8px); } 50% { transform: scale(.7) translateY(20px) translateX(20px); opacity: .35; filter: blur(4px); } 75% { transform: scale(.9) translateY(8px) translateX(-12px); opacity: .55; filter: blur(1px); } 100% { transform: scale(1) translateY(0) translateX(0); opacity: .65; filter: blur(0); } }
         @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }

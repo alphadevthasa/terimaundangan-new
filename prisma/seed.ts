@@ -45,6 +45,14 @@ async function main() {
         price: 'Free',
         isPopular: false,
       },
+      {
+        name: 'West Sumatra',
+        description: 'Undangan pernikahan adat Minangkabau dengan nuansa biru gelap dan emas songket. Cocok untuk pernikahan tradisional Minang yang sarat makna.',
+        type: 'wedding',
+        thumbnail: '',
+        price: 'Free',
+        isPopular: false,
+      },
     ],
   });
 
