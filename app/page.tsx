@@ -252,7 +252,7 @@ export default function HomePage() {
                           fontSize: '.78rem', fontWeight: 500, cursor: 'pointer',
                           transition: 'all .2s', letterSpacing: '.03em',
                         }}
-                        onClick={(e) => { e.stopPropagation(); router.push(`/checkout/${template.id}`); }}
+                        onClick={(e) => { e.stopPropagation(); router.push(`/detail/${template.id}`); }}
                         onMouseEnter={(e) => { e.currentTarget.style.opacity = '.9'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
                         onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'translateY(0)'; }}
                       >
