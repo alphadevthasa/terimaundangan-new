@@ -77,16 +77,11 @@ export default function HomePage() {
           }}>
             <span style={{ color: '#0a0807', fontWeight: 600, fontSize: '1rem' }}>E</span>
           </div>
-          <span style={{ fontFamily: "'Italiana', serif", fontSize: isMobile ? '1.1rem' : '1.4rem', color: '#c9a961' }}>
+          <span style={{ fontFamily: "'Italiana', serif", fontSize: isMobile ? '1.25rem' : '1.5rem', color: '#c9a961', fontWeight: 600 }}>
             Terima Undangan
           </span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '.5rem' : '1.5rem' }}>
-          <a href="#templates" style={{ color: 'rgba(245,236,217,.6)', fontSize: '.85rem', textDecoration: 'none', transition: 'color .2s', letterSpacing: '.05em' }}
-            onMouseEnter={(e) => e.currentTarget.style.color = '#c9a961'}
-            onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(245,236,217,.6)'}
-          >Templates</a>
-
           {isMobile ? (
             <>
               <button onClick={() => setMenuOpen(!menuOpen)}
@@ -160,9 +155,28 @@ export default function HomePage() {
         background: 'radial-gradient(ellipse at 50% 30%, #1a1611 0%, #0a0807 60%)',
         overflow: 'hidden',
       }}>
-        <div style={{ position: 'absolute', top: '15%', left: '10%', width: '300px', height: '300px', border: '1px solid rgba(201,169,97,.05)', borderRadius: '50%', animation: 'float 8s ease-in-out infinite' }} />
-        <div style={{ position: 'absolute', bottom: '20%', right: '15%', width: '200px', height: '200px', border: '1px solid rgba(201,169,97,.08)', borderRadius: '50%', animation: 'float 6s ease-in-out infinite reverse' }} />
-        <div style={{ position: 'absolute', top: '40%', right: '25%', width: '120px', height: '120px', border: '1px solid rgba(201,169,97,.04)', borderRadius: '50%', animation: 'float 10s ease-in-out infinite 2s' }} />
+        {[
+          { size: 400, left: '5%', bottom: '-10%', delay: '0s', dur: '14s', opacity: .06 },
+          { size: 280, left: '20%', bottom: '-8%', delay: '2s', dur: '11s', opacity: .08 },
+          { size: 180, right: '10%', bottom: '-5%', delay: '4s', dur: '9s', opacity: .1 },
+          { size: 120, right: '30%', bottom: '-3%', delay: '1s', dur: '7s', opacity: .12 },
+          { size: 250, left: '60%', bottom: '-15%', delay: '3s', dur: '12s', opacity: .07 },
+          { size: 90,  left: '40%', bottom: '-20%', delay: '5s', dur: '6s', opacity: .15 },
+          { size: 60,  right: '20%', bottom: '-10%', delay: '1.5s', dur: '5s', opacity: .2 },
+          { size: 150, left: '75%', bottom: '-12%', delay: '6s', dur: '10s', opacity: .09 },
+        ].map((b, i) => (
+          <div key={i} style={{
+            position: 'absolute',
+            width: b.size, height: b.size,
+            left: b.left, right: b.right, bottom: b.bottom,
+            borderRadius: '50%',
+            border: '1px solid rgba(201,169,97,.15)',
+            background: `radial-gradient(circle at 30% 30%, rgba(201,169,97,${b.opacity * .3}), rgba(201,169,97,${b.opacity * .05}) 60%, transparent)`,
+            boxShadow: `inset 0 -20px 40px rgba(201,169,97,${b.opacity * .1}), 0 0 60px rgba(201,169,97,${b.opacity * .05})`,
+            animation: `bubble ${b.dur} ease-in-out infinite ${b.delay}`,
+            pointerEvents: 'none',
+          }} />
+        ))}
 
         <div style={{ display: 'inline-block', padding: '.35rem 1rem', borderRadius: '100px', background: 'rgba(201,169,97,.1)', border: '1px solid rgba(201,169,97,.2)', fontSize: '.75rem', color: '#c9a961', textTransform: 'uppercase', letterSpacing: '.2em', marginBottom: '2rem' }}>
           Premium Wedding Invitations
@@ -344,7 +358,7 @@ export default function HomePage() {
       <style dangerouslySetInnerHTML={{ __html: `
         @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes float { 0%,100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-30px) rotate(5deg); } }
+        @keyframes bubble { 0%,100% { transform: translateY(0) translateX(0) scale(1); } 25% { transform: translateY(-25vh) translateX(10px) scale(1.04); } 50% { transform: translateY(-45vh) translateX(-8px) scale(.96); } 75% { transform: translateY(-65vh) translateX(15px) scale(1.02); } }
         @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
