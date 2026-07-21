@@ -160,8 +160,9 @@ function KelolaTemplateContent() {
   const [mounted, setMounted] = useState(false);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
   const [isLoading, setIsLoading] = useState(true);
-  const [staticTemplate, setStaticTemplate] = useState<{ name: string } | null>(null);
+  const [staticTemplate, setStaticTemplate] = useState<{ name: string; html?: string } | null>(null);
   const templateConfig = staticTemplate ? (TEMPLATE_CONFIGS[staticTemplate.name] || DEFAULT_TEMPLATE_CONFIG) : DEFAULT_TEMPLATE_CONFIG;
+  const templateHtml = staticTemplate?.html || templateConfig.html;
 
   // Fetch template from API on mount
   useEffect(() => {
@@ -586,7 +587,7 @@ function KelolaTemplateContent() {
           <iframe
             ref={iframeRef}
             onLoad={handleIframeLoad}
-            srcDoc={templateConfig.html}
+            srcDoc={templateHtml}
             title="Wedding Preview"              style={{
               background: 'var(--bg)',
               transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',

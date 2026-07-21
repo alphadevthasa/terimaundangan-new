@@ -18,8 +18,27 @@ model Template {
   thumbnail   String   @default("")
   price       String   @default("Free")
   isPopular   Boolean  @default(false)
+  html        String   @default("") /// Full HTML content (for admin-managed templates)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  orders      Order[]
+}
+
+/// Purchase / order record
+model Order {
+  id            String    @id @default(uuid())
+  templateId    String?
+  templateName  String    @default("")
+  customerName  String    @default("")
+  customerEmail String    @default("")
+  amount        Int       @default(0)
+  status        String    @default("pending") /// pending | paid | cancelled | refunded
+  paymentMethod String    @default("")
+  invoiceUrl    String    @default("")
+  paidAt        DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  template      Template? @relation(fields: [templateId], references: [id])
 }
 
 /// User's purchased/customized template data

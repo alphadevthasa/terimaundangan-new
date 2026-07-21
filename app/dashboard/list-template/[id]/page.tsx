@@ -12,6 +12,7 @@ interface StaticTemplate {
   thumbnail: string;
   price: string;
   isPopular: boolean;
+  html?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -23,6 +24,7 @@ export default function TemplateDetailPage() {
 
   const [staticTemplate, setStaticTemplate] = useState<StaticTemplate | null>(null);
   const templateConfig = staticTemplate ? (TEMPLATE_CONFIGS[staticTemplate.name] || DEFAULT_TEMPLATE_CONFIG) : DEFAULT_TEMPLATE_CONFIG;
+  const templateHtml = staticTemplate?.html || templateConfig.html;
   const [previewData, setPreviewData] = useState<Record<string, string>>(templateConfig.demoData);
   const [isMobile, setIsMobile] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
@@ -281,7 +283,7 @@ export default function TemplateDetailPage() {
 
           <iframe
             ref={iframeRef}
-            srcDoc={templateConfig.html}
+            srcDoc={templateHtml}
             onLoad={handleIframeLoad}
             style={{
               width: '100%',

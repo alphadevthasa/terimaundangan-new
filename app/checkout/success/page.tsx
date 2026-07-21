@@ -24,6 +24,14 @@ function SuccessContent() {
 
     const install = async () => {
       try {
+        // Mark order as paid (redirect flow)
+        await fetch('/api/admin/orders/mark-paid', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ templateId }),
+        });
+
+        // Install customer
         const res = await fetch('/api/customer/install', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

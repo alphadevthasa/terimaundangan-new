@@ -4,7 +4,7 @@ import { Suspense, useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { TEMPLATE_CONFIGS, DEFAULT_TEMPLATE_CONFIG } from '../../lib/templates-config';
 
-interface StaticTemplate { id: string; name: string; description: string; type: string; thumbnail: string; price: string; isPopular: boolean; }
+interface StaticTemplate { id: string; name: string; description: string; type: string; thumbnail: string; price: string; isPopular: boolean; html?: string; }
 
 function useMediaQuery(query: string) {
   const [matches, setMatches] = useState(false);
@@ -41,6 +41,7 @@ function CheckoutContent() {
 
   // Get template config based on template name
   const templateConfig = template ? (TEMPLATE_CONFIGS[template.name] || DEFAULT_TEMPLATE_CONFIG) : DEFAULT_TEMPLATE_CONFIG;
+  const templateHtml = template?.html || templateConfig.html;
 
   useEffect(() => {
     setMounted(true);
@@ -276,7 +277,7 @@ function CheckoutContent() {
                     </div>
                   </div>
                 )}
-                <iframe ref={desktopRef} srcDoc={templateConfig.html} onLoad={handleIframeLoad}
+                <iframe ref={desktopRef} srcDoc={templateHtml} onLoad={handleIframeLoad}
                   style={{
                     width: '100%',
                     flex: 1,
@@ -324,7 +325,7 @@ function CheckoutContent() {
                   </div>
                 </div>
                 <div style={{ height: '450px', background: '#0a0807' }}>
-                  <iframe ref={desktopRef} srcDoc={templateConfig.html} onLoad={handleIframeLoad} style={{ width: '100%', height: '100%', border: 'none', background: '#0a0807' }} title="Mobile Preview" />
+                  <iframe ref={desktopRef} srcDoc={templateHtml} onLoad={handleIframeLoad} style={{ width: '100%', height: '100%', border: 'none', background: '#0a0807' }} title="Mobile Preview" />
                 </div>
               </div>
             ) : (
@@ -337,7 +338,7 @@ function CheckoutContent() {
                   <div style={{ flex: 1, textAlign: 'center', fontSize: '.65rem', color: 'rgba(255,255,255,.3)' }}>{template.name}</div>
                 </div>
                 <div style={{ height: '360px', background: '#0a0807' }}>
-                  <iframe ref={desktopRef} srcDoc={templateConfig.html} onLoad={handleIframeLoad} style={{ width: '100%', height: '100%', border: 'none', background: '#0a0807' }} title="Desktop Preview" />
+                  <iframe ref={desktopRef} srcDoc={templateHtml} onLoad={handleIframeLoad} style={{ width: '100%', height: '100%', border: 'none', background: '#0a0807' }} title="Desktop Preview" />
                 </div>
               </div>
             )}

@@ -215,8 +215,8 @@ function CheckoutContent() {
       <div style={{ flex: isMobile ? 'none' : 1, display: 'flex', flexDirection: isMobile ? 'column' : 'row', minHeight: 0, paddingTop: isMobile ? '60px' : '72px' }}>
         {/* LEFT: Template info */}
         <div style={{ flex: isMobile ? 'none' : 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-          <div style={{ flex: 1, overflowY: 'auto', maxWidth: '450px', width: '100%', margin: '0 auto' }}>
-            <div style={{ padding: isMobile ? '1rem' : '1.5rem 1rem', display: 'flex', flexDirection: 'column', gap: '.85rem' }}>
+          <div style={{ flex: 1, overflowY: 'auto', minHeight: 0 }}>
+            <div style={{ padding: isMobile ? '1rem' : '1.5rem 2rem', display: 'flex', flexDirection: 'column', gap: '.85rem', maxWidth: '860px' }}>
               <div style={{ background: '#14110d', border: '1px solid rgba(201,169,97,.12)', borderRadius: '12px', overflow: 'hidden' }}>
                 <div style={{ position: 'relative', width: '100%', aspectRatio: '16 / 10', background: '#0a0807' }}>
                   {template.thumbnail ? (

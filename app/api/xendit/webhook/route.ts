@@ -22,6 +22,13 @@ export async function POST(request: NextRequest) {
   const templateId = externalId.replace(/^template-/, '').replace(/-\d+$/, '');
   const customerEmail = body.payer_email || body.customer?.email || '';
   const customerName = body.customer?.given_names || 'Customer';
+  const paymentMethod = body.payment_method || body.payment_channel || '';
+
+  // Update Order record to paid
+  await prisma.order.updateMany({
+    where: { templateId, status: 'pending' },
+    data: { status: 'paid', paidAt: new Date(), paymentMethod },
+  });
 
   const staticTemplate = await prisma.template.findUnique({ where: { id: templateId } });
   if (!staticTemplate) {

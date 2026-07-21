@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
 
 // POST /api/create-invoice - Create a Xendit payment invoice for template purchase
 export async function POST(request: NextRequest) {
@@ -15,6 +16,18 @@ export async function POST(request: NextRequest) {
 
     // If free, skip Xendit and return success immediately
     if (isFree) {
+      // Create order record for free template
+      await prisma.order.create({
+        data: {
+          templateId,
+          templateName,
+          customerName: customerName || '',
+          customerEmail: customerEmail || '',
+          amount: 0,
+          status: 'paid',
+          paidAt: new Date(),
+        },
+      });
       return NextResponse.json({
         success: true,
         isFree: true,
@@ -73,6 +86,20 @@ export async function POST(request: NextRequest) {
     }
 
     const invoice = await xenditResponse.json();
+
+    // Create pending order record
+    await prisma.order.create({
+      data: {
+        templateId,
+        templateName,
+        customerName: customerName || '',
+        customerEmail: customerEmail || '',
+        amount,
+        status: 'pending',
+        invoiceUrl: invoice.invoice_url || '',
+        paymentMethod: '',
+      },
+    });
 
     return NextResponse.json({
       success: true,

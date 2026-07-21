@@ -11,7 +11,7 @@ export async function GET(
     if (!template) return new NextResponse('Template not found', { status: 404 });
 
     const config = TEMPLATE_CONFIGS[template.name] || DEFAULT_TEMPLATE_CONFIG;
-    let html = config.html;
+    let html = template.html || config.html;
     const d = config.demoData;
 
     // Inject demo data into cover placeholders server-side
