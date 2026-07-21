@@ -179,7 +179,7 @@ function CheckoutContent() {
             <div style={{ flex: 1, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', minHeight: 0, overflow: 'auto', padding: '1rem 0' }}>
               {previewMode === 'mobile' ? (
                 /* Mobile phone mockup */
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '.5rem', flexShrink: 0 }}>
+                <div className="preview-fade-in" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '.5rem', flexShrink: 0 }}>
                   <div style={{
                     width: '330px', height: '620px', background: '#0a0807',
                     border: '3px solid #2a2a2a', borderRadius: '24px', overflow: 'hidden',
@@ -194,7 +194,7 @@ function CheckoutContent() {
                 </div>
               ) : (
                 /* Desktop macOS window mockup */
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '.5rem', width: '100%', maxWidth: '1100px' }}>
+                <div className="preview-fade-in" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '.5rem', width: '100%', maxWidth: '1100px' }}>
                   <div style={{
                     width: '100%', background: '#1c1c1e', borderRadius: '10px', overflow: 'hidden',
                     boxShadow: '0 0 0 1px rgba(255,255,255,.06), 0 20px 60px rgba(0,0,0,.5)',
@@ -239,11 +239,11 @@ function CheckoutContent() {
               </button>
             </div>
             {previewMode === 'mobile' ? (
-              <div style={{ width: '100%', height: '480px', background: '#0a0807', border: '1px solid rgba(201,169,97,.15)', borderRadius: '8px', overflow: 'hidden', boxShadow: '0 10px 40px rgba(0,0,0,.4)' }}>
+              <div className="preview-fade-in" style={{ width: '100%', height: '480px', background: '#0a0807', border: '1px solid rgba(201,169,97,.15)', borderRadius: '8px', overflow: 'hidden', boxShadow: '0 10px 40px rgba(0,0,0,.4)' }}>
                 <iframe ref={mobileRef} srcDoc={templateConfig.html} onLoad={handleIframeLoad} style={{ width: '100%', height: '100%', border: 'none', background: '#0a0807' }} title="Mobile Preview" />
               </div>
             ) : (
-              <div style={{ width: '100%', background: '#1c1c1e', borderRadius: '8px', overflow: 'hidden', boxShadow: '0 0 0 1px rgba(255,255,255,.06), 0 10px 40px rgba(0,0,0,.5)' }}>
+              <div className="preview-fade-in" style={{ width: '100%', background: '#1c1c1e', borderRadius: '8px', overflow: 'hidden', boxShadow: '0 0 0 1px rgba(255,255,255,.06), 0 10px 40px rgba(0,0,0,.5)' }}>
                 <div style={{ padding: '.5rem .85rem', background: '#2c2c2e', borderBottom: '1px solid rgba(255,255,255,.06)', display: 'flex', alignItems: 'center', gap: '.5rem' }}>
                   <div style={{ display: 'flex', gap: '5px' }}><div style={{ width: '9px', height: '9px', borderRadius: '50%', background: '#ff5f56' }} /><div style={{ width: '9px', height: '9px', borderRadius: '50%', background: '#ffbd2e' }} /><div style={{ width: '9px', height: '9px', borderRadius: '50%', background: '#28c840' }} /></div>
                   <div style={{ flex: 1, textAlign: 'center', fontSize: '.65rem', color: 'rgba(255,255,255,.3)' }}>{template.name}</div>
@@ -319,7 +319,10 @@ function CheckoutContent() {
 export default function CheckoutPage() {
   return (
     <>
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }
+        .preview-fade-in { animation: fadeScale .45s cubic-bezier(.16,1,.3,1); }
+        @keyframes fadeScale { from { opacity: 0; transform: scale(.96) translateY(8px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+      `}</style>
       <Suspense fallback={
         <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0a0807', color: '#f5ecd9' }}>
           <div style={{ textAlign: 'center' }}>
