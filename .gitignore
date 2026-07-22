@@ -7,5 +7,6 @@ node_modules/
 tmp/
 public/*.png
 public/.tmp/
+public/uploads/
 .DS_Store
 scripts/*.mjs

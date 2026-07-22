@@ -1,10 +1,13 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireAdmin } from '@/lib/auth';
 
 export async function GET(
-  _request: Request,
+  request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  const { response } = await requireAdmin(request);
+  if (response) return response;
   try {
     const template = await prisma.template.findUnique({ where: { id: params.id } });
     if (!template) {
@@ -18,9 +21,11 @@ export async function GET(
 }
 
 export async function PUT(
-  request: Request,
+  request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  const { response } = await requireAdmin(request);
+  if (response) return response;
   try {
     const body = await request.json();
     const template = await prisma.template.update({
@@ -29,24 +34,31 @@ export async function PUT(
         ...(body.name !== undefined && { name: body.name }),
         ...(body.description !== undefined && { description: body.description }),
         ...(body.type !== undefined && { type: body.type }),
+        ...(body.category !== undefined && { category: body.category }),
+        ...(body.theme !== undefined && { theme: body.theme }),
         ...(body.thumbnail !== undefined && { thumbnail: body.thumbnail }),
         ...(body.price !== undefined && { price: body.price }),
         ...(body.isPopular !== undefined && { isPopular: body.isPopular }),
+        ...(body.isPublished !== undefined && { isPublished: body.isPublished }),
         ...(body.html !== undefined && { html: body.html }),
-        ...(body.defaultData !== undefined && { defaultData: body.defaultData }),
+        ...(body.defaultData !== undefined && { defaultData: typeof body.defaultData === 'string' ? body.defaultData : JSON.stringify(body.defaultData) }),
       },
     });
     return NextResponse.json({ template });
   } catch (error) {
     console.error('Error updating template:', error);
+    console.error('Error type:', error instanceof Error ? error.constructor.name : typeof error);
+    console.error('Error message:', error instanceof Error ? error.message : JSON.stringify(error));
     return NextResponse.json({ error: 'Failed to update template' }, { status: 500 });
   }
 }
 
 export async function DELETE(
-  _request: Request,
+  request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  const { response } = await requireAdmin(request);
+  if (response) return response;
   try {
     const orderCount = await prisma.order.count({ where: { templateId: params.id } });
     if (orderCount > 0) {

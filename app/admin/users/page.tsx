@@ -111,7 +111,7 @@ export default function UsersPage() {
                     <td style={td}>{c.name || '-'}</td>
                     <td style={td}>{c.email || '-'}</td>
                     <td style={td}>{c.templateName || '-'}</td>
-                    <td style={td}>{c.dateText || '-'}</td>
+                    <td style={td}>{c.templateData?.[0]?.dateText || '-'}</td>
                     <td style={td}><span style={badge(c.status)}>{c.status}</span></td>
                     <td style={td}>{new Date(c.createdAt).toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' })}</td>
                     <td style={{ ...td, textAlign: 'right' }}>

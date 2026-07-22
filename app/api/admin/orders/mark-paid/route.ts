@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireAdmin } from '@/lib/auth';
 
 export async function POST(request: NextRequest) {
+  const { response } = await requireAdmin(request);
+  if (response) return response;
   try {
     const { templateId, customerEmail } = await request.json();
     if (!templateId) {

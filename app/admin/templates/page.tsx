@@ -90,10 +90,11 @@ export default function AdminTemplates() {
               <tr>
                 <th style={thStyle}></th>
                 <th style={thStyle}>Name</th>
+                <th style={thStyle}>Theme</th>
                 <th style={thStyle}>Type</th>
                 <th style={thStyle}>Price</th>
                 <th style={thStyle}>Popular</th>
-                <th style={thStyle}>HTML</th>
+                <th style={thStyle}>Published</th>
                 <th style={thStyle}>Created</th>
                 <th style={thStyle}>Actions</th>
               </tr>
@@ -105,6 +106,9 @@ export default function AdminTemplates() {
                     {t.thumbnail ? <img src={t.thumbnail} alt="" style={{ width: 40, height: 40, borderRadius: 6, objectFit: 'cover' }} /> : null}
                   </td>
                   <td style={tdStyle}>{t.name}</td>
+                  <td style={tdStyle}>
+                    <span style={{ padding: '.2rem .55rem', borderRadius: '99px', fontSize: '.7rem', display: 'inline-block', background: 'rgba(212,175,55,.1)', color: '#d4af37' }}>{t.theme || '-'}</span>
+                  </td>
                   <td style={tdStyle}>{t.type}</td>
                   <td style={tdStyle}>
                     <span style={{
@@ -115,8 +119,23 @@ export default function AdminTemplates() {
                   <td style={tdStyle}>
                     {t.isPopular ? <span style={{ padding: '.2rem .55rem', borderRadius: '99px', fontSize: '.7rem', display: 'inline-block', background: 'rgba(212,175,55,.15)', color: '#d4af37' }}>Popular</span> : '-'}
                   </td>
-                  <td style={{ ...tdStyle, fontSize: '.72rem', color: 'rgba(253,246,227,.4)', maxWidth: 140, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {t.html?.length ?? 0} chars
+                  <td style={tdStyle}>
+                    <button onClick={async () => {
+                      await fetch(`/api/admin/templates/${t.id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ isPublished: !t.isPublished }),
+                      });
+                      load();
+                    }} style={{
+                      width: '36px', height: '20px', borderRadius: '99px', border: 'none', cursor: 'pointer', position: 'relative', transition: 'background .2s',
+                      background: t.isPublished ? '#22c55e' : 'rgba(253,246,227,.15)',
+                    }}>
+                      <span style={{
+                        position: 'absolute', top: '2px', width: '16px', height: '16px', borderRadius: '50%', background: '#fff', transition: 'left .2s',
+                        left: t.isPublished ? '18px' : '2px',
+                      }} />
+                    </button>
                   </td>
                   <td style={tdStyle}>{new Date(t.createdAt).toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' })}</td>
                   <td style={tdStyle}>

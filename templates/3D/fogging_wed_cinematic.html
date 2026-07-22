@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Wedding of Romeo & Juliet - 3D Cinematic</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@300;400;600&family=Sacramento&display=swap" rel="stylesheet">
+
+    <!-- Vanilla Tilt JS (Engine 3D Parallax Mouse Tracking) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"></script>
+
+    <style>
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0b0d10;
+            color: #e2e8f0;
+            overflow-x: hidden;
+            perspective: 1000px;
+        }
+        .font-serif-custom { font-family: 'Cormorant Garamond', serif; }
+        .font-latin { font-family: 'Sacramento', cursive; }
+
+        /* Custom Smooth Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0b0d10; }
+        ::-webkit-scrollbar-thumb { background: #d4af37; border-radius: 3px; }
+
+        /* Glassmorphism 3D Layer */
+        .glass-3d {
+            background: rgba(18, 22, 29, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(212, 175, 55, 0.15);
+            transform-style: preserve-3d;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Continuous Vertical Auto-Scroll (Wishes) */
+        .marquee-vertical {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            animation: scrollUp 18s linear infinite;
+        }
+        .marquee-vertical:hover { animation-play-state: paused; }
+        @keyframes scrollUp {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-50%); }
+        }
+
+        /* Gallery 3D Zoom Effect */
+        .gallery-item {
+            overflow: hidden;
+            transform-style: preserve-3d;
+            transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        .gallery-item img {
+            transition: transform 0.7s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        .gallery-item:hover img {
+            transform: scale(1.15) translateZ(20px);
+        }
+
+        #main-content {
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            pointer-events: none;
+        }
+        body.opened #main-content {
+            opacity: 1;
+            pointer-events: auto;
+        }
+    </style>
+</head>
+<body class="relative min-h-screen">
+
+    <!-- AUDIO PLAYER (URL LANGSUNG) -->
+    <audio id="bg-music" loop preload="auto">
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- FLOATING MUSIC TOGGLE BUTTON -->
+    <button id="music-btn" class="fixed bottom-6 right-6 z-50 w-12 h-12 rounded-full glass-3d text-amber-400 flex items-center justify-center shadow-2xl hover:scale-110 transition hidden">
+        <i id="music-icon" class="fa-solid fa-compact-disc fa-spin text-xl"></i>
+    </button>
+
+    <!-- MAIN SPLIT CONTAINER -->
+    <div class="flex flex-col lg:flex-row w-full min-h-screen">
+        
+        <!-- LEFT SIDE: COVER & VIDEO BACKGROUND LANGSUNG (70% WIDTH) -->
+        <section class="w-full lg:w-[70%] h-screen lg:sticky lg:top-0 relative overflow-hidden flex items-center justify-center border-r border-amber-500/10">
+            
+            <!-- Video Layer dengan Direct URL MP3/MP4 -->
+            <div id="parallax-bg" class="absolute inset-0 w-full h-full scale-110 transition-transform duration-75 ease-out">
+                <video autoplay muted loop playsinline class="w-full h-full object-cover filter brightness-40">
+                    <source src="https://assets.mixkit.co/videos/preview/mixkit-wedding-ceremony-couple-close-up-40030-large.mp4" type="video/mp4">
+                </video>
+            </div>
+            
+            <!-- Overlay Gradient -->
+            <div class="absolute inset-0 bg-gradient-to-t from-[#0b0d10] via-black/30 to-black/60 z-10"></div>
+
+            <!-- Parallax Floating Ornaments -->
+            <div id="parallax-ornament" class="absolute inset-0 z-20 pointer-events-none flex justify-between p-10 transition-transform duration-100 ease-out">
+                <div class="w-32 h-32 rounded-full bg-amber-500/10 blur-3xl"></div>
+                <div class="w-48 h-48 rounded-full bg-amber-300/10 blur-3xl self-end"></div>
+            </div>
+
+            <!-- Cover Title Card -->
+            <div id="parallax-title" class="relative z-30 text-center px-6 max-w-2xl transition-transform duration-100 ease-out" data-tilt data-tilt-max="10" data-tilt-speed="1000" data-tilt-perspective="1000">
+                <div class="glass-3d p-8 lg:p-12 rounded-3xl border border-amber-400/20">
+                    <p class="uppercase tracking-[0.4em] text-xs lg:text-sm text-amber-400 mb-3 font-semibold">The Wedding Of</p>
+                    <h1 class="font-latin text-6xl lg:text-8xl text-amber-200 mb-4 drop-shadow-2xl" style="transform: translateZ(40px);">Romeo & Juliet</h1>
+                    <p class="font-serif-custom text-lg lg:text-2xl tracking-widest text-gray-300 italic mb-8" style="transform: translateZ(20px);">25.12.2026</p>
+                    
+                    <button id="open-btn" onclick="openInvitation()" class="px-8 py-3.5 rounded-full bg-gradient-to-r from-amber-400 via-amber-500 to-amber-700 text-slate-950 font-bold shadow-xl hover:brightness-120 transition hover:scale-105 active:scale-95 flex items-center gap-3 mx-auto" style="transform: translateZ(30px);">
+                        <i class="fa-solid fa-envelope-open"></i> Buka Undangan
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- RIGHT SIDE: CONTENT SECTION (30% WIDTH) -->
+        <main id="main-content" class="w-full lg:w-[30%] min-h-screen glass-3d px-6 py-12 flex flex-col gap-16 overflow-y-auto relative z-40">
+            
+            <!-- 1. HOLY VERSE -->
+            <section class="text-center space-y-4 pt-6 glass-3d p-6 rounded-2xl" data-tilt data-tilt-max="8">
+                <div class="text-amber-400 text-2xl" style="transform: translateZ(15px);"><i class="fa-solid fa-quote-left"></i></div>
+                <p class="text-xs text-gray-300 leading-relaxed font-serif-custom italic" style="transform: translateZ(10px);">
+                    "Dan di antara tanda-tanda (kebesaran)-Nya ialah Dia menciptakan pasangan-pasangan untukmu dari jenismu sendiri..."
+                </p>
+                <span class="text-[10px] tracking-widest text-amber-400 uppercase font-semibold block" style="transform: translateZ(15px);">Ar-Rum: 21</span>
+            </section>
+
+            <!-- 2. COUNTDOWN TIMER -->
+            <section class="text-center space-y-4">
+                <h2 class="font-serif-custom text-2xl text-amber-200">Menghitung Hari</h2>
+                <div class="grid grid-cols-4 gap-2 text-center" id="countdown">
+                    <div class="glass-3d p-3 rounded-xl" data-tilt data-tilt-max="15"><span id="days" class="block font-bold text-xl text-amber-400">00</span><span class="text-[9px] uppercase text-gray-400">Hari</span></div>
+                    <div class="glass-3d p-3 rounded-xl" data-tilt data-tilt-max="15"><span id="hours" class="block font-bold text-xl text-amber-400">00</span><span class="text-[9px] uppercase text-gray-400">Jam</span></div>
+                    <div class="glass-3d p-3 rounded-xl" data-tilt data-tilt-max="15"><span id="minutes" class="block font-bold text-xl text-amber-400">00</span><span class="text-[9px] uppercase text-gray-400">Menit</span></div>
+                    <div class="glass-3d p-3 rounded-xl" data-tilt data-tilt-max="15"><span id="seconds" class="block font-bold text-xl text-amber-400">00</span><span class="text-[9px] uppercase text-gray-400">Detik</span></div>
+                </div>
+            </section>
+
+            <!-- 3. THE COUPLE -->
+            <section class="space-y-8 text-center">
+                <h2 class="font-serif-custom text-3xl text-amber-200">Mempelai</h2>
+                
+                <div class="space-y-3 glass-3d p-5 rounded-2xl" data-tilt data-tilt-glare data-tilt-max-glare="0.2">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&auto=format&fit=crop&q=80" alt="Romeo" class="w-28 h-28 mx-auto rounded-full object-cover border-2 border-amber-400/50 shadow-xl" style="transform: translateZ(25px);">
+                    <h3 class="font-latin text-3xl text-amber-300" style="transform: translateZ(15px);">Romeo Montague, S.T.</h3>
+                    <p class="text-xs text-gray-400">Putra dari Bapak Montague & Ibu Montague</p>
+                    <a href="#" class="inline-block text-amber-400 text-xs hover:underline"><i class="fa-brands fa-instagram"></i> @romeo</a>
+                </div>
+
+                <div class="font-latin text-4xl text-amber-400">&</div>
+
+                <div class="space-y-3 glass-3d p-5 rounded-2xl" data-tilt data-tilt-glare data-tilt-max-glare="0.2">
+                    <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&auto=format&fit=crop&q=80" alt="Juliet" class="w-28 h-28 mx-auto rounded-full object-cover border-2 border-amber-400/50 shadow-xl" style="transform: translateZ(25px);">
+                    <h3 class="font-latin text-3xl text-amber-300" style="transform: translateZ(15px);">Juliet Capulet, S.Ked.</h3>
+                    <p class="text-xs text-gray-400">Putri dari Bapak Capulet & Ibu Capulet</p>
+                    <a href="#" class="inline-block text-amber-400 text-xs hover:underline"><i class="fa-brands fa-instagram"></i> @juliet</a>
+                </div>
+            </section>
+
+            <!-- 4. LOVE STORY -->
+            <section class="space-y-6">
+                <h2 class="font-serif-custom text-3xl text-amber-200 text-center">Kisah Kita</h2>
+                <div class="border-l-2 border-amber-400/30 pl-4 space-y-6 text-left">
+                    <div class="relative glass-3d p-4 rounded-xl" data-tilt data-tilt-max="5">
+                        <span class="text-xs font-bold text-amber-400">2021</span>
+                        <h4 class="text-sm font-semibold text-gray-200">Pertemuan Pertama</h4>
+                        <p class="text-xs text-gray-400 mt-1">Berawal dari kampus tempat kami menimba ilmu bersama.</p>
+                    </div>
+                    <div class="relative glass-3d p-4 rounded-xl" data-tilt data-tilt-max="5">
+                        <span class="text-xs font-bold text-amber-400">2024</span>
+                        <h4 class="text-sm font-semibold text-gray-200">Lamaran</h4>
+                        <p class="text-xs text-gray-400 mt-1">Memutuskan untuk melangkah ke jenjang yang lebih serius.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 5. EVENTS -->
+            <section class="space-y-6 text-center">
+                <h2 class="font-serif-custom text-3xl text-amber-200">Acara Pernikahan</h2>
+                
+                <div class="glass-3d p-6 rounded-2xl space-y-3" data-tilt data-tilt-max="8">
+                    <h3 class="font-serif-custom text-xl text-amber-400 font-bold" style="transform: translateZ(10px);">Akad Nikah</h3>
+                    <p class="text-xs text-gray-300"><i class="fa-regular fa-calendar"></i> Jumat, 25 Desember 2026</p>
+                    <p class="text-xs text-gray-300"><i class="fa-regular fa-clock"></i> 08.00 - 10.00 WIB</p>
+                    <p class="text-xs text-gray-400">Grand Ballroom Hotel Indonesia, Jakarta</p>
+                    <a href="https://maps.google.com" target="_blank" class="inline-block px-4 py-2 text-xs rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/30 hover:bg-amber-500/40" style="transform: translateZ(15px);">Google Maps</a>
+                </div>
+
+                <div class="glass-3d p-6 rounded-2xl space-y-3" data-tilt data-tilt-max="8">
+                    <h3 class="font-serif-custom text-xl text-amber-400 font-bold" style="transform: translateZ(10px);">Resepsi</h3>
+                    <p class="text-xs text-gray-300"><i class="fa-regular fa-calendar"></i> Jumat, 25 Desember 2026</p>
+                    <p class="text-xs text-gray-300"><i class="fa-regular fa-clock"></i> 11.00 - Selesai</p>
+                    <p class="text-xs text-gray-400">Grand Ballroom Hotel Indonesia, Jakarta</p>
+                    <a href="https://maps.google.com" target="_blank" class="inline-block px-4 py-2 text-xs rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/30 hover:bg-amber-500/40" style="transform: translateZ(15px);">Google Maps</a>
+                </div>
+            </section>
+
+            <!-- 6. PHOTO GALLERY -->
+            <section class="space-y-4 text-center">
+                <h2 class="font-serif-custom text-3xl text-amber-200">Galeri Foto</h2>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="gallery-item rounded-xl glass-3d" data-tilt data-tilt-max="15">
+                        <img src="https://images.unsplash.com/photo-1519741497674-611481863552?w=500&auto=format&fit=crop&q=80" class="h-36 w-full object-cover rounded-xl">
+                    </div>
+                    <div class="gallery-item rounded-xl glass-3d" data-tilt data-tilt-max="15">
+                        <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=500&auto=format&fit=crop&q=80" class="h-36 w-full object-cover rounded-xl">
+                    </div>
+                    <div class="gallery-item rounded-xl glass-3d" data-tilt data-tilt-max="15">
+                        <img src="https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=500&auto=format&fit=crop&q=80" class="h-36 w-full object-cover rounded-xl">
+                    </div>
+                    <div class="gallery-item rounded-xl glass-3d" data-tilt data-tilt-max="15">
+                        <img src="https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=500&auto=format&fit=crop&q=80" class="h-36 w-full object-cover rounded-xl">
+                    </div>
+                </div>
+            </section>
+
+            <!-- 7. RSVP -->
+            <section class="glass-3d p-6 rounded-2xl space-y-4" data-tilt data-tilt-max="5">
+                <h2 class="font-serif-custom text-2xl text-amber-200 text-center">Konfirmasi Kehadiran</h2>
+                <form class="space-y-3 text-xs" onsubmit="event.preventDefault(); alert('Terima kasih atas konfirmasinya!');">
+                    <input type="text" placeholder="Nama Lengkap" class="w-full p-3 rounded-lg bg-slate-900/80 border border-slate-700 text-white focus:outline-none focus:border-amber-400" required>
+                    <select class="w-full p-3 rounded-lg bg-slate-900/80 border border-slate-700 text-white focus:outline-none focus:border-amber-400">
+                        <option>Hadir</option>
+                        <option>Tidak Hadir</option>
+                        <option>Ragu-ragu</option>
+                    </select>
+                    <button type="submit" class="w-full py-3 bg-gradient-to-r from-amber-400 to-amber-600 font-bold text-slate-950 rounded-lg hover:brightness-110 transition">Kirim RSVP</button>
+                </form>
+            </section>
+
+            <!-- 8. WEDDING GIFTS -->
+            <section class="space-y-4 text-center">
+                <h2 class="font-serif-custom text-3xl text-amber-200">Hadiah Digital</h2>
+                <div class="glass-3d p-5 rounded-xl space-y-2" data-tilt data-tilt-max="10">
+                    <p class="text-xs font-bold text-gray-300">Bank BCA</p>
+                    <p class="text-sm font-mono text-amber-400 tracking-wider" style="transform: translateZ(15px);">1234 5678 90</p>
+                    <p class="text-[10px] text-gray-400">a.n Romeo Montague</p>
+                    <button onclick="navigator.clipboard.writeText('1234567890'); alert('Nomor rekening berhasil disalin!');" class="text-[10px] px-3 py-1 bg-amber-500/20 text-amber-300 rounded border border-amber-500/30 hover:bg-amber-500/40" style="transform: translateZ(10px);">Salin No. Rekening</button>
+                </div>
+            </section>
+
+            <!-- 9. LIVE STREAMING -->
+            <section class="glass-3d p-6 rounded-2xl text-center space-y-3" data-tilt data-tilt-max="8">
+                <i class="fa-solid fa-video text-amber-400 text-3xl" style="transform: translateZ(15px);"></i>
+                <h3 class="font-serif-custom text-xl text-amber-200">Live Streaming</h3>
+                <p class="text-xs text-gray-400">Bagi keluarga dan sahabat yang berhalangan hadir, dapat menyaksikan siaran langsung pernikahan kami.</p>
+                <a href="#" class="inline-block px-4 py-2 text-xs bg-red-600 hover:bg-red-500 text-white font-semibold rounded-lg shadow-lg" style="transform: translateZ(10px);"><i class="fa-brands fa-youtube mr-1"></i> Tonton di YouTube</a>
+            </section>
+
+            <!-- 10. WISHES / GUEST MESSAGES (AUTO SCROLL) -->
+            <section class="space-y-4">
+                <h2 class="font-serif-custom text-2xl text-amber-200 text-center">Ucapan & Doa</h2>
+                <div class="h-52 overflow-hidden relative glass-3d p-4 rounded-xl">
+                    <div class="marquee-vertical text-xs">
+                        <div class="p-3 glass-3d rounded-lg">
+                            <span class="font-bold text-amber-400">Ahmad Subagja</span>
+                            <p class="text-gray-300 mt-1">Selamat untuk Romeo & Juliet! Semoga menjadi keluarga sakinah mawaddah warahmah.</p>
+                        </div>
+                        <div class="p-3 glass-3d rounded-lg">
+                            <span class="font-bold text-amber-400">Siti Nurhaliza</span>
+                            <p class="text-gray-300 mt-1">Happy wedding! Wish you both a lifetime of happiness!</p>
+                        </div>
+                        <div class="p-3 glass-3d rounded-lg">
+                            <span class="font-bold text-amber-400">Budi Santoso</span>
+                            <p class="text-gray-300 mt-1">Selamat menempuh hidup baru sahabatku!</p>
+                        </div>
+                        <div class="p-3 glass-3d rounded-lg">
+                            <span class="font-bold text-amber-400">Ahmad Subagja</span>
+                            <p class="text-gray-300 mt-1">Selamat untuk Romeo & Juliet! Semoga menjadi keluarga sakinah mawaddah warahmah.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 11. CLOSING -->
+            <section class="text-center space-y-4 py-8">
+                <p class="text-xs text-gray-400">Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir.</p>
+                <h3 class="font-latin text-4xl text-amber-300">Romeo & Juliet</h3>
+                <p class="text-[10px] text-gray-600 tracking-widest uppercase">Digital Invitation Crafted with 3D Elegance</p>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        const audio = document.getElementById('bg-music');
+        const musicBtn = document.getElementById('music-btn');
+        const musicIcon = document.getElementById('music-icon');
+        let isPlaying = false;
+
+        function openInvitation() {
+            document.body.classList.add('opened');
+            musicBtn.classList.remove('hidden');
+            audio.play().then(() => { isPlaying = true; }).catch(e => console.log('Autoplay blocked:', e));
+
+            if (window.innerWidth < 1024) {
+                document.getElementById('main-content').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        musicBtn.addEventListener('click', () => {
+            if (isPlaying) {
+                audio.pause();
+                musicIcon.classList.remove('fa-spin');
+                musicIcon.classList.replace('fa-compact-disc', 'fa-play');
+            } else {
+                audio.play();
+                musicIcon.classList.add('fa-spin');
+                musicIcon.classList.replace('fa-play', 'fa-compact-disc');
+            }
+            isPlaying = !isPlaying;
+        });
+
+        // Parallax Interaction
+        const parallaxBg = document.getElementById('parallax-bg');
+        const parallaxTitle = document.getElementById('parallax-title');
+        const parallaxOrnament = document.getElementById('parallax-ornament');
+
+        window.addEventListener('mousemove', (e) => {
+            const x = (e.clientX / window.innerWidth - 0.5) * 2;
+            const y = (e.clientY / window.innerHeight - 0.5) * 2;
+            parallaxBg.style.transform = `scale(1.1) translate(${x * 10}px, ${y * 10}px)`;
+            parallaxOrnament.style.transform = `translate(${x * -25}px, ${y * -25}px)`;
+            parallaxTitle.style.transform = `translate(${x * 15}px, ${y * 15}px)`;
+        });
+
+        // Countdown Timer
+        const targetDate = new Date("Dec 25, 2026 08:00:00").getTime();
+        setInterval(() => {
+            const now = new Date().getTime();
+            const difference = targetDate - now;
+            if (difference > 0) {
+                document.getElementById('days').innerText = String(Math.floor(difference / (1000 * 60 * 60 * 24))).padStart(2, '0');
+                document.getElementById('hours').innerText = String(Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))).padStart(2, '0');
+                document.getElementById('minutes').innerText = String(Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
+                document.getElementById('seconds').innerText = String(Math.floor((difference % (1000 * 60)) / 1000)).padStart(2, '0');
+            }
+        }, 1000);
+
+        // Tilt Engine Init
+        VanillaTilt.init(document.querySelectorAll("[data-tilt]"), {
+            glare: true,
+            "max-glare": 0.15,
+            perspective: 1000,
+            scale: 1.02
+        });
+    </script>
+</body>
+</html>

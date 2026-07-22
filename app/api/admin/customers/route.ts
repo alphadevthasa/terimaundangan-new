@@ -1,19 +1,21 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireAdmin } from '@/lib/auth';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const { response } = await requireAdmin(request);
+  if (response) return response;
   try {
-    const customers = await prisma.customer.findMany({ orderBy: { createdAt: 'desc' } });
-    const templateIds = Array.from(new Set(customers.map(c => c.templateId).filter(Boolean))) as string[];
-    const templates = templateIds.length
-      ? await prisma.template.findMany({ where: { id: { in: templateIds } }, select: { id: true, name: true } })
-      : [];
-    const templateMap = new Map(templates.map(t => [t.id, t.name]));
-    const result = customers.map(c => ({
-      ...c,
-      templateName: c.templateId ? templateMap.get(c.templateId) ?? null : null,
-    }));
-    return NextResponse.json({ customers: result });
+    const customers = await prisma.customer.findMany({
+      orderBy: { createdAt: 'desc' },
+      include: {
+        templateData: {
+          include: { template: { select: { id: true, name: true } } },
+          orderBy: { createdAt: 'desc' },
+        },
+      },
+    });
+    return NextResponse.json({ customers });
   } catch (error) {
     console.error('Error fetching customers:', error);
     return NextResponse.json({ error: 'Failed to fetch customers' }, { status: 500 });

@@ -18,11 +18,15 @@ model Template {
   thumbnail   String   @default("")
   price       String   @default("Free")
   isPopular   Boolean  @default(false)
+  isPublished Boolean  @default(true)
+  category    String   @default("wedding")
+  theme       String   @default("")
   html        String   @default("") /// Full HTML content (for admin-managed templates)
   defaultData String   @default("{}") /// JSON: default values for bride/groom names, dates, venue etc.
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   orders      Order[]
+  templateData TemplateData[]
 }
 
 /// Purchase / order record
@@ -33,6 +37,8 @@ model Order {
   customerName  String    @default("")
   customerEmail String    @default("")
   amount        Int       @default(0)
+  tax           Int       @default(0)
+  discount      Int       @default(0)
   status        String    @default("pending") /// pending | paid | cancelled | refunded
   paymentMethod String    @default("")
   invoiceUrl    String    @default("")
@@ -42,15 +48,35 @@ model Order {
   template      Template? @relation(fields: [templateId], references: [id])
 }
 
-/// User's purchased/customized template data
+/// User account (authentication & identity only)
 model Customer {
-  id        String   @id @default(uuid())
-  templateId String? // reference to the static Template
-  name      String   @default("")
-  email     String   @default("")
-  status    String   @default("active")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id              String          @id @default(uuid())
+  name            String          @default("")
+  email           String          @default("")
+  status          String          @default("active")
+  isAdmin         Boolean         @default(false)
+  password        String          @default("")
+  resetToken        String?         @db.Text
+  resetTokenExpiry  DateTime?
+  emailVerifiedAt   DateTime?
+  verificationToken String?         @db.Text
+  createdAt         DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  templateData    TemplateData[]
+}
+
+/// Wedding invitation data (one per template installation, customer can have many)
+model TemplateData {
+  id          String      @id @default(uuid())
+  customerId  String
+  templateId  String?
+  slug        String      @default("") @unique
+  published   Boolean     @default(false)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  customer    Customer    @relation(fields: [customerId], references: [id])
+  template    Template?   @relation(fields: [templateId], references: [id])
 
   // 1. Cover
   brideNick  String @default("Sophia")
@@ -123,7 +149,34 @@ model Customer {
   wishesTitle String @default("Guest Book")
   wishesDesc  String @default("Leave your warmest wishes and blessings for our marriage.")
 
-  // 15. Closing
+  // 15. Background Images
+  heroBg    String @default("")
+  coupleBg  String @default("")
+  storyBg   String @default("")
+  galleryBg String @default("")
+  giftsBg   String @default("")
+  wishesBg  String @default("")
+
+  // 16. Closing
   closingThanks String @default("Terima Kasih")
   closingFam    String @default("The Pierce & Laurent Families")
+
+  // Relations
+  wishes Wish[]
+
+  @@index([customerId])
+  @@index([templateId])
+}
+
+/// Guest wishes / messages for wedding invitations
+model Wish {
+  id             String       @id @default(uuid())
+  templateDataId String
+  name           String       @default("")
+  message        String       @default("")
+  createdAt      DateTime     @default(now())
+
+  templateData   TemplateData @relation(fields: [templateDataId], references: [id])
+
+  @@index([templateDataId])
 }

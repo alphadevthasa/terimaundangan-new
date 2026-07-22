@@ -1,28 +1,35 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-// GET /api/customer - Fetch a customer by id or templateId
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
-    const templateId = searchParams.get('templateId');
+    const email = searchParams.get('email');
 
     let customer;
 
     if (id) {
-      customer = await prisma.customer.findUnique({ where: { id } });
+      customer = await prisma.customer.findUnique({
+        where: { id },
+        include: { templateData: { include: { template: { select: { name: true } } } } },
+      });
       if (!customer) {
         return NextResponse.json({ error: 'Customer not found' }, { status: 404 });
       }
-    } else if (templateId) {
-      customer = await prisma.customer.findFirst({ where: { templateId } });
+    } else if (email) {
+      customer = await prisma.customer.findFirst({
+        where: { email },
+        include: { templateData: { include: { template: { select: { name: true } } } } },
+      });
       if (!customer) {
-        // Create a new customer record for this template
-        customer = await prisma.customer.create({ data: { templateId } });
+        return NextResponse.json({ error: 'Customer not found' }, { status: 404 });
       }
     } else {
-      customer = await prisma.customer.findFirst({ where: { status: 'active' } });
+      customer = await prisma.customer.findFirst({
+        where: { status: 'active' },
+        include: { templateData: { include: { template: { select: { name: true } } } } },
+      });
       if (!customer) {
         customer = await prisma.customer.create({ data: {} });
       }
@@ -35,36 +42,23 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// PUT /api/customer - Update a customer, optionally by templateId
 export async function PUT(request: Request) {
   try {
     const body = await request.json();
-    const templateId = body.templateId;
-    delete body.templateId; // Remove templateId from update data
+    const { id, name, email, status } = body;
 
-    let customer;
-
-    if (templateId) {
-      customer = await prisma.customer.findFirst({ where: { templateId } });
-      if (!customer) {
-        customer = await prisma.customer.create({ data: { ...body, templateId } });
-      } else {
-        customer = await prisma.customer.update({
-          where: { id: customer.id },
-          data: body,
-        });
-      }
-    } else {
-      customer = await prisma.customer.findFirst({ where: { status: 'active' } });
-      if (!customer) {
-        customer = await prisma.customer.create({ data: body });
-      } else {
-        customer = await prisma.customer.update({
-          where: { id: customer.id },
-          data: body,
-        });
-      }
+    if (!id) {
+      return NextResponse.json({ error: 'Customer ID required' }, { status: 400 });
     }
+
+    const customer = await prisma.customer.update({
+      where: { id },
+      data: {
+        ...(name !== undefined && { name }),
+        ...(email !== undefined && { email }),
+        ...(status !== undefined && { status }),
+      },
+    });
 
     return NextResponse.json({ customer });
   } catch (error) {

@@ -1,7 +1,10 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireAdmin } from '@/lib/auth';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const { response } = await requireAdmin(request);
+  if (response) return response;
   try {
     const templates = await prisma.template.findMany({ orderBy: { createdAt: 'desc' } });
     return NextResponse.json({ templates });
@@ -11,7 +14,9 @@ export async function GET() {
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
+  const { response } = await requireAdmin(request);
+  if (response) return response;
   try {
     const body = await request.json();
     const template = await prisma.template.create({
@@ -19,9 +24,12 @@ export async function POST(request: Request) {
         name: body.name,
         description: body.description ?? '',
         type: body.type ?? 'wedding',
+        theme: body.theme ?? '',
+        category: 'wedding',
         thumbnail: body.thumbnail ?? '',
         price: body.price ?? 'Free',
         isPopular: body.isPopular ?? false,
+        isPublished: body.isPublished ?? true,
         html: body.html ?? '',
         defaultData: body.defaultData ?? '{}',
       },

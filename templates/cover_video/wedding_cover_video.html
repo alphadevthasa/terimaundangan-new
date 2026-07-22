@@ -250,14 +250,14 @@
       <p class="text-[10px] md:text-xs tracking-[0.5em] uppercase text-white/50 mb-6 animate-fade-in-down">The Wedding Of</p>
 
       <h1 class="text-5xl md:text-7xl lg:text-8xl font-light tracking-wide mb-4 animate-scale-in delay-200" style="font-family: 'Playfair Display', serif;">
-        <span class="block">Rizky</span>
+        <span class="block" id="e-groom-name">Rizky</span>
         <span class="text-2xl md:text-4xl text-[var(--gold)] mx-4">&</span>
-        <span class="block">Amanda</span>
+        <span class="block" id="e-bride-name">Amanda</span>
       </h1>
 
       <div class="w-16 h-px bg-gradient-to-r from-transparent via-[var(--gold)] to-transparent my-6 animate-fade-in delay-500"></div>
 
-      <p class="text-xs md:text-sm tracking-[0.4em] text-white/40 animate-fade-in delay-600">12 . 12 . 2026</p>
+      <p class="text-xs md:text-sm tracking-[0.4em] text-white/40 animate-fade-in delay-600" id="e-date-text">12 . 12 . 2026</p>
 
       <button onclick="scrollToSection('countdown')" class="mt-16 px-10 py-4 border border-[var(--gold)]/40 rounded-full text-xs tracking-[0.3em] uppercase text-[var(--gold-light)] hover:bg-[var(--gold)] hover:text-black transition-all duration-500 animate-bounce-slow delay-1000 btn-glow">
         Open Invitation
@@ -311,7 +311,7 @@
         <!-- Groom -->
         <div class="text-center reveal">
           <div class="photo-frame relative w-72 h-96 mx-auto mb-8 overflow-hidden rounded-2xl group">
-            <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=600&q=80" 
+            <img id="e-groom-photo" src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=600&q=80" 
                  alt="Groom" 
                  class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110">
             <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
@@ -319,10 +319,10 @@
               <p class="text-[10px] tracking-[0.3em] uppercase text-[var(--gold)]">The Groom</p>
             </div>
           </div>
-          <h3 class="text-3xl font-light mb-2" style="font-family: 'Playfair Display', serif;">Rizky Aditya Pratama</h3>
+          <h3 class="text-3xl font-light mb-2" id="e-groom-full" style="font-family: 'Playfair Display', serif;">Rizky Aditya Pratama</h3>
           <div class="w-8 h-px bg-[var(--gold)]/40 mx-auto my-4"></div>
           <p class="text-[10px] tracking-[0.3em] text-white/30 uppercase mb-3">Putra Pertama</p>
-          <p class="text-sm text-white/40 max-w-xs mx-auto leading-relaxed">Putra dari Bapak Surya Wijaya<br>& Ibu Dewi Kusumaningrum</p>
+          <p class="text-sm text-white/40 max-w-xs mx-auto leading-relaxed" id="e-groom-parents">Putra dari Bapak Surya Wijaya<br>& Ibu Dewi Kusumaningrum</p>
         </div>
 
         <!-- Divider for mobile -->
@@ -333,7 +333,7 @@
         <!-- Bride -->
         <div class="text-center reveal">
           <div class="photo-frame relative w-72 h-96 mx-auto mb-8 overflow-hidden rounded-2xl group">
-            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&q=80" 
+            <img id="e-bride-photo" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&q=80" 
                  alt="Bride" 
                  class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110">
             <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
@@ -341,10 +341,10 @@
               <p class="text-[10px] tracking-[0.3em] uppercase text-[var(--gold)]">The Bride</p>
             </div>
           </div>
-          <h3 class="text-3xl font-light mb-2" style="font-family: 'Playfair Display', serif;">Amanda Putri Lestari</h3>
+          <h3 class="text-3xl font-light mb-2" id="e-bride-full" style="font-family: 'Playfair Display', serif;">Amanda Putri Lestari</h3>
           <div class="w-8 h-px bg-[var(--gold)]/40 mx-auto my-4"></div>
           <p class="text-[10px] tracking-[0.3em] text-white/30 uppercase mb-3">Putri Kedua</p>
-          <p class="text-sm text-white/40 max-w-xs mx-auto leading-relaxed">Putri dari Bapak Hartono Santoso<br>& Ibu Rina Setyawati</p>
+          <p class="text-sm text-white/40 max-w-xs mx-auto leading-relaxed" id="e-bride-parents">Putri dari Bapak Hartono Santoso<br>& Ibu Rina Setyawati</p>
         </div>
       </div>
     </div>
@@ -363,11 +363,11 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
         </svg>
       </div>
-      <p class="text-xl md:text-2xl font-light leading-loose text-white/70 italic mb-8 reveal" style="font-family: 'Playfair Display', serif;">
+      <p class="text-xl md:text-2xl font-light leading-loose text-white/70 italic mb-8 reveal" id="e-verse-text" style="font-family: 'Playfair Display', serif;">
         "Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan untukmu pasangan-pasangan dari jenismu sendiri, supaya kamu cenderung dan merasa tenteram kepadanya, dan dijadikan-Nya di antaramu rasa kasih dan sayang."
       </p>
       <div class="w-12 h-px bg-gradient-to-r from-transparent via-[var(--gold)] to-transparent mx-auto mb-6 reveal"></div>
-      <p class="text-xs tracking-[0.4em] uppercase text-[var(--gold)]/60 reveal">QS. Ar-Rum : 21</p>
+      <p class="text-xs tracking-[0.4em] uppercase text-[var(--gold)]/60 reveal" id="e-verse-source">QS. Ar-Rum : 21</p>
     </div>
   </section>
 
@@ -453,19 +453,19 @@
           <div class="space-y-3 text-sm">
             <div class="flex items-center justify-center gap-3 text-white/50">
               <svg class="w-4 h-4 text-[var(--gold)]/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-              <span>Sabtu, 12 Desember 2026</span>
+              <span id="e-akad-date">Sabtu, 12 Desember 2026</span>
             </div>
             <div class="flex items-center justify-center gap-3 text-white/50">
               <svg class="w-4 h-4 text-[var(--gold)]/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-              <span>08:00 - 10:00 WIB</span>
+              <span id="e-akad-time">08:00 - 10:00 WIB</span>
             </div>
             <div class="flex items-center justify-center gap-3 text-white/50">
               <svg class="w-4 h-4 text-[var(--gold)]/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-              <span>Masjid Al-Ikhlas, Jakarta</span>
+              <span id="e-akad-place">Masjid Al-Ikhlas, Jakarta</span>
             </div>
           </div>
 
-          <a href="https://maps.google.com/?q=Masjid+Al-Ikhlas+Jakarta" target="_blank" 
+          <a id="e-akad-maps" href="https://maps.google.com/?q=Masjid+Al-Ikhlas+Jakarta" target="_blank" 
              class="inline-block mt-8 px-8 py-3 border border-[var(--gold)]/30 rounded-full text-xs tracking-[0.2em] uppercase text-[var(--gold-light)] hover:bg-[var(--gold)] hover:text-black transition-all duration-300">
             Lihat Lokasi
           </a>
@@ -485,19 +485,19 @@
           <div class="space-y-3 text-sm">
             <div class="flex items-center justify-center gap-3 text-white/50">
               <svg class="w-4 h-4 text-[var(--gold)]/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-              <span>Sabtu, 12 Desember 2026</span>
+              <span id="e-resepsi-date">Sabtu, 12 Desember 2026</span>
             </div>
             <div class="flex items-center justify-center gap-3 text-white/50">
               <svg class="w-4 h-4 text-[var(--gold)]/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-              <span>11:00 - 15:00 WIB</span>
+              <span id="e-resepsi-time">11:00 - 15:00 WIB</span>
             </div>
             <div class="flex items-center justify-center gap-3 text-white/50">
               <svg class="w-4 h-4 text-[var(--gold)]/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-              <span>The Grand Ballroom, Jakarta</span>
+              <span id="e-resepsi-place">The Grand Ballroom, Jakarta</span>
             </div>
           </div>
 
-          <a href="https://maps.google.com/?q=Grand+Ballroom+Jakarta" target="_blank" 
+          <a id="e-resepsi-maps" href="https://maps.google.com/?q=Grand+Ballroom+Jakarta" target="_blank" 
              class="inline-block mt-8 px-8 py-3 border border-[var(--gold)]/30 rounded-full text-xs tracking-[0.2em] uppercase text-[var(--gold-light)] hover:bg-[var(--gold)] hover:text-black transition-all duration-300">
             Lihat Lokasi
           </a>
@@ -516,22 +516,22 @@
 
       <div class="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
         <div class="gallery-item relative aspect-[3/4] rounded-xl overflow-hidden cursor-pointer reveal" onclick="openLightbox(0)">
-          <img src="https://images.unsplash.com/photo-1519741497674-611481863552?w=800&q=80" class="w-full h-full object-cover" alt="Gallery 1">
+          <img id="e-gallery-1" src="https://images.unsplash.com/photo-1519741497674-611481863552?w=800&q=80" class="w-full h-full object-cover" alt="Gallery 1">
         </div>
         <div class="gallery-item relative aspect-[3/4] rounded-xl overflow-hidden cursor-pointer reveal" onclick="openLightbox(1)">
-          <img src="https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=800&q=80" class="w-full h-full object-cover" alt="Gallery 2">
+          <img id="e-gallery-2" src="https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=800&q=80" class="w-full h-full object-cover" alt="Gallery 2">
         </div>
         <div class="gallery-item relative aspect-[3/4] rounded-xl overflow-hidden cursor-pointer reveal" onclick="openLightbox(2)">
-          <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=800&q=80" class="w-full h-full object-cover" alt="Gallery 3">
+          <img id="e-gallery-3" src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=800&q=80" class="w-full h-full object-cover" alt="Gallery 3">
         </div>
         <div class="gallery-item relative aspect-[3/4] rounded-xl overflow-hidden cursor-pointer reveal" onclick="openLightbox(3)">
-          <img src="https://images.unsplash.com/photo-1591604466107-ec97de577aff?w=800&q=80" class="w-full h-full object-cover" alt="Gallery 4">
+          <img id="e-gallery-4" src="https://images.unsplash.com/photo-1591604466107-ec97de577aff?w=800&q=80" class="w-full h-full object-cover" alt="Gallery 4">
         </div>
         <div class="gallery-item relative aspect-[3/4] rounded-xl overflow-hidden cursor-pointer reveal" onclick="openLightbox(4)">
-          <img src="https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=800&q=80" class="w-full h-full object-cover" alt="Gallery 5">
+          <img id="e-gallery-5" src="https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=800&q=80" class="w-full h-full object-cover" alt="Gallery 5">
         </div>
         <div class="gallery-item relative aspect-[3/4] rounded-xl overflow-hidden cursor-pointer reveal" onclick="openLightbox(5)">
-          <img src="https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=800&q=80" class="w-full h-full object-cover" alt="Gallery 6">
+          <img id="e-gallery-6" src="https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=800&q=80" class="w-full h-full object-cover" alt="Gallery 6">
         </div>
       </div>
     </div>
@@ -600,9 +600,9 @@
             </svg>
           </div>
           <p class="text-[10px] tracking-[0.3em] uppercase text-white/30 mb-3">Transfer Bank</p>
-          <p class="text-2xl font-light text-[var(--gold)] mb-1">BCA</p>
-          <p class="text-lg text-white/60 mb-2 font-mono tracking-wider">1234 5678 9012</p>
-          <p class="text-xs text-white/20">a.n. Rizky Aditya Pratama</p>
+          <p class="text-2xl font-light text-[var(--gold)] mb-1" id="e-bank-name">BCA</p>
+          <p class="text-lg text-white/60 mb-2 font-mono tracking-wider" id="e-bank-acc">1234 5678 9012</p>
+          <p class="text-xs text-white/20" id="e-bank-holder">a.n. Rizky Aditya Pratama</p>
           <button onclick="copyToClipboard('1234 5678 9012')" 
                   class="mt-6 px-6 py-2 border border-white/10 rounded-full text-xs tracking-[0.2em] uppercase hover:bg-[var(--gold)] hover:text-black hover:border-[var(--gold)] transition-all duration-300">
             Salin Nomor
@@ -763,7 +763,7 @@
     <div class="relative z-10 max-w-2xl mx-auto text-center">
       <p class="text-[10px] tracking-[0.5em] uppercase text-[var(--gold)]/50 mb-8 reveal">Terima Kasih</p>
       <h2 class="text-4xl md:text-6xl font-light mb-10 reveal" style="font-family: 'Playfair Display', serif;">
-        Rizky <span class="text-[var(--gold)]">&</span> Amanda
+        <span id="e-closing-bride">Rizky</span> <span class="text-[var(--gold)]">&</span> <span id="e-closing-groom">Amanda</span>
       </h2>
       <p class="text-sm text-white/40 leading-loose mb-14 max-w-md mx-auto reveal">
         Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir untuk memberikan doa restu kepada kami.
@@ -800,7 +800,77 @@
   <script>
     // ==================== CONFIGURATION ====================
     // GANTI TANGGAL PERNIKAHAN ANDA DI SINI
-    const WEDDING_DATE = new Date('2026-12-12T08:00:00').getTime();
+    let WEDDING_DATE = new Date('2026-12-12T08:00:00').getTime();
+
+    // ==================== UPDATE INVITATION (called by editor) ====================
+    window.updateInvitation = function(data) {
+      // Cover names
+      if (data.brideName) {
+        const el = document.querySelector('#cover h1 span:first-child');
+        if (el) el.textContent = data.brideName;
+      }
+      if (data.groomName) {
+        const el = document.querySelector('#cover h1 span:last-child');
+        if (el) el.textContent = data.groomName;
+      }
+      if (data.heroDate) document.getElementById('e-date-text').textContent = data.heroDate;
+
+      // Couple section - groom
+      if (data.groomFull) document.getElementById('e-groom-full').textContent = data.groomFull;
+      if (data.groomPhoto) document.getElementById('e-groom-photo').src = data.groomPhoto;
+      if (data.groomParents) document.getElementById('e-groom-parents').innerHTML = data.groomParents;
+
+      // Couple section - bride
+      if (data.brideFull) document.getElementById('e-bride-full').textContent = data.brideFull;
+      if (data.bridePhoto) document.getElementById('e-bride-photo').src = data.bridePhoto;
+      if (data.brideParents) document.getElementById('e-bride-parents').innerHTML = data.brideParents;
+
+      // Verse
+      if (data.verseText) document.getElementById('e-verse-text').textContent = data.verseText;
+      if (data.verseSource) document.getElementById('e-verse-source').textContent = data.verseSource;
+
+      // Events - Akad
+      if (data.akadDate) document.getElementById('e-akad-date').textContent = data.akadDate;
+      if (data.akadTime) document.getElementById('e-akad-time').textContent = data.akadTime;
+      if (data.akadPlace) document.getElementById('e-akad-place').innerHTML = data.akadPlace;
+      if (data.akadMaps) document.getElementById('e-akad-maps').href = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(data.akadMaps);
+
+      // Events - Resepsi
+      if (data.resepsiDate) document.getElementById('e-resepsi-date').textContent = data.resepsiDate;
+      if (data.resepsiTime) document.getElementById('e-resepsi-time').textContent = data.resepsiTime;
+      if (data.resepsiPlace) document.getElementById('e-resepsi-place').innerHTML = data.resepsiPlace;
+      if (data.resepsiMaps) document.getElementById('e-resepsi-maps').href = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(data.resepsiMaps);
+
+      // Countdown
+      if (data.countdownDate) {
+        WEDDING_DATE = new Date(data.countdownDate).getTime();
+        updateCountdown();
+      }
+
+      // Gallery
+      if (data.gallery1) document.getElementById('e-gallery-1').src = data.gallery1;
+      if (data.gallery2) document.getElementById('e-gallery-2').src = data.gallery2;
+      if (data.gallery3) document.getElementById('e-gallery-3').src = data.gallery3;
+      if (data.gallery4) document.getElementById('e-gallery-4').src = data.gallery4;
+      if (data.gallery5) document.getElementById('e-gallery-5').src = data.gallery5;
+      if (data.gallery6) document.getElementById('e-gallery-6').src = data.gallery6;
+
+      // Gifts
+      if (data.bankName) document.getElementById('e-bank-name').textContent = data.bankName;
+      if (data.bankAcc) document.getElementById('e-bank-acc').textContent = data.bankAcc;
+      if (data.bankHolder) document.getElementById('e-bank-holder').textContent = data.bankHolder;
+
+      // Closing
+      if (data.brideName) document.getElementById('e-closing-bride').textContent = data.brideName;
+      if (data.groomName) document.getElementById('e-closing-groom').textContent = data.groomName;
+    };
+
+    // Listen for postMessage from parent (for detail page preview and editor)
+    window.addEventListener('message', function(e) {
+      if (e.data.type === 'UPDATE') {
+        if (window.updateInvitation) window.updateInvitation(e.data.payload);
+      }
+    });
 
     // ==================== COUNTDOWN TIMER ====================
     function updateCountdown() {

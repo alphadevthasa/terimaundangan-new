@@ -1,10 +1,13 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireAdmin } from '@/lib/auth';
 
 export async function GET(
-  _request: Request,
+  request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  const { response } = await requireAdmin(request);
+  if (response) return response;
   try {
     const order = await prisma.order.findUnique({
       where: { id: params.id },
@@ -21,9 +24,11 @@ export async function GET(
 }
 
 export async function PUT(
-  request: Request,
+  request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  const { response } = await requireAdmin(request);
+  if (response) return response;
   try {
     const body = await request.json();
     const data: Record<string, unknown> = {};

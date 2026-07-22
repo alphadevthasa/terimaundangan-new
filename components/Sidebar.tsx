@@ -3,6 +3,14 @@
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 
+interface SidebarProps {
+  userName?: string;
+  userEmail?: string;
+  userInitial?: string;
+  newWishesCount?: number;
+  onToggle?: (collapsed: boolean) => void;
+}
+
 const menuItems = [
   {
     label: 'Overview',
@@ -13,20 +21,6 @@ const menuItems = [
         <rect x="14" y="3" width="7" height="7" rx="1" />
         <rect x="3" y="14" width="7" height="7" rx="1" />
         <rect x="14" y="14" width="7" height="7" rx="1" />
-      </svg>
-    ),
-  },
-  {
-    label: 'List Template',
-    href: '/dashboard/list-template',
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <line x1="8" y1="6" x2="21" y2="6" />
-        <line x1="8" y1="12" x2="21" y2="12" />
-        <line x1="8" y1="18" x2="21" y2="18" />
-        <line x1="3" y1="6" x2="3.01" y2="6" />
-        <line x1="3" y1="12" x2="3.01" y2="12" />
-        <line x1="3" y1="18" x2="3.01" y2="18" />
       </svg>
     ),
   },
@@ -43,6 +37,16 @@ const menuItems = [
       </svg>
     ),
   },
+
+  {
+    label: 'Guest Wishes',
+    href: '/dashboard/wishes',
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+      </svg>
+    ),
+  },
   {
     label: 'Settings',
     href: '/dashboard/settings',
@@ -55,10 +59,16 @@ const menuItems = [
   },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ userName, userEmail, userInitial, newWishesCount = 0, onToggle }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [isCollapsed, setIsCollapsed] = useState(false);
+
+  const toggleCollapsed = () => {
+    const newState = !isCollapsed;
+    setIsCollapsed(newState);
+    onToggle?.(newState);
+  };
 
   const handleNavigation = (href: string) => {
     router.push(href);
@@ -139,7 +149,7 @@ export default function Sidebar() {
           </div>
         )}
         <button
-          onClick={() => setIsCollapsed(!isCollapsed)}
+          onClick={toggleCollapsed}
           style={{
             background: 'none',
             border: 'none',
@@ -164,7 +174,10 @@ export default function Sidebar() {
       {/* Collapse toggle for collapsed state */}
       {isCollapsed && (
         <button
-          onClick={() => setIsCollapsed(false)}
+          onClick={() => {
+            setIsCollapsed(false);
+            onToggle?.(false);
+          }}
           style={{
             background: 'none',
             border: 'none',
@@ -246,7 +259,25 @@ export default function Sidebar() {
                 <span style={{ flexShrink: 0, opacity: isActive ? 1 : 0.6 }}>
                   {item.icon}
                 </span>
-                {!isCollapsed && <span>{item.label}</span>}
+                {!isCollapsed && (
+                  <span style={{ flex: 1 }}>{item.label}</span>
+                )}
+                {item.href === '/dashboard/wishes' && newWishesCount > 0 && !isCollapsed && !pathname.startsWith('/dashboard/wishes') && (
+                  <span style={{
+                    background: '#ef4444',
+                    color: '#fff',
+                    fontSize: '.6rem',
+                    fontWeight: 600,
+                    padding: '.1rem .35rem',
+                    borderRadius: '99px',
+                    minWidth: '16px',
+                    textAlign: 'center',
+                    lineHeight: '1.2',
+                    animation: 'wishPulse 2s ease-in-out infinite',
+                  }}>
+                    {newWishesCount > 99 ? '99+' : newWishesCount}
+                  </span>
+                )}
               </button>
             );
           })}
@@ -278,11 +309,11 @@ export default function Sidebar() {
                 fontWeight: 500,
               }}
             >
-              U
+              {userInitial || 'U'}
             </div>
             <div style={{ overflow: 'hidden' }}>
-              <div style={{ fontSize: '0.85rem', fontWeight: 500, whiteSpace: 'nowrap' }}>User Baru</div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--muted)', whiteSpace: 'nowrap' }}>Premium Plan</div>
+              <div style={{ fontSize: '0.85rem', fontWeight: 500, whiteSpace: 'nowrap' }}>{userName || 'User'}</div>
+              <div style={{ fontSize: '0.7rem', color: 'var(--muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '160px' }}>{userEmail || ''}</div>
             </div>
           </div>
         ) : (
@@ -302,7 +333,7 @@ export default function Sidebar() {
               fontWeight: 500,
             }}
           >
-            U
+            {userInitial || 'U'}
           </div>
         )}
       </div>

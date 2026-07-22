@@ -83,6 +83,7 @@ export default function TemplateViewPage() {
         <div style={{ width: '1px', height: '20px', background: 'rgba(212,175,55,.15)' }} />
         <span style={{ fontSize: '.95rem', color: '#fdf6e3', fontWeight: 500 }}>{template.name}</span>
         <span style={badge}>{template.type || 'template'}</span>
+        {template.theme && <span style={{ ...badge, background: 'rgba(52,211,153,.12)', color: '#34d399', marginLeft: '.5rem' }}>{template.theme}</span>}
         <div style={{ flex: 1 }} />
         <div style={{ display: 'flex', gap: '.25rem', background: 'rgba(253,246,227,.04)', borderRadius: '4px', padding: '2px' }}>
           <button onClick={() => setMobile(false)} style={toggleBtn(!mobile)}>Desktop</button>

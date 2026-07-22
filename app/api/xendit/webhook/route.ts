@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { customerDefaults } from '@/lib/template-utils';
 
 export async function POST(request: NextRequest) {
   const token = request.headers.get('x-callback-token');
@@ -25,7 +24,6 @@ export async function POST(request: NextRequest) {
   const customerName = body.customer?.given_names || 'Customer';
   const paymentMethod = body.payment_method || body.payment_channel || '';
 
-  // Update Order record to paid
   await prisma.order.updateMany({
     where: { templateId, status: 'pending' },
     data: { status: 'paid', paidAt: new Date(), paymentMethod },
@@ -37,9 +35,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Template not found' }, { status: 404 });
   }
 
-  // Idempotent: skip if customer with same template+email already exists
   const existing = customerEmail
-    ? await prisma.customer.findFirst({ where: { templateId, email: customerEmail, status: 'active' } })
+    ? await prisma.customer.findFirst({
+        where: { email: customerEmail, templateData: { some: { templateId } } },
+      })
     : null;
   if (existing) {
     console.log('[xendit-webhook] already installed, skipping:', existing.id);
@@ -51,18 +50,33 @@ export async function POST(request: NextRequest) {
     data: { status: 'draft' },
   });
 
-  const defaults = customerDefaults(staticTemplate.defaultData);
+  let customer = customerEmail
+    ? await prisma.customer.findFirst({ where: { email: customerEmail } })
+    : null;
+  if (!customer) {
+    customer = await prisma.customer.create({
+      data: { name: customerName, email: customerEmail, status: 'active' },
+    });
+  } else {
+    customer = await prisma.customer.update({
+      where: { id: customer.id },
+      data: { status: 'active', name: customerName },
+    });
+  }
 
-  const customer = await prisma.customer.create({
+  const defaults = JSON.parse(staticTemplate.defaultData || '{}');
+  const slug = customerName
+    ? customerName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') + '-' + customer.id.slice(0, 6)
+    : customer.id.slice(0, 12);
+  const templateData = await prisma.templateData.create({
     data: {
+      customerId: customer.id,
       templateId: staticTemplate.id,
-      name: customerName,
-      email: customerEmail,
-      status: 'active',
+      slug,
       ...defaults,
     },
   });
 
-  console.log('[xendit-webhook] installed customer:', customer.id, templateId);
+  console.log('[xendit-webhook] installed customer:', customer.id, 'templateData:', templateData.id, templateId);
   return NextResponse.json({ received: true, customerId: customer.id });
 }

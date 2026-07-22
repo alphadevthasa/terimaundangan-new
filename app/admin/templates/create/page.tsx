@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 
 export default function CreateTemplate() {
   const router = useRouter();
-  const [form, setForm] = useState({ name: '', description: '', type: 'wedding', thumbnail: '', price: 'Free', isPopular: false, html: '' });
+  const [form, setForm] = useState({ name: '', description: '', type: 'wedding', theme: '', thumbnail: '', price: 'Free', isPopular: false, html: '' });
   const [error, setError] = useState('');
 
   const update = (k: string, v: any) => setForm(f => ({ ...f, [k]: v }));
@@ -51,6 +51,17 @@ export default function CreateTemplate() {
             <label style={s.label}>Price</label>
             <input style={s.input} value={form.price} onChange={e => update('price', e.target.value)} />
           </div>
+        </div>
+        <div style={{ ...s.field, maxWidth: '300px' }}>
+          <label style={s.label}>Theme</label>
+          <select style={s.input} value={form.theme} onChange={e => update('theme', e.target.value)}>
+            <option value="">Select theme</option>
+            <option value="Elegant">Elegant</option>
+            <option value="Modern">Modern</option>
+            <option value="Romantic">Romantic</option>
+            <option value="Traditional">Traditional</option>
+            <option value="Nature">Nature</option>
+          </select>
         </div>
         <div style={s.field}>
           <label style={s.label}>Thumbnail URL</label>

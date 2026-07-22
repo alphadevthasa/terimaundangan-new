@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { customerDefaults } from '@/lib/template-utils';
 
-// POST /api/customer/install - Install a static template, creating a new Customer record
 export async function POST(request: NextRequest) {
   try {
     const { templateId, customerName, customerEmail } = await request.json();
@@ -11,7 +9,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'templateId is required' }, { status: 400 });
     }
 
-    // Verify the static template exists
     const staticTemplate = await prisma.template.findUnique({
       where: { id: templateId },
     });
@@ -20,26 +17,44 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Template not found' }, { status: 404 });
     }
 
-    // Deactivate any existing active customer
     await prisma.customer.updateMany({
       where: { status: 'active' },
       data: { status: 'draft' },
     });
 
-    // Create a new Customer record linked to the static template
-    const defaults = customerDefaults(staticTemplate.defaultData);
-    const customer = await prisma.customer.create({
+    let customer = customerEmail
+      ? await prisma.customer.findFirst({ where: { email: customerEmail } })
+      : null;
+    if (!customer) {
+      customer = await prisma.customer.create({
+        data: {
+          name: customerName || '',
+          email: customerEmail || '',
+          status: 'active',
+        },
+      });
+    } else {
+      customer = await prisma.customer.update({
+        where: { id: customer.id },
+        data: { status: 'active', name: customerName || customer.name },
+      });
+    }
+
+    const defaults = JSON.parse(staticTemplate.defaultData || '{}');
+    const slug = customerName
+      ? customerName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') + '-' + customer.id.slice(0, 6)
+      : customer.id.slice(0, 12);
+    const templateData = await prisma.templateData.create({
       data: {
+        customerId: customer.id,
         templateId: staticTemplate.id,
-        name: customerName || '',
-        email: customerEmail || '',
-        status: 'active',
+        slug,
         ...defaults,
       },
     });
 
     return NextResponse.json({
-      customer,
+      customer: { ...customer, templateData },
       message: 'Template installed successfully! You can now edit your wedding invitation.',
     });
   } catch (error) {

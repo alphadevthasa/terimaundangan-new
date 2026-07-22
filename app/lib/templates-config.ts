@@ -39,11 +39,63 @@ export const ELITE_WEDDING_TEMPLATE = `<!DOCTYPE html>
         #audio-btn { position:fixed; bottom:20px; right:20px; background:var(--bg-card); border:1px solid var(--gold); color:var(--gold); width:40px; height:40px; border-radius:50%; cursor:pointer; z-index:100; display:flex; justify-content:center; align-items:center; }
         @media (min-width:768px) { .couple-grid { display:flex; justify-content:center; gap:4rem; } .event-grid { display:flex; justify-content:center; gap:2rem; } }
     
-        /* autoplay FAB */
-        .autoplay-btn { position: fixed; bottom: 80px; right: 20px; width: 44px; height: 44px; background: rgba(10,8,7,.6); border: 1px solid var(--gold); color: var(--gold); border-radius: 50%; cursor: pointer; z-index: 100; display: flex; align-items: center; justify-content: center; font-size: 1rem; backdrop-filter: blur(8px); box-shadow: 0 4px 15px rgba(0,0,0,.3); transition: all .3s; }
-        .autoplay-btn:hover { background: var(--gold); color: var(--bg); transform: scale(1.1); }
-        .autoplay-btn.playing { background: linear-gradient(135deg,var(--gold),#b8942e); box-shadow: 0 0 20px rgba(201,169,97,.4); }
-        </style>
+        
+        /* Gallery Lightbox */
+        .gallery-lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.92);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        .gallery-lightbox.active { display: flex; }
+        .gallery-lightbox img {
+            max-width: 90vw;
+            max-height: 80vh;
+            object-fit: contain;
+            border-radius: 4px;
+            box-shadow: 0 20px 60px rgba(0,0,0,.5);
+        }
+        .gallery-lightbox .lb-close {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 2rem;
+            cursor: pointer;
+            z-index: 10000;
+        }
+        .gallery-lightbox .lb-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,.1);
+            border: 1px solid rgba(255,255,255,.2);
+            color: #fff;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .gallery-lightbox .lb-prev { left: 1rem; }
+        .gallery-lightbox .lb-next { right: 1rem; }
+        .gallery-lightbox .lb-counter {
+            position: absolute;
+            bottom: 1.5rem;
+            color: rgba(255,255,255,.7);
+            font-size: .85rem;
+        }
+
+</style>
 </head>
 <body>
     <section id="s-cover">
@@ -114,8 +166,7 @@ export const ELITE_WEDDING_TEMPLATE = `<!DOCTYPE html>
         <div class="gold-text" style="font-family:'Cormorant Garamond';font-size:3rem;font-style:italic;"><span id="e-bride-nick-close">B</span> & <span id="e-groom-nick-close">G</span></div>
         <div class="uppercase" style="margin-top:2rem;letter-spacing:0.3em;font-size:0.8rem;" id="e-closing-fam">Family</div>
     </section>
-            <button id="autoplay-btn" class="autoplay-btn" onclick="toggleAutoPlay()" aria-label="Toggle Autoplay"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="6,3 20,12 6,21 6,3"/></svg></button>
-<button id="audio-btn" onclick="toggleAudio()"><i class="fas fa-music"></i></button>
+<button id="audio-btn" onclick="toggleAudio()">🎵</button>
     <script>
         let audioCtx, osc1, osc2, gainNode, isPlaying = false;
         function initAudio() {
@@ -127,8 +178,9 @@ export const ELITE_WEDDING_TEMPLATE = `<!DOCTYPE html>
         }
         function toggleAudio() {
             if (!audioCtx) initAudio();
-            if (isPlaying) { audioCtx.suspend(); document.getElementById('audio-btn').style.background = 'var(--bg-card)'; }
-            else { audioCtx.resume(); document.getElementById('audio-btn').style.background = 'var(--gold)'; document.getElementById('audio-btn').style.color = 'var(--bg)'; }
+            const btn = document.getElementById('audio-btn');
+            if (isPlaying) { audioCtx.suspend(); btn.innerText = '🎵'; }
+            else { audioCtx.resume(); btn.innerText = '⏸️'; }
             isPlaying = !isPlaying;
         }
         let countdownInterval;
@@ -150,7 +202,11 @@ export const ELITE_WEDDING_TEMPLATE = `<!DOCTYPE html>
                 const data = e.data.payload;
                 for (const key in data) {
                     const el = document.getElementById('e-' + key);
-                    if (el) { if (el.tagName === 'IMG') el.src = data[key]; else el.innerText = data[key]; }
+                    if (el) {
+                        if (el.tagName === 'IMG') el.src = data[key];
+                        else if (key.endsWith('Bg') || key.endsWith('bg')) el.style.backgroundImage = 'url(' + data[key] + ')';
+                        else el.innerText = data[key];
+                    }
                 }
                 if(data['bride-nick']) document.getElementById('e-bride-nick-close').innerText = data['bride-nick'];
                 if(data['groom-nick']) document.getElementById('e-groom-nick-close').innerText = data['groom-nick'];
@@ -160,32 +216,88 @@ export const ELITE_WEDDING_TEMPLATE = `<!DOCTYPE html>
     </script>
 
 
-<script>
-var autoSections = ["s-cover","s-countdown","s-couple","s-verse","s-story","s-events","s-gallery","s-rsvp","s-gifts","s-stream","s-wishes","s-closing"];
-var autoInterval = null, autoPlaying = false, autoIdx = 0;
-function toggleAutoPlay() {
-  if (autoPlaying) { clearInterval(autoInterval); autoPlaying = false;
-    document.getElementById('autoplay-btn').classList.remove('playing');
-    document.getElementById('autoplay-btn').innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="6,3 20,12 6,21 6,3"/></svg>';
-    return; }
-  autoPlaying = true; autoIdx = 0;
-  document.getElementById('autoplay-btn').innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="4" width="5" height="16"/><rect x="14" y="4" width="5" height="16"/></svg>';
-  document.getElementById('autoplay-btn').classList.add('playing');
-  var el = document.getElementById(autoSections[0]);
-  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  autoIdx = 1;
-  autoInterval = setInterval(function() {
-    var el = document.getElementById(autoSections[autoIdx]);
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    autoIdx = (autoIdx + 1) % autoSections.length;
-  }, 4000);
-}
-window.addEventListener('beforeunload', function() { if (autoInterval) clearInterval(autoInterval); });
-</script>
+    <script>
+    // Gallery Lightbox
+    var lbImages = [];
+    var lbIndex = 0;
+    function initLightbox() {
+        var gallery = document.getElementById('gallery') || document.getElementById('s-gallery');
+        if (!gallery) return;
+        var imgs = gallery.querySelectorAll('img');
+        imgs.forEach(function(img, idx) {
+            img.style.cursor = 'pointer';
+            img.addEventListener('click', function() { openLightbox(idx); });
+        });
+    }
+    function refreshGalleryImages() {
+        var gallery = document.getElementById('gallery') || document.getElementById('s-gallery');
+        if (!gallery) return;
+        lbImages = Array.from(gallery.querySelectorAll('img')).map(img => img.src || img.dataset.src || img.getAttribute('src')).filter(Boolean);
+    }
+    function openLightbox(idx) {
+        refreshGalleryImages();
+        lbIndex = Math.min(idx, lbImages.length - 1);
+        if (lbIndex < 0) lbIndex = 0;
+        updateLightbox();
+        document.getElementById('galleryLightbox').classList.add('active');
+    }
+    function closeLightbox() {
+        document.getElementById('galleryLightbox').classList.remove('active');
+    }
+    function lightboxNav(dir) {
+        refreshGalleryImages();
+        lbIndex = (lbIndex + dir + lbImages.length) % lbImages.length;
+        updateLightbox();
+    }
+    function updateLightbox() {
+        var img = document.getElementById('lb-image');
+        var counter = document.getElementById('lb-counter');
+        if (img && lbImages[lbIndex]) {
+            img.src = lbImages[lbIndex];
+        }
+        if (counter && lbImages.length) {
+            counter.textContent = (lbIndex + 1) + ' / ' + lbImages.length;
+        }
+    }
+    document.addEventListener('keydown', function(e) {
+        if (!document.getElementById('galleryLightbox').classList.contains('active')) return;
+        if (e.key === 'Escape') closeLightbox();
+        if (e.key === 'ArrowLeft') lightboxNav(-1);
+        if (e.key === 'ArrowRight') lightboxNav(1);
+    });
+    initLightbox();
+    // Re-init lightbox after template data loads via postMessage
+    window.addEventListener('message', function(e) {
+        if (e.data.type === 'UPDATE') {
+            setTimeout(initLightbox, 100);
+        }
+    });
+    // Touch/swipe support for lightbox
+    var touchStartX = 0;
+    var touchEndX = 0;
+    document.addEventListener('touchstart', function(e) {
+        touchStartX = e.changedTouches[0].screenX;
+    }, false);
+    document.addEventListener('touchend', function(e) {
+        touchEndX = e.changedTouches[0].screenX;
+        if (!document.getElementById('galleryLightbox').classList.contains('active')) return;
+        var diff = touchStartX - touchEndX;
+        if (Math.abs(diff) > 50) {
+            lightboxNav(diff > 0 ? 1 : -1);
+        }
+    }, false);
+    </script>
+    <!-- Gallery Lightbox -->
+    <div class="gallery-lightbox" id="galleryLightbox">
+        <button class="lb-close" onclick="closeLightbox()">&times;</button>
+        <button class="lb-nav lb-prev" onclick="lightboxNav(-1)">&#10094;</button>
+        <img id="lb-image" src="" alt="Gallery preview" />
+        <button class="lb-nav lb-next" onclick="lightboxNav(1)">&#10095;</button>
+        <div class="lb-counter" id="lb-counter"></div>
+    </div>
 </body>
-</html>`;
-
-// ==================== Honey Wedding Template ====================
+</html>
+`;
 export const HONEY_WEDDING_TEMPLATE = `<!DOCTYPE html>
 <html lang="id">
 <head>
@@ -354,11 +466,63 @@ export const HONEY_WEDDING_TEMPLATE = `<!DOCTYPE html>
     .scroll-cue { bottom: 50px; }
   }
 
-        /* autoplay FAB */
-        .autoplay-btn { position: fixed; bottom: 80px; right: 20px; width: 44px; height: 44px; background: rgba(10,8,7,.6); border: 1px solid var(--gold); color: var(--gold); border-radius: 50%; cursor: pointer; z-index: 100; display: flex; align-items: center; justify-content: center; font-size: 1rem; backdrop-filter: blur(8px); box-shadow: 0 4px 15px rgba(0,0,0,.3); transition: all .3s; }
-        .autoplay-btn:hover { background: var(--gold); color: var(--bg); transform: scale(1.1); }
-        .autoplay-btn.playing { background: linear-gradient(135deg,var(--gold),#b8942e); box-shadow: 0 0 20px rgba(201,169,97,.4); }
-        </style>
+        
+        /* Gallery Lightbox */
+        .gallery-lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.92);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        .gallery-lightbox.active { display: flex; }
+        .gallery-lightbox img {
+            max-width: 90vw;
+            max-height: 80vh;
+            object-fit: contain;
+            border-radius: 4px;
+            box-shadow: 0 20px 60px rgba(0,0,0,.5);
+        }
+        .gallery-lightbox .lb-close {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 2rem;
+            cursor: pointer;
+            z-index: 10000;
+        }
+        .gallery-lightbox .lb-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,.1);
+            border: 1px solid rgba(255,255,255,.2);
+            color: #fff;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .gallery-lightbox .lb-prev { left: 1rem; }
+        .gallery-lightbox .lb-next { right: 1rem; }
+        .gallery-lightbox .lb-counter {
+            position: absolute;
+            bottom: 1.5rem;
+            color: rgba(255,255,255,.7);
+            font-size: .85rem;
+        }
+
+</style>
 </head>
 <body>
 
@@ -368,7 +532,6 @@ export const HONEY_WEDDING_TEMPLATE = `<!DOCTYPE html>
 <div class="vignette"></div>
 <div class="light-leak"></div>
 
-        <button id="autoplay-btn" class="autoplay-btn" onclick="toggleAutoPlay()" aria-label="Toggle Autoplay"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="6,3 20,12 6,21 6,3"/></svg></button>
 <button class="music-toggle" id="musicToggle"><div class="bars"><span></span><span></span><span></span></div></button>
 
 <nav class="side-nav">
@@ -418,7 +581,7 @@ export const HONEY_WEDDING_TEMPLATE = `<!DOCTYPE html>
   <div class="reveal"><div class="section-eyebrow">The Couple</div><h2 class="section-title">Bersatu dengan Cinta</h2></div>
   <div class="couple-grid mt-16">
     <div class="couple-card reveal reveal-delay-1">
-      <div class="photo-wrap"><img id="e-bride-photo" src="https://picsum.photos/seed/bride-sienna-wedding/600/800.jpg" alt="Sienna" class="photo"></div>
+      <div class="photo-wrap"><img id="e-bride-photo" src="https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=600&auto=format&fit=crop" alt="Sienna" class="photo"></div>
       <div class="role">The Bride</div>
       <div class="name" id="e-bride-name2">Sienna</div>
       <div class="fullname" id="e-bride-full">Sienna Pradipta Reswari</div>
@@ -426,7 +589,7 @@ export const HONEY_WEDDING_TEMPLATE = `<!DOCTYPE html>
     </div>
     <div class="couple-amp reveal reveal-delay-2">&amp;</div>
     <div class="couple-card reveal reveal-delay-3">
-      <div class="photo-wrap"><img id="e-groom-photo" src="https://picsum.photos/seed/groom-arka-wedding/600/800.jpg" alt="Arka" class="photo"></div>
+      <div class="photo-wrap"><img id="e-groom-photo" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=600&auto=format&fit=crop" alt="Arka" class="photo"></div>
       <div class="role">The Groom</div>
       <div class="name" id="e-groom-name2">Arka</div>
       <div class="fullname" id="e-groom-full">Arka Mahesa Wijaya</div>
@@ -484,12 +647,12 @@ export const HONEY_WEDDING_TEMPLATE = `<!DOCTYPE html>
 <section id="gallery">
   <div class="reveal"><div class="section-eyebrow">Our Moments</div><h2 class="section-title">Galeri Kenangan</h2></div>
   <div class="gallery-grid mt-16">
-    <div class="gallery-item reveal"><img id="e-gallery-1" src="https://picsum.photos/seed/wedding-gallery-1/600/800.jpg" alt="Gallery 1"></div>
-    <div class="gallery-item reveal reveal-delay-1"><img id="e-gallery-2" src="https://picsum.photos/seed/wedding-gallery-2/600/800.jpg" alt="Gallery 2"></div>
-    <div class="gallery-item reveal reveal-delay-2"><img id="e-gallery-3" src="https://picsum.photos/seed/wedding-gallery-3/600/800.jpg" alt="Gallery 3"></div>
-    <div class="gallery-item reveal"><img id="e-gallery-4" src="https://picsum.photos/seed/wedding-gallery-4/600/800.jpg" alt="Gallery 4"></div>
-    <div class="gallery-item reveal reveal-delay-1"><img id="e-gallery-5" src="https://picsum.photos/seed/wedding-gallery-5/600/800.jpg" alt="Gallery 5"></div>
-    <div class="gallery-item reveal reveal-delay-2"><img id="e-gallery-6" src="https://picsum.photos/seed/wedding-gallery-6/600/800.jpg" alt="Gallery 6"></div>
+    <div class="gallery-item reveal"><img id="e-gallery-1" src="https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=600&auto=format&fit=crop" alt="Gallery 1"></div>
+    <div class="gallery-item reveal reveal-delay-1"><img id="e-gallery-2" src="https://images.unsplash.com/photo-1511895426328-dc8714191300?q=80&w=600&auto=format&fit=crop" alt="Gallery 2"></div>
+    <div class="gallery-item reveal reveal-delay-2"><img id="e-gallery-3" src="https://images.unsplash.com/photo-1520854221256-17451cc331bf?q=80&w=600&auto=format&fit=crop" alt="Gallery 3"></div>
+    <div class="gallery-item reveal"><img id="e-gallery-4" src="https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?q=80&w=600&auto=format&fit=crop" alt="Gallery 4"></div>
+    <div class="gallery-item reveal reveal-delay-1"><img id="e-gallery-5" src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?q=80&w=600&auto=format&fit=crop" alt="Gallery 5"></div>
+    <div class="gallery-item reveal reveal-delay-2"><img id="e-gallery-6" src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=600&auto=format&fit=crop" alt="Gallery 6"></div>
   </div>
 </section>
 
@@ -610,12 +773,12 @@ export const HONEY_WEDDING_TEMPLATE = `<!DOCTYPE html>
     if (data.resepsiPlace) document.getElementById('e-resepsi-place').innerHTML = data.resepsiPlace;
     if (data.resepsiMaps) document.getElementById('e-resepsi-maps').href = \`https://www.google.com/maps/search/?api=1&query=\${encodeURIComponent(data.resepsiMaps)}\`;
     if (data.countdownDate) { weddingDate = new Date(data.countdownDate).getTime(); updateCountdown(); }
-    if (data.gallery1) document.getElementById('e-gallery-1').src = data.gallery1;
-    if (data.gallery2) document.getElementById('e-gallery-2').src = data.gallery2;
-    if (data.gallery3) document.getElementById('e-gallery-3').src = data.gallery3;
-    if (data.gallery4) document.getElementById('e-gallery-4').src = data.gallery4;
-    if (data.gallery5) document.getElementById('e-gallery-5').src = data.gallery5;
-    if (data.gallery6) document.getElementById('e-gallery-6').src = data.gallery6;
+    if (data['gal-1']) document.getElementById('e-gal-1').src = data['gal-1'];
+    if (data['gal-2']) document.getElementById('e-gal-2').src = data['gal-2'];
+    if (data['gal-3']) document.getElementById('e-gal-3').src = data['gal-3'];
+    if (data['gal-4']) document.getElementById('e-gal-4').src = data['gal-4'];
+    if (data['gal-5']) document.getElementById('e-gal-5').src = data['gal-5'];
+    if (data['gal-6']) document.getElementById('e-gal-6').src = data['gal-6'];
     if (data.brideName && data.groomName) document.getElementById('e-footer-names').innerHTML = \`\${data.brideName} &amp; \${data.groomName}\`;
   };
 
@@ -629,31 +792,93 @@ export const HONEY_WEDDING_TEMPLATE = `<!DOCTYPE html>
 
 
 <script>
-var autoSections = ["hero","opening","couple","story","events","gallery"];
-var autoInterval = null, autoPlaying = false, autoIdx = 0;
-function toggleAutoPlay() {
-  if (autoPlaying) { clearInterval(autoInterval); autoPlaying = false;
-    document.getElementById('autoplay-btn').classList.remove('playing');
-    document.getElementById('autoplay-btn').innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="6,3 20,12 6,21 6,3"/></svg>';
-    return; }
-  autoPlaying = true; autoIdx = 0;
-  document.getElementById('autoplay-btn').innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="4" width="5" height="16"/><rect x="14" y="4" width="5" height="16"/></svg>';
-  document.getElementById('autoplay-btn').classList.add('playing');
-  var el = document.getElementById(autoSections[0]);
-  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  autoIdx = 1;
-  autoInterval = setInterval(function() {
-    var el = document.getElementById(autoSections[autoIdx]);
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    autoIdx = (autoIdx + 1) % autoSections.length;
-  }, 4000);
-}
-window.addEventListener('beforeunload', function() { if (autoInterval) clearInterval(autoInterval); });
 </script>
-</body>
-</html>`;
 
-// ==================== Java Batik Template ====================
+
+
+
+    <script>
+    // Gallery Lightbox
+    var lbImages = [];
+    var lbIndex = 0;
+    function initLightbox() {
+        var gallery = document.getElementById('gallery') || document.getElementById('s-gallery');
+        if (!gallery) return;
+        var imgs = gallery.querySelectorAll('img');
+        imgs.forEach(function(img, idx) {
+            img.style.cursor = 'pointer';
+            img.addEventListener('click', function() { openLightbox(idx); });
+        });
+    }
+    function refreshGalleryImages() {
+        var gallery = document.getElementById('gallery') || document.getElementById('s-gallery');
+        if (!gallery) return;
+        lbImages = Array.from(gallery.querySelectorAll('img')).map(img => img.src || img.dataset.src || img.getAttribute('src')).filter(Boolean);
+    }
+    function openLightbox(idx) {
+        refreshGalleryImages();
+        lbIndex = Math.min(idx, lbImages.length - 1);
+        if (lbIndex < 0) lbIndex = 0;
+        updateLightbox();
+        document.getElementById('galleryLightbox').classList.add('active');
+    }
+    function closeLightbox() {
+        document.getElementById('galleryLightbox').classList.remove('active');
+    }
+    function lightboxNav(dir) {
+        refreshGalleryImages();
+        lbIndex = (lbIndex + dir + lbImages.length) % lbImages.length;
+        updateLightbox();
+    }
+    function updateLightbox() {
+        var img = document.getElementById('lb-image');
+        var counter = document.getElementById('lb-counter');
+        if (img && lbImages[lbIndex]) {
+            img.src = lbImages[lbIndex];
+        }
+        if (counter && lbImages.length) {
+            counter.textContent = (lbIndex + 1) + ' / ' + lbImages.length;
+        }
+    }
+    document.addEventListener('keydown', function(e) {
+        if (!document.getElementById('galleryLightbox').classList.contains('active')) return;
+        if (e.key === 'Escape') closeLightbox();
+        if (e.key === 'ArrowLeft') lightboxNav(-1);
+        if (e.key === 'ArrowRight') lightboxNav(1);
+    });
+    initLightbox();
+    // Re-init lightbox after template data loads via postMessage
+    window.addEventListener('message', function(e) {
+        if (e.data.type === 'UPDATE') {
+            setTimeout(initLightbox, 100);
+        }
+    });
+    // Touch/swipe support for lightbox
+    var touchStartX = 0;
+    var touchEndX = 0;
+    document.addEventListener('touchstart', function(e) {
+        touchStartX = e.changedTouches[0].screenX;
+    }, false);
+    document.addEventListener('touchend', function(e) {
+        touchEndX = e.changedTouches[0].screenX;
+        if (!document.getElementById('galleryLightbox').classList.contains('active')) return;
+        var diff = touchStartX - touchEndX;
+        if (Math.abs(diff) > 50) {
+            lightboxNav(diff > 0 ? 1 : -1);
+        }
+    }, false);
+    </script>
+    <!-- Gallery Lightbox -->
+    <div class="gallery-lightbox" id="galleryLightbox">
+        <button class="lb-close" onclick="closeLightbox()">&times;</button>
+        <button class="lb-nav lb-prev" onclick="lightboxNav(-1)">&#10094;</button>
+        <img id="lb-image" src="" alt="Gallery preview" />
+        <button class="lb-nav lb-next" onclick="lightboxNav(1)">&#10095;</button>
+        <div class="lb-counter" id="lb-counter"></div>
+    </div>
+</body>
+</html>
+`;
 export const JAVA_BATIK_TEMPLATE = `<!DOCTYPE html>
 <html lang="id">
 <head>
@@ -826,7 +1051,7 @@ export const JAVA_BATIK_TEMPLATE = `<!DOCTYPE html>
   .hero-bg {
     position: absolute;
     inset: -10%;
-    background: url('https://picsum.photos/seed/javanese-palace-bg/1200/1600.jpg') no-repeat center center / cover;
+    background: url('https://images.unsplash.com/photo-1564419320508-2e3d3a7d7bf5?q=80&w=1200&auto=format&fit=crop') no-repeat center center / cover;
     filter: sepia(0.6) brightness(0.35) contrast(1.1);
     z-index: 0;
     will-change: transform;
@@ -993,20 +1218,71 @@ export const JAVA_BATIK_TEMPLATE = `<!DOCTYPE html>
   /* Floating particles ONLY IN HERO */
   .particle { position: absolute; background: var(--gold-bright); border-radius: 50%; pointer-events: none; box-shadow: 0 0 6px var(--gold); opacity: 0; z-index: 1; }
 
-        /* autoplay FAB */
-        .autoplay-btn { position: fixed; bottom: 80px; right: 20px; width: 44px; height: 44px; background: rgba(10,8,7,.6); border: 1px solid var(--gold); color: var(--gold); border-radius: 50%; cursor: pointer; z-index: 100; display: flex; align-items: center; justify-content: center; font-size: 1rem; backdrop-filter: blur(8px); box-shadow: 0 4px 15px rgba(0,0,0,.3); transition: all .3s; }
-        .autoplay-btn:hover { background: var(--gold); color: var(--bg); transform: scale(1.1); }
-        .autoplay-btn.playing { background: linear-gradient(135deg,var(--gold),#b8942e); box-shadow: 0 0 20px rgba(201,169,97,.4); }
-        </style>
+        
+        /* Gallery Lightbox */
+        .gallery-lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.92);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        .gallery-lightbox.active { display: flex; }
+        .gallery-lightbox img {
+            max-width: 90vw;
+            max-height: 80vh;
+            object-fit: contain;
+            border-radius: 4px;
+            box-shadow: 0 20px 60px rgba(0,0,0,.5);
+        }
+        .gallery-lightbox .lb-close {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 2rem;
+            cursor: pointer;
+            z-index: 10000;
+        }
+        .gallery-lightbox .lb-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,.1);
+            border: 1px solid rgba(255,255,255,.2);
+            color: #fff;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .gallery-lightbox .lb-prev { left: 1rem; }
+        .gallery-lightbox .lb-next { right: 1rem; }
+        .gallery-lightbox .lb-counter {
+            position: absolute;
+            bottom: 1.5rem;
+            color: rgba(255,255,255,.7);
+            font-size: .85rem;
+        }
+
+</style>
 </head>
 <body>
 
-        <button id="autoplay-btn" class="autoplay-btn" onclick="toggleAutoPlay()" aria-label="Toggle Autoplay"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="6,3 20,12 6,21 6,3"/></svg></button>
-<button class="music-toggle" id="musicToggle" aria-label="Toggle Music"><i class="fas fa-music"></i></button>
+<button class="music-toggle" id="musicToggle" aria-label="Toggle Music">🎵</button>
 
 <!-- ============ 1. COVER (GANJIL - PARALLAX) ============ -->
 <section class="hero" id="cover">
-  <div class="hero-bg" data-speed="0.4"></div>
+  <div class="hero-bg" id="e-heroBg" data-speed="0.4"></div>
   <div class="hero-pattern" data-speed="0.2"></div>
   <div class="hero-overlay"></div>
   <div class="hero-content" data-tilt="true">
@@ -1042,7 +1318,7 @@ export const JAVA_BATIK_TEMPLATE = `<!DOCTYPE html>
 
 <!-- ============ 3. THE COUPLE (GANJIL - PARALLAX) ============ -->
 <section class="base-section parallax-section reveal" id="couple">
-  <div class="parallax-bg" style="background-image: url('https://picsum.photos/seed/javanese-couple-bg/1200/1600.jpg');" data-speed="0.15"></div>
+  <div class="parallax-bg" id="e-coupleBg" style="background-image: url('https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?q=80&w=1200&auto=format&fit=crop');" data-speed="0.15"></div>
   <div class="parallax-pattern pattern-kawung" data-speed="0.05"></div>
   <div class="parallax-overlay"></div>
   <div class="ornate-frame-parallax" data-tilt="true"></div>
@@ -1057,7 +1333,7 @@ export const JAVA_BATIK_TEMPLATE = `<!DOCTYPE html>
     <div class="ornament-divider"><div class="line"></div><i class="fas fa-leaf"></i><div class="line right"></div></div>
     <div class="couple-grid">
       <div class="couple-card">
-        <div class="couple-photo-wrap"><img id="e-groom-photo" src="https://picsum.photos/seed/javanese-groom/600/800.jpg" alt="Groom" class="couple-photo"></div>
+        <div class="couple-photo-wrap"><img id="e-groom-photo" src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=600&auto=format&fit=crop" alt="Groom" class="couple-photo"></div>
         <div class="couple-role">The Groom</div>
         <div class="couple-name" id="e-groom-name2">Baskoro</div>
         <div class="couple-fullname" id="e-groom-full">Raden Mas Baskoro Wicaksono, S.T.</div>
@@ -1065,7 +1341,7 @@ export const JAVA_BATIK_TEMPLATE = `<!DOCTYPE html>
       </div>
       <div class="couple-amp">&amp;</div>
       <div class="couple-card">
-        <div class="couple-photo-wrap"><img id="e-bride-photo" src="https://picsum.photos/seed/javanese-bride/600/800.jpg" alt="Bride" class="couple-photo"></div>
+        <div class="couple-photo-wrap"><img id="e-bride-photo" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop" alt="Bride" class="couple-photo"></div>
         <div class="couple-role">The Bride</div>
         <div class="couple-name" id="e-bride-name2">Sekarwangi</div>
         <div class="couple-fullname" id="e-bride-full">Raden Ayu Sekarwangi Putri, S.Ked.</div>
@@ -1095,7 +1371,7 @@ export const JAVA_BATIK_TEMPLATE = `<!DOCTYPE html>
 
 <!-- ============ 5. LOVE STORY (GANJIL - PARALLAX) ============ -->
 <section class="base-section parallax-section reveal" id="story">
-  <div class="parallax-bg" style="background-image: url('https://picsum.photos/seed/javanese-story-bg/1200/1600.jpg');" data-speed="0.15"></div>
+  <div class="parallax-bg" id="e-storyBg" style="background-image: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1200&auto=format&fit=crop');" data-speed="0.15"></div>
   <div class="parallax-pattern pattern-tumpal" data-speed="0.05"></div>
   <div class="parallax-overlay"></div>
   <div class="ornate-frame-parallax" data-tilt="true"></div>
@@ -1138,7 +1414,7 @@ export const JAVA_BATIK_TEMPLATE = `<!DOCTYPE html>
 
 <!-- ============ 7. PHOTO GALLERY (GANJIL - PARALLAX) ============ -->
 <section class="base-section parallax-section reveal" id="gallery">
-  <div class="parallax-bg" style="background-image: url('https://picsum.photos/seed/javanese-gallery-bg/1200/1600.jpg');" data-speed="0.15"></div>
+  <div class="parallax-bg" id="e-galleryBg" style="background-image: url('https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?q=80&w=1200&auto=format&fit=crop');" data-speed="0.15"></div>
   <div class="parallax-pattern pattern-parang" data-speed="0.05"></div>
   <div class="parallax-overlay"></div>
   <div class="ornate-frame-parallax" data-tilt="true"></div>
@@ -1152,12 +1428,12 @@ export const JAVA_BATIK_TEMPLATE = `<!DOCTYPE html>
     <h2 class="section-heading">Galeri Kenangan</h2>
     <div class="ornament-divider"><div class="line"></div><i class="fas fa-leaf"></i><div class="line right"></div></div>
     <div class="gallery-grid">
-      <div class="gallery-item"><img id="e-gallery-1" src="https://picsum.photos/seed/java-wed-1/600/800.jpg" alt="Gallery 1"></div>
-      <div class="gallery-item"><img id="e-gallery-2" src="https://picsum.photos/seed/java-wed-2/600/800.jpg" alt="Gallery 2"></div>
-      <div class="gallery-item"><img id="e-gallery-3" src="https://picsum.photos/seed/java-wed-3/600/800.jpg" alt="Gallery 3"></div>
-      <div class="gallery-item"><img id="e-gallery-4" src="https://picsum.photos/seed/java-wed-4/600/800.jpg" alt="Gallery 4"></div>
-      <div class="gallery-item"><img id="e-gallery-5" src="https://picsum.photos/seed/java-wed-5/600/800.jpg" alt="Gallery 5"></div>
-      <div class="gallery-item"><img id="e-gallery-6" src="https://picsum.photos/seed/java-wed-6/600/800.jpg" alt="Gallery 6"></div>
+      <div class="gallery-item"><img id="e-gallery-1" src="https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=600&auto=format&fit=crop" alt="Gallery 1"></div>
+      <div class="gallery-item"><img id="e-gallery-2" src="https://images.unsplash.com/photo-1511895426328-dc8714191300?q=80&w=600&auto=format&fit=crop" alt="Gallery 2"></div>
+      <div class="gallery-item"><img id="e-gallery-3" src="https://images.unsplash.com/photo-1520854221256-17451cc331bf?q=80&w=600&auto=format&fit=crop" alt="Gallery 3"></div>
+      <div class="gallery-item"><img id="e-gallery-4" src="https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?q=80&w=600&auto=format&fit=crop" alt="Gallery 4"></div>
+      <div class="gallery-item"><img id="e-gallery-5" src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?q=80&w=600&auto=format&fit=crop" alt="Gallery 5"></div>
+      <div class="gallery-item"><img id="e-gallery-6" src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=600&auto=format&fit=crop" alt="Gallery 6"></div>
     </div>
   </div>
 </section>
@@ -1188,7 +1464,7 @@ export const JAVA_BATIK_TEMPLATE = `<!DOCTYPE html>
 
 <!-- ============ 9. WEDDING GIFTS (GANJIL - PARALLAX) ============ -->
 <section class="base-section parallax-section reveal" id="gifts">
-  <div class="parallax-bg" style="background-image: url('https://picsum.photos/seed/javanese-gift-bg/1200/1600.jpg');" data-speed="0.15"></div>
+  <div class="parallax-bg" id="e-giftsBg" style="background-image: url('https://images.unsplash.com/photo-1510076857177-7470076d4098?q=80&w=1200&auto=format&fit=crop');" data-speed="0.15"></div>
   <div class="parallax-pattern pattern-tumpal" data-speed="0.05"></div>
   <div class="parallax-overlay"></div>
   <div class="ornate-frame-parallax" data-tilt="true"></div>
@@ -1234,7 +1510,7 @@ export const JAVA_BATIK_TEMPLATE = `<!DOCTYPE html>
 
 <!-- ============ 11. WISHES / GUEST MESSAGES (GANJIL - PARALLAX) ============ -->
 <section class="base-section parallax-section reveal" id="wishes">
-  <div class="parallax-bg" style="background-image: url('https://picsum.photos/seed/javanese-wishes-bg/1200/1600.jpg');" data-speed="0.15"></div>
+  <div class="parallax-bg" id="e-wishesBg" style="background-image: url('https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=1200&auto=format&fit=crop');" data-speed="0.15"></div>
   <div class="parallax-pattern pattern-parang" data-speed="0.05"></div>
   <div class="parallax-overlay"></div>
   <div class="ornate-frame-parallax" data-tilt="true"></div>
@@ -1414,7 +1690,7 @@ export const JAVA_BATIK_TEMPLATE = `<!DOCTYPE html>
     if (!audioCtx) initAudio();
     if (audioCtx.state === 'suspended') audioCtx.resume();
     isPlaying = !isPlaying;
-    musicToggle.innerHTML = isPlaying ? '<i class="fas fa-pause"></i>' : '<i class="fas fa-music"></i>';
+    musicToggle.innerText = isPlaying ? '⏸️' : '🎵';
     masterGain.gain.linearRampToValueAtTime(isPlaying ? 0.15 : 0, audioCtx.currentTime + 1.5);
   });
 
@@ -1473,6 +1749,13 @@ export const JAVA_BATIK_TEMPLATE = `<!DOCTYPE html>
     if (data.bankHolder) document.getElementById('e-bank-holder').textContent = data.bankHolder;
     if (data.closingThanks) document.getElementById('e-closing-thanks').textContent = data.closingThanks;
     if (data.closingFam) document.getElementById('e-closing-fam').textContent = data.closingFam;
+    // Handle background images
+    if (data.heroBg) document.getElementById('e-heroBg').style.backgroundImage = 'url(' + data.heroBg + ')';
+    if (data.coupleBg) document.getElementById('e-coupleBg').style.backgroundImage = 'url(' + data.coupleBg + ')';
+    if (data.storyBg) document.getElementById('e-storyBg').style.backgroundImage = 'url(' + data.storyBg + ')';
+    if (data.galleryBg) document.getElementById('e-galleryBg').style.backgroundImage = 'url(' + data.galleryBg + ')';
+    if (data.giftsBg) document.getElementById('e-giftsBg').style.backgroundImage = 'url(' + data.giftsBg + ')';
+    if (data.wishesBg) document.getElementById('e-wishesBg').style.backgroundImage = 'url(' + data.wishesBg + ')';
   };
 
   // Listen for postMessage from parent (for detail page preview and editor)
@@ -1485,31 +1768,93 @@ export const JAVA_BATIK_TEMPLATE = `<!DOCTYPE html>
 
 
 <script>
-var autoSections = ["cover","countdown-sec","couple","verse","story","events","gallery","rsvp","gifts","streaming","wishes","closing"];
-var autoInterval = null, autoPlaying = false, autoIdx = 0;
-function toggleAutoPlay() {
-  if (autoPlaying) { clearInterval(autoInterval); autoPlaying = false;
-    document.getElementById('autoplay-btn').classList.remove('playing');
-    document.getElementById('autoplay-btn').innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="6,3 20,12 6,21 6,3"/></svg>';
-    return; }
-  autoPlaying = true; autoIdx = 0;
-  document.getElementById('autoplay-btn').innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="4" width="5" height="16"/><rect x="14" y="4" width="5" height="16"/></svg>';
-  document.getElementById('autoplay-btn').classList.add('playing');
-  var el = document.getElementById(autoSections[0]);
-  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  autoIdx = 1;
-  autoInterval = setInterval(function() {
-    var el = document.getElementById(autoSections[autoIdx]);
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    autoIdx = (autoIdx + 1) % autoSections.length;
-  }, 4000);
-}
-window.addEventListener('beforeunload', function() { if (autoInterval) clearInterval(autoInterval); });
 </script>
-</body>
-</html> `;
 
-// ==================== Forest Nature Template ====================
+
+
+
+    <script>
+    // Gallery Lightbox
+    var lbImages = [];
+    var lbIndex = 0;
+    function initLightbox() {
+        var gallery = document.getElementById('gallery') || document.getElementById('s-gallery');
+        if (!gallery) return;
+        var imgs = gallery.querySelectorAll('img');
+        imgs.forEach(function(img, idx) {
+            img.style.cursor = 'pointer';
+            img.addEventListener('click', function() { openLightbox(idx); });
+        });
+    }
+    function refreshGalleryImages() {
+        var gallery = document.getElementById('gallery') || document.getElementById('s-gallery');
+        if (!gallery) return;
+        lbImages = Array.from(gallery.querySelectorAll('img')).map(img => img.src || img.dataset.src || img.getAttribute('src')).filter(Boolean);
+    }
+    function openLightbox(idx) {
+        refreshGalleryImages();
+        lbIndex = Math.min(idx, lbImages.length - 1);
+        if (lbIndex < 0) lbIndex = 0;
+        updateLightbox();
+        document.getElementById('galleryLightbox').classList.add('active');
+    }
+    function closeLightbox() {
+        document.getElementById('galleryLightbox').classList.remove('active');
+    }
+    function lightboxNav(dir) {
+        refreshGalleryImages();
+        lbIndex = (lbIndex + dir + lbImages.length) % lbImages.length;
+        updateLightbox();
+    }
+    function updateLightbox() {
+        var img = document.getElementById('lb-image');
+        var counter = document.getElementById('lb-counter');
+        if (img && lbImages[lbIndex]) {
+            img.src = lbImages[lbIndex];
+        }
+        if (counter && lbImages.length) {
+            counter.textContent = (lbIndex + 1) + ' / ' + lbImages.length;
+        }
+    }
+    document.addEventListener('keydown', function(e) {
+        if (!document.getElementById('galleryLightbox').classList.contains('active')) return;
+        if (e.key === 'Escape') closeLightbox();
+        if (e.key === 'ArrowLeft') lightboxNav(-1);
+        if (e.key === 'ArrowRight') lightboxNav(1);
+    });
+    initLightbox();
+    // Re-init lightbox after template data loads via postMessage
+    window.addEventListener('message', function(e) {
+        if (e.data.type === 'UPDATE') {
+            setTimeout(initLightbox, 100);
+        }
+    });
+    // Touch/swipe support for lightbox
+    var touchStartX = 0;
+    var touchEndX = 0;
+    document.addEventListener('touchstart', function(e) {
+        touchStartX = e.changedTouches[0].screenX;
+    }, false);
+    document.addEventListener('touchend', function(e) {
+        touchEndX = e.changedTouches[0].screenX;
+        if (!document.getElementById('galleryLightbox').classList.contains('active')) return;
+        var diff = touchStartX - touchEndX;
+        if (Math.abs(diff) > 50) {
+            lightboxNav(diff > 0 ? 1 : -1);
+        }
+    }, false);
+    </script>
+    <!-- Gallery Lightbox -->
+    <div class="gallery-lightbox" id="galleryLightbox">
+        <button class="lb-close" onclick="closeLightbox()">&times;</button>
+        <button class="lb-nav lb-prev" onclick="lightboxNav(-1)">&#10094;</button>
+        <img id="lb-image" src="" alt="Gallery preview" />
+        <button class="lb-nav lb-next" onclick="lightboxNav(1)">&#10095;</button>
+        <div class="lb-counter" id="lb-counter"></div>
+    </div>
+</body>
+</html>
+`;
 export const FOREST_NATURE_TEMPLATE = `<!DOCTYPE html>
 <html lang="id">
 <head>
@@ -1931,11 +2276,63 @@ export const FOREST_NATURE_TEMPLATE = `<!DOCTYPE html>
             .timeline { padding-left: 1.5rem; }
         }
     
-        /* autoplay FAB */
-        .autoplay-btn { position: fixed; bottom: 80px; right: 20px; width: 44px; height: 44px; background: rgba(10,8,7,.6); border: 1px solid var(--gold); color: var(--gold); border-radius: 50%; cursor: pointer; z-index: 100; display: flex; align-items: center; justify-content: center; font-size: 1rem; backdrop-filter: blur(8px); box-shadow: 0 4px 15px rgba(0,0,0,.3); transition: all .3s; }
-        .autoplay-btn:hover { background: var(--gold); color: var(--bg); transform: scale(1.1); }
-        .autoplay-btn.playing { background: linear-gradient(135deg,var(--gold),#b8942e); box-shadow: 0 0 20px rgba(201,169,97,.4); }
-        </style>
+        
+        /* Gallery Lightbox */
+        .gallery-lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.92);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        .gallery-lightbox.active { display: flex; }
+        .gallery-lightbox img {
+            max-width: 90vw;
+            max-height: 80vh;
+            object-fit: contain;
+            border-radius: 4px;
+            box-shadow: 0 20px 60px rgba(0,0,0,.5);
+        }
+        .gallery-lightbox .lb-close {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 2rem;
+            cursor: pointer;
+            z-index: 10000;
+        }
+        .gallery-lightbox .lb-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,.1);
+            border: 1px solid rgba(255,255,255,.2);
+            color: #fff;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .gallery-lightbox .lb-prev { left: 1rem; }
+        .gallery-lightbox .lb-next { right: 1rem; }
+        .gallery-lightbox .lb-counter {
+            position: absolute;
+            bottom: 1.5rem;
+            color: rgba(255,255,255,.7);
+            font-size: .85rem;
+        }
+
+</style>
 </head>
 <body>
 
@@ -1943,8 +2340,7 @@ export const FOREST_NATURE_TEMPLATE = `<!DOCTYPE html>
     <audio id="bg-music" loop>
         <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
     </audio>
-            <button id="autoplay-btn" class="autoplay-btn" onclick="toggleAutoPlay()" aria-label="Toggle Autoplay"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="6,3 20,12 6,21 6,3"/></svg></button>
-<button id="music-btn" onclick="toggleMusic()"><i class="fas fa-music"></i></button>
+<button id="music-btn" onclick="toggleMusic()">🎵</button>
 
     <!-- 1. COVER -->
     <section id="cover" class="parallax">
@@ -2177,12 +2573,12 @@ export const FOREST_NATURE_TEMPLATE = `<!DOCTYPE html>
         function toggleMusic() {
             if (isPlaying) {
                 audio.pause();
-                musicBtn.innerHTML = '<i class="fas fa-music"></i>';
+                musicBtn.innerText = '🎵';
             } else {
                 audio.play().catch(error => {
                     console.log("Audio play failed:", error);
                 });
-                musicBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                musicBtn.innerText = '⏸️';
             }
             isPlaying = !isPlaying;
         }
@@ -2216,6 +2612,11 @@ export const FOREST_NATURE_TEMPLATE = `<!DOCTYPE html>
             if (data.bankHolder) document.getElementById('e-bank-holder').textContent = data.bankHolder;
             if (data.closingThanks) document.getElementById('e-closing-thanks').textContent = data.closingThanks;
             if (data.closingNames) document.getElementById('e-closing-names').textContent = data.closingNames;
+            // Handle background images (Forest Nature uses section elements)
+            if (data.heroBg) document.getElementById('cover').style.backgroundImage = 'url(' + data.heroBg + ')';
+            if (data.coupleBg) document.getElementById('holy-verse').style.backgroundImage = 'url(' + data.coupleBg + ')';
+            if (data.storyBg) document.getElementById('events').style.backgroundImage = 'url(' + data.storyBg + ')';
+            if (data.galleryBg) document.getElementById('closing').style.backgroundImage = 'url(' + data.galleryBg + ')';
         };
 
         // Listen for postMessage from parent (for detail page preview and editor)
@@ -2225,33 +2626,112 @@ export const FOREST_NATURE_TEMPLATE = `<!DOCTYPE html>
             }
         });
     </script>
+    initLightbox();
+    // Touch/swipe support for lightbox
+    var touchStartX = 0;
+    var touchEndX = 0;
+    document.addEventListener('touchstart', function(e) {
+        touchStartX = e.changedTouches[0].screenX;
+    }, false);
+    document.addEventListener('touchend', function(e) {
+        touchEndX = e.changedTouches[0].screenX;
+        if (!document.getElementById('galleryLightbox').classList.contains('active')) return;
+        var diff = touchStartX - touchEndX;
+        if (Math.abs(diff) > 50) {
+            lightboxNav(diff > 0 ? 1 : -1);
+        }
+    }, false);
+
 
 
 <script>
-var autoSections = ["cover","countdown-section","holy-verse","couple","love-story","events","gallery","gifts-stream","rsvp-wishes","closing"];
-var autoInterval = null, autoPlaying = false, autoIdx = 0;
-function toggleAutoPlay() {
-  if (autoPlaying) { clearInterval(autoInterval); autoPlaying = false;
-    document.getElementById('autoplay-btn').classList.remove('playing');
-    document.getElementById('autoplay-btn').innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="6,3 20,12 6,21 6,3"/></svg>';
-    return; }
-  autoPlaying = true; autoIdx = 0;
-  document.getElementById('autoplay-btn').innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="4" width="5" height="16"/><rect x="14" y="4" width="5" height="16"/></svg>';
-  document.getElementById('autoplay-btn').classList.add('playing');
-  var el = document.getElementById(autoSections[0]);
-  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  autoIdx = 1;
-  autoInterval = setInterval(function() {
-    var el = document.getElementById(autoSections[autoIdx]);
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    autoIdx = (autoIdx + 1) % autoSections.length;
-  }, 4000);
-}
-window.addEventListener('beforeunload', function() { if (autoInterval) clearInterval(autoInterval); });
-</script>
-</body>
-</html> `;
 
+
+
+
+
+    <script>
+    // Gallery Lightbox
+    var lbImages = [];
+    var lbIndex = 0;
+    function initLightbox() {
+        var gallery = document.getElementById('gallery') || document.getElementById('s-gallery');
+        if (!gallery) return;
+        var imgs = gallery.querySelectorAll('img');
+        imgs.forEach(function(img, idx) {
+            img.style.cursor = 'pointer';
+            img.addEventListener('click', function() { openLightbox(idx); });
+        });
+    }
+    function refreshGalleryImages() {
+        var gallery = document.getElementById('gallery') || document.getElementById('s-gallery');
+        if (!gallery) return;
+        lbImages = Array.from(gallery.querySelectorAll('img')).map(img => img.src || img.dataset.src || img.getAttribute('src')).filter(Boolean);
+    }
+    function openLightbox(idx) {
+        refreshGalleryImages();
+        lbIndex = Math.min(idx, lbImages.length - 1);
+        if (lbIndex < 0) lbIndex = 0;
+        updateLightbox();
+        document.getElementById('galleryLightbox').classList.add('active');
+    }
+    function closeLightbox() {
+        document.getElementById('galleryLightbox').classList.remove('active');
+    }
+    function lightboxNav(dir) {
+        refreshGalleryImages();
+        lbIndex = (lbIndex + dir + lbImages.length) % lbImages.length;
+        updateLightbox();
+    }
+    function updateLightbox() {
+        var img = document.getElementById('lb-image');
+        var counter = document.getElementById('lb-counter');
+        if (img && lbImages[lbIndex]) {
+            img.src = lbImages[lbIndex];
+        }
+        if (counter && lbImages.length) {
+            counter.textContent = (lbIndex + 1) + ' / ' + lbImages.length;
+        }
+    }
+    document.addEventListener('keydown', function(e) {
+        if (!document.getElementById('galleryLightbox').classList.contains('active')) return;
+        if (e.key === 'Escape') closeLightbox();
+        if (e.key === 'ArrowLeft') lightboxNav(-1);
+        if (e.key === 'ArrowRight') lightboxNav(1);
+    });
+    initLightbox();
+    // Re-init lightbox after template data loads via postMessage
+    window.addEventListener('message', function(e) {
+        if (e.data.type === 'UPDATE') {
+            setTimeout(initLightbox, 100);
+        }
+    });
+    // Touch/swipe support for lightbox
+    var touchStartX = 0;
+    var touchEndX = 0;
+    document.addEventListener('touchstart', function(e) {
+        touchStartX = e.changedTouches[0].screenX;
+    }, false);
+    document.addEventListener('touchend', function(e) {
+        touchEndX = e.changedTouches[0].screenX;
+        if (!document.getElementById('galleryLightbox').classList.contains('active')) return;
+        var diff = touchStartX - touchEndX;
+        if (Math.abs(diff) > 50) {
+            lightboxNav(diff > 0 ? 1 : -1);
+        }
+    }, false);
+    </script>
+    <!-- Gallery Lightbox -->
+    <div class="gallery-lightbox" id="galleryLightbox">
+        <button class="lb-close" onclick="closeLightbox()">&times;</button>
+        <button class="lb-nav lb-prev" onclick="lightboxNav(-1)">&#10094;</button>
+        <img id="lb-image" src="" alt="Gallery preview" />
+        <button class="lb-nav lb-next" onclick="lightboxNav(1)">&#10095;</button>
+        <div class="lb-counter" id="lb-counter"></div>
+    </div>
+</body>
+</html>
+`;
 export const WEST_SUMATRA_TEMPLATE = `<!DOCTYPE html>
 <html lang="id">
 <head>
@@ -2425,7 +2905,7 @@ export const WEST_SUMATRA_TEMPLATE = `<!DOCTYPE html>
   .hero-bg {
     position: absolute;
     inset: -10%;
-    background: url('https://picsum.photos/seed/ocean-night-blue/1200/1600.jpg') no-repeat center center / cover;
+    background: url('https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=1200&auto=format&fit=crop') no-repeat center center / cover;
     /* Filter biru untuk hero */
     filter: brightness(0.35) contrast(1.2) saturate(0.8) hue-rotate(190deg);
     z-index: 0;
@@ -2593,20 +3073,71 @@ export const WEST_SUMATRA_TEMPLATE = `<!DOCTYPE html>
   /* Floating particles ONLY IN HERO */
   .particle { position: absolute; background: var(--gold-bright); border-radius: 50%; pointer-events: none; box-shadow: 0 0 6px var(--gold); opacity: 0; z-index: 1; }
 
-        /* autoplay FAB */
-        .autoplay-btn { position: fixed; bottom: 80px; right: 20px; width: 44px; height: 44px; background: rgba(10,8,7,.6); border: 1px solid var(--gold); color: var(--gold); border-radius: 50%; cursor: pointer; z-index: 100; display: flex; align-items: center; justify-content: center; font-size: 1rem; backdrop-filter: blur(8px); box-shadow: 0 4px 15px rgba(0,0,0,.3); transition: all .3s; }
-        .autoplay-btn:hover { background: var(--gold); color: var(--bg); transform: scale(1.1); }
-        .autoplay-btn.playing { background: linear-gradient(135deg,var(--gold),#b8942e); box-shadow: 0 0 20px rgba(201,169,97,.4); }
-        </style>
+        
+        /* Gallery Lightbox */
+        .gallery-lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.92);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        .gallery-lightbox.active { display: flex; }
+        .gallery-lightbox img {
+            max-width: 90vw;
+            max-height: 80vh;
+            object-fit: contain;
+            border-radius: 4px;
+            box-shadow: 0 20px 60px rgba(0,0,0,.5);
+        }
+        .gallery-lightbox .lb-close {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 2rem;
+            cursor: pointer;
+            z-index: 10000;
+        }
+        .gallery-lightbox .lb-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,.1);
+            border: 1px solid rgba(255,255,255,.2);
+            color: #fff;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .gallery-lightbox .lb-prev { left: 1rem; }
+        .gallery-lightbox .lb-next { right: 1rem; }
+        .gallery-lightbox .lb-counter {
+            position: absolute;
+            bottom: 1.5rem;
+            color: rgba(255,255,255,.7);
+            font-size: .85rem;
+        }
+
+</style>
 </head>
 <body>
 
-        <button id="autoplay-btn" class="autoplay-btn" onclick="toggleAutoPlay()" aria-label="Toggle Autoplay"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="6,3 20,12 6,21 6,3"/></svg></button>
-<button class="music-toggle" id="musicToggle" aria-label="Toggle Music"><i class="fas fa-music"></i></button>
+<button class="music-toggle" id="musicToggle" aria-label="Toggle Music">🎵</button>
 
 <!-- ============ 1. COVER (GANJIL - PARALLAX) ============ -->
 <section class="hero" id="cover">
-  <div class="hero-bg" data-speed="0.4"></div>
+  <div class="hero-bg" id="e-heroBg" data-speed="0.4"></div>
   <div class="hero-pattern" data-speed="0.2"></div>
   <div class="hero-overlay"></div>
   <div class="hero-content" data-tilt="true">
@@ -2650,7 +3181,7 @@ export const WEST_SUMATRA_TEMPLATE = `<!DOCTYPE html>
 
 <!-- ============ 3. THE COUPLE (GANJIL - PARALLAX) ============ -->
 <section class="base-section parallax-section reveal" id="couple">
-  <div class="parallax-bg" style="background-image: url('https://picsum.photos/seed/elegant-blue-bg/1200/1600.jpg');" data-speed="0.15"></div>
+  <div class="parallax-bg" id="e-coupleBg" style="background-image: url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=1200&auto=format&fit=crop');" data-speed="0.15"></div>
   <div class="parallax-pattern pattern-songket-2" data-speed="0.05"></div>
   <div class="parallax-overlay"></div>
   <div class="ornate-frame-parallax" data-tilt="true"></div>
@@ -2665,7 +3196,7 @@ export const WEST_SUMATRA_TEMPLATE = `<!DOCTYPE html>
     <div class="ornament-divider"><div class="line"></div><i class="fas fa-leaf"></i><div class="line right"></div></div>
     <div class="couple-grid">
       <div class="couple-card">
-        <div class="couple-photo-wrap"><img src="https://picsum.photos/seed/blue-groom/600/800.jpg" alt="Groom" class="couple-photo"></div>
+        <div class="couple-photo-wrap"><img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=600&auto=format&fit=crop" alt="Groom" class="couple-photo"></div>
         <div class="couple-role">The Groom</div>
         <div class="couple-name">Raka</div>
         <div class="couple-fullname">Raka Pratama Bukhari, S.E.</div>
@@ -2673,7 +3204,7 @@ export const WEST_SUMATRA_TEMPLATE = `<!DOCTYPE html>
       </div>
       <div class="couple-amp">&amp;</div>
       <div class="couple-card">
-        <div class="couple-photo-wrap"><img src="https://picsum.photos/seed/blue-bride/600/800.jpg" alt="Bride" class="couple-photo"></div>
+        <div class="couple-photo-wrap"><img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop" alt="Bride" class="couple-photo"></div>
         <div class="couple-role">The Bride</div>
         <div class="couple-name">Sri</div>
         <div class="couple-fullname">Sri Wahyuni Zainul, S.K.M.</div>
@@ -2703,7 +3234,7 @@ export const WEST_SUMATRA_TEMPLATE = `<!DOCTYPE html>
 
 <!-- ============ 5. LOVE STORY (GANJIL - PARALLAX) ============ -->
 <section class="base-section parallax-section reveal" id="story">
-  <div class="parallax-bg" style="background-image: url('https://picsum.photos/seed/blue-night-scenery/1200/1600.jpg');" data-speed="0.15"></div>
+  <div class="parallax-bg" id="e-storyBg" style="background-image: url('https://images.unsplash.com/photo-1472214103451-9374bd1c798e?q=80&w=1200&auto=format&fit=crop');" data-speed="0.15"></div>
   <div class="parallax-pattern pattern-songket-2" data-speed="0.05"></div>
   <div class="parallax-overlay"></div>
   <div class="ornate-frame-parallax" data-tilt="true"></div>
@@ -2746,7 +3277,7 @@ export const WEST_SUMATRA_TEMPLATE = `<!DOCTYPE html>
 
 <!-- ============ 7. PHOTO GALLERY (GANJIL - PARALLAX) ============ -->
 <section class="base-section parallax-section reveal" id="gallery">
-  <div class="parallax-bg" style="background-image: url('https://picsum.photos/seed/royal-blue-abstract/1200/1600.jpg');" data-speed="0.15"></div>
+  <div class="parallax-bg" id="e-galleryBg" style="background-image: url('https://images.unsplash.com/photo-1431440869543-efaf3388c585?q=80&w=1200&auto=format&fit=crop');" data-speed="0.15"></div>
   <div class="parallax-pattern pattern-songket-2" data-speed="0.05"></div>
   <div class="parallax-overlay"></div>
   <div class="ornate-frame-parallax" data-tilt="true"></div>
@@ -2760,12 +3291,12 @@ export const WEST_SUMATRA_TEMPLATE = `<!DOCTYPE html>
     <h2 class="section-heading">Galeri Kenangan</h2>
     <div class="ornament-divider"><div class="line"></div><i class="fas fa-leaf"></i><div class="line right"></div></div>
     <div class="gallery-grid">
-      <div class="gallery-item"><img src="https://picsum.photos/seed/blue-wed-1/600/800.jpg" alt="Gallery 1"></div>
-      <div class="gallery-item"><img src="https://picsum.photos/seed/blue-wed-2/600/800.jpg" alt="Gallery 2"></div>
-      <div class="gallery-item"><img src="https://picsum.photos/seed/blue-wed-3/600/800.jpg" alt="Gallery 3"></div>
-      <div class="gallery-item"><img src="https://picsum.photos/seed/blue-wed-4/600/800.jpg" alt="Gallery 4"></div>
-      <div class="gallery-item"><img src="https://picsum.photos/seed/blue-wed-5/600/800.jpg" alt="Gallery 5"></div>
-      <div class="gallery-item"><img src="https://picsum.photos/seed/blue-wed-6/600/800.jpg" alt="Gallery 6"></div>
+      <div class="gallery-item"><img src="https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=600&auto=format&fit=crop" alt="Gallery 1"></div>
+      <div class="gallery-item"><img src="https://images.unsplash.com/photo-1511895426328-dc8714191300?q=80&w=600&auto=format&fit=crop" alt="Gallery 2"></div>
+      <div class="gallery-item"><img src="https://images.unsplash.com/photo-1520854221256-17451cc331bf?q=80&w=600&auto=format&fit=crop" alt="Gallery 3"></div>
+      <div class="gallery-item"><img src="https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?q=80&w=600&auto=format&fit=crop" alt="Gallery 4"></div>
+      <div class="gallery-item"><img src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?q=80&w=600&auto=format&fit=crop" alt="Gallery 5"></div>
+      <div class="gallery-item"><img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=600&auto=format&fit=crop" alt="Gallery 6"></div>
     </div>
   </div>
 </section>
@@ -2796,7 +3327,7 @@ export const WEST_SUMATRA_TEMPLATE = `<!DOCTYPE html>
 
 <!-- ============ 9. WEDDING GIFTS (GANJIL - PARALLAX) ============ -->
 <section class="base-section parallax-section reveal" id="gifts">
-  <div class="parallax-bg" style="background-image: url('https://picsum.photos/seed/navy-blue-luxury/1200/1600.jpg');" data-speed="0.15"></div>
+  <div class="parallax-bg" id="e-giftsBg" style="background-image: url('https://images.unsplash.com/photo-1510076857177-7470076d4098?q=80&w=1200&auto=format&fit=crop');" data-speed="0.15"></div>
   <div class="parallax-pattern pattern-songket-2" data-speed="0.05"></div>
   <div class="parallax-overlay"></div>
   <div class="ornate-frame-parallax" data-tilt="true"></div>
@@ -2842,7 +3373,7 @@ export const WEST_SUMATRA_TEMPLATE = `<!DOCTYPE html>
 
 <!-- ============ 11. WISHES / GUEST MESSAGES (GANJIL - PARALLAX) ============ -->
 <section class="base-section parallax-section reveal" id="wishes">
-  <div class="parallax-bg" style="background-image: url('https://picsum.photos/seed/starry-blue-night/1200/1600.jpg');" data-speed="0.15"></div>
+  <div class="parallax-bg" id="e-wishesBg" style="background-image: url('https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=1200&auto=format&fit=crop');" data-speed="0.15"></div>
   <div class="parallax-pattern pattern-songket-2" data-speed="0.05"></div>
   <div class="parallax-overlay"></div>
   <div class="ornate-frame-parallax" data-tilt="true"></div>
@@ -3023,7 +3554,7 @@ export const WEST_SUMATRA_TEMPLATE = `<!DOCTYPE html>
     if (!audioCtx) initAudio();
     if (audioCtx.state === 'suspended') audioCtx.resume();
     isPlaying = !isPlaying;
-    musicToggle.innerHTML = isPlaying ? '<i class="fas fa-pause"></i>' : '<i class="fas fa-music"></i>';
+    musicToggle.innerText = isPlaying ? '⏸️' : '🎵';
     masterGain.gain.linearRampToValueAtTime(isPlaying ? 0.15 : 0, audioCtx.currentTime + 1.5);
   });
 
@@ -3050,6 +3581,22 @@ export const WEST_SUMATRA_TEMPLATE = `<!DOCTYPE html>
     });
   }
 </script>
+    initLightbox();
+    // Touch/swipe support for lightbox
+    var touchStartX = 0;
+    var touchEndX = 0;
+    document.addEventListener('touchstart', function(e) {
+        touchStartX = e.changedTouches[0].screenX;
+    }, false);
+    document.addEventListener('touchend', function(e) {
+        touchEndX = e.changedTouches[0].screenX;
+        if (!document.getElementById('galleryLightbox').classList.contains('active')) return;
+        var diff = touchStartX - touchEndX;
+        if (Math.abs(diff) > 50) {
+            lightboxNav(diff > 0 ? 1 : -1);
+        }
+    }, false);
+
 
   // ===== updateInvitation for editor system =====
   window.updateInvitation = function(data) {
@@ -3057,6 +3604,13 @@ export const WEST_SUMATRA_TEMPLATE = `<!DOCTYPE html>
       window.weddingDate = new Date(data.countdownDate).getTime();
       if (typeof updateCountdown === "function") updateCountdown();
     }
+    // Handle background images (kebab-case keys since West Sumatra has no keyMap)
+    if (data['hero-bg']) document.getElementById('e-heroBg').style.backgroundImage = 'url(' + data['hero-bg'] + ')';
+    if (data['couple-bg']) document.getElementById('e-coupleBg').style.backgroundImage = 'url(' + data['couple-bg'] + ')';
+    if (data['story-bg']) document.getElementById('e-storyBg').style.backgroundImage = 'url(' + data['story-bg'] + ')';
+    if (data['gallery-bg']) document.getElementById('e-galleryBg').style.backgroundImage = 'url(' + data['gallery-bg'] + ')';
+    if (data['gifts-bg']) document.getElementById('e-giftsBg').style.backgroundImage = 'url(' + data['gifts-bg'] + ')';
+    if (data['wishes-bg']) document.getElementById('e-wishesBg').style.backgroundImage = 'url(' + data['wishes-bg'] + ')';
   };
   // ===== postMessage listener =====
   window.addEventListener("message", function(e) {
@@ -3067,31 +3621,93 @@ export const WEST_SUMATRA_TEMPLATE = `<!DOCTYPE html>
 
 
 <script>
-var autoSections = ["cover","countdown-sec","couple","verse","story","events","gallery","rsvp","gifts","streaming","wishes","closing"];
-var autoInterval = null, autoPlaying = false, autoIdx = 0;
-function toggleAutoPlay() {
-  if (autoPlaying) { clearInterval(autoInterval); autoPlaying = false;
-    document.getElementById('autoplay-btn').classList.remove('playing');
-    document.getElementById('autoplay-btn').innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="6,3 20,12 6,21 6,3"/></svg>';
-    return; }
-  autoPlaying = true; autoIdx = 0;
-  document.getElementById('autoplay-btn').innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="4" width="5" height="16"/><rect x="14" y="4" width="5" height="16"/></svg>';
-  document.getElementById('autoplay-btn').classList.add('playing');
-  var el = document.getElementById(autoSections[0]);
-  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  autoIdx = 1;
-  autoInterval = setInterval(function() {
-    var el = document.getElementById(autoSections[autoIdx]);
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    autoIdx = (autoIdx + 1) % autoSections.length;
-  }, 4000);
-}
-window.addEventListener('beforeunload', function() { if (autoInterval) clearInterval(autoInterval); });
-</script>
-</body>
-</html>`;
 
-// ==================== Demo Data ====================
+
+
+
+
+    <script>
+    // Gallery Lightbox
+    var lbImages = [];
+    var lbIndex = 0;
+    function initLightbox() {
+        var gallery = document.getElementById('gallery') || document.getElementById('s-gallery');
+        if (!gallery) return;
+        var imgs = gallery.querySelectorAll('img');
+        imgs.forEach(function(img, idx) {
+            img.style.cursor = 'pointer';
+            img.addEventListener('click', function() { openLightbox(idx); });
+        });
+    }
+    function refreshGalleryImages() {
+        var gallery = document.getElementById('gallery') || document.getElementById('s-gallery');
+        if (!gallery) return;
+        lbImages = Array.from(gallery.querySelectorAll('img')).map(img => img.src || img.dataset.src || img.getAttribute('src')).filter(Boolean);
+    }
+    function openLightbox(idx) {
+        refreshGalleryImages();
+        lbIndex = Math.min(idx, lbImages.length - 1);
+        if (lbIndex < 0) lbIndex = 0;
+        updateLightbox();
+        document.getElementById('galleryLightbox').classList.add('active');
+    }
+    function closeLightbox() {
+        document.getElementById('galleryLightbox').classList.remove('active');
+    }
+    function lightboxNav(dir) {
+        refreshGalleryImages();
+        lbIndex = (lbIndex + dir + lbImages.length) % lbImages.length;
+        updateLightbox();
+    }
+    function updateLightbox() {
+        var img = document.getElementById('lb-image');
+        var counter = document.getElementById('lb-counter');
+        if (img && lbImages[lbIndex]) {
+            img.src = lbImages[lbIndex];
+        }
+        if (counter && lbImages.length) {
+            counter.textContent = (lbIndex + 1) + ' / ' + lbImages.length;
+        }
+    }
+    document.addEventListener('keydown', function(e) {
+        if (!document.getElementById('galleryLightbox').classList.contains('active')) return;
+        if (e.key === 'Escape') closeLightbox();
+        if (e.key === 'ArrowLeft') lightboxNav(-1);
+        if (e.key === 'ArrowRight') lightboxNav(1);
+    });
+    initLightbox();
+    // Re-init lightbox after template data loads via postMessage
+    window.addEventListener('message', function(e) {
+        if (e.data.type === 'UPDATE') {
+            setTimeout(initLightbox, 100);
+        }
+    });
+    // Touch/swipe support for lightbox
+    var touchStartX = 0;
+    var touchEndX = 0;
+    document.addEventListener('touchstart', function(e) {
+        touchStartX = e.changedTouches[0].screenX;
+    }, false);
+    document.addEventListener('touchend', function(e) {
+        touchEndX = e.changedTouches[0].screenX;
+        if (!document.getElementById('galleryLightbox').classList.contains('active')) return;
+        var diff = touchStartX - touchEndX;
+        if (Math.abs(diff) > 50) {
+            lightboxNav(diff > 0 ? 1 : -1);
+        }
+    }, false);
+    </script>
+    <!-- Gallery Lightbox -->
+    <div class="gallery-lightbox" id="galleryLightbox">
+        <button class="lb-close" onclick="closeLightbox()">&times;</button>
+        <button class="lb-nav lb-prev" onclick="lightboxNav(-1)">&#10094;</button>
+        <img id="lb-image" src="" alt="Gallery preview" />
+        <button class="lb-nav lb-next" onclick="lightboxNav(1)">&#10095;</button>
+        <div class="lb-counter" id="lb-counter"></div>
+    </div>
+</body>
+</html>
+`;
 export const DEMO_DATA_ELITE: Record<string, string> = {
   'bride-nick': 'Sophia',
   'groom-nick': 'Alexander',
@@ -3150,8 +3766,8 @@ export const DEMO_DATA_HONEY: Record<string, string> = {
   groomFull: 'Arka Mahesa Wijaya',
   brideParents: 'Bapak Surya Pratama, S.E.<br>& Ibu Lestari Wulandari, S.KM.',
   groomParents: 'Bapak Dr. Wijaya Kusuma, M.Sc.<br>& Ibu Maharani Anggraini, S.Pd.',
-  bridePhoto: 'https://picsum.photos/seed/bride-sienna-wedding/600/800.jpg',
-  groomPhoto: 'https://picsum.photos/seed/groom-arka-wedding/600/800.jpg',
+  bridePhoto: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=600&auto=format&fit=crop',
+  groomPhoto: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=600&auto=format&fit=crop',
   akadDate: 'Sabtu, 20 Desember 2025',
   akadTime: '08.00 — 10.00 WIB',
   akadPlace: 'Masjid Agung Al-Azhar<br>Jakarta Selatan',
@@ -3161,12 +3777,12 @@ export const DEMO_DATA_HONEY: Record<string, string> = {
   resepsiPlace: 'The Ritz-Carlton Ballroom<br>Jakarta Selatan',
   resepsiMaps: 'The Ritz-Carlton Jakarta',
   countdownDate: '2025-12-20T08:00:00+07:00',
-  gallery1: 'https://picsum.photos/seed/wedding-gallery-1/600/800.jpg',
-  gallery2: 'https://picsum.photos/seed/wedding-gallery-2/600/800.jpg',
-  gallery3: 'https://picsum.photos/seed/wedding-gallery-3/600/800.jpg',
-  gallery4: 'https://picsum.photos/seed/wedding-gallery-4/600/800.jpg',
-  gallery5: 'https://picsum.photos/seed/wedding-gallery-5/600/800.jpg',
-  gallery6: 'https://picsum.photos/seed/wedding-gallery-6/600/800.jpg',
+  gallery1: 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=600&auto=format&fit=crop',
+  gallery2: 'https://images.unsplash.com/photo-1511895426328-dc8714191300?q=80&w=600&auto=format&fit=crop',
+  gallery3: 'https://images.unsplash.com/photo-1520854221256-17451cc331bf?q=80&w=600&auto=format&fit=crop',
+  gallery4: 'https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?q=80&w=600&auto=format&fit=crop',
+  gallery5: 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?q=80&w=600&auto=format&fit=crop',
+  gallery6: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=600&auto=format&fit=crop',
 };
 
 export const DEMO_DATA_FOREST_NATURE: Record<string, string> = {
@@ -3208,8 +3824,8 @@ export const DEMO_DATA_JAVA_BATIK: Record<string, string> = {
   groomFull: 'Raden Mas Baskoro Wicaksono, S.T.',
   brideParents: 'Bapak R. Ronggowarsito, M.M.<br>& Ibu R. Ayu Maharani Dewi',
   groomParents: 'Bapak R. Suryo Negoro, S.H.<br>& Ibu R. Ayu Retno Wulandari',
-  bridePhoto: 'https://picsum.photos/seed/javanese-bride/600/800.jpg',
-  groomPhoto: 'https://picsum.photos/seed/javanese-groom/600/800.jpg',
+  bridePhoto: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop',
+  groomPhoto: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=600&auto=format&fit=crop',
   akadDate: 'Sabtu, 20 Desember 2025',
   akadTime: '08.00 — 10.00 WIB',
   akadPlace: 'Pendopo Agung Keraton<br>Yogyakarta',
@@ -3219,12 +3835,12 @@ export const DEMO_DATA_JAVA_BATIK: Record<string, string> = {
   resepsiPlace: 'Ballroom Hotel Phoenix<br>Yogyakarta',
   resepsiMaps: 'Hotel Phoenix Yogyakarta',
   countdownDate: '2025-12-20T08:00:00+07:00',
-  gallery1: 'https://picsum.photos/seed/java-wed-1/600/800.jpg',
-  gallery2: 'https://picsum.photos/seed/java-wed-2/600/800.jpg',
-  gallery3: 'https://picsum.photos/seed/java-wed-3/600/800.jpg',
-  gallery4: 'https://picsum.photos/seed/java-wed-4/600/800.jpg',
-  gallery5: 'https://picsum.photos/seed/java-wed-5/600/800.jpg',
-  gallery6: 'https://picsum.photos/seed/java-wed-6/600/800.jpg',
+  gallery1: 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=600&auto=format&fit=crop',
+  gallery2: 'https://images.unsplash.com/photo-1511895426328-dc8714191300?q=80&w=600&auto=format&fit=crop',
+  gallery3: 'https://images.unsplash.com/photo-1520854221256-17451cc331bf?q=80&w=600&auto=format&fit=crop',
+  gallery4: 'https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?q=80&w=600&auto=format&fit=crop',
+  gallery5: 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?q=80&w=600&auto=format&fit=crop',
+  gallery6: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=600&auto=format&fit=crop',
   bankName: 'Bank BCA',
   bankAcc: '1234 5678 9012',
   bankHolder: 'Raden Ayu Sekarwangi',
@@ -3305,6 +3921,12 @@ export const TEMPLATE_CONFIGS: Record<string, TemplateConfig> = {
       'bank-acc': 'bankAcc',
       'bank-holder': 'bankHolder',
       'closing-thanks': 'closingThanks',
+      'hero-bg': 'heroBg',
+      'couple-bg': 'coupleBg',
+      'story-bg': 'storyBg',
+      'gallery-bg': 'galleryBg',
+      'gifts-bg': 'giftsBg',
+      'wishes-bg': 'wishesBg',
     },
   },
   'Java Batik': {
@@ -3336,6 +3958,12 @@ export const TEMPLATE_CONFIGS: Record<string, TemplateConfig> = {
       'bank-holder': 'bankHolder',
       'closing-thanks': 'closingThanks',
       'closing-fam': 'closingFam',
+      'hero-bg': 'heroBg',
+      'couple-bg': 'coupleBg',
+      'story-bg': 'storyBg',
+      'gallery-bg': 'galleryBg',
+      'gifts-bg': 'giftsBg',
+      'wishes-bg': 'wishesBg',
     },
   },
   'West Sumatra': {
