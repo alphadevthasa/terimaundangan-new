@@ -9,6 +9,8 @@ interface StaticTemplate {
   name: string;
   description: string;
   type: string;
+  category?: string;
+  theme?: string;
   thumbnail: string;
   price: string;
   isPopular: boolean;
@@ -27,6 +29,24 @@ function useMediaQuery(query: string) {
   }, [query]);
   return matches;
 }
+
+const CATEGORY_LABEL: Record<string, string> = {
+  wedding: 'Wedding',
+  birthday: 'Birthday',
+  corporate: 'Corporate',
+  graduation: 'Graduation',
+  baby: 'Baby Shower',
+  other: 'Other',
+};
+
+const THEME_LABEL: Record<string, string> = {
+  elegant: 'Elegant',
+  modern: 'Modern',
+  romantic: 'Romantic',
+  traditional: 'Traditional',
+  nature: 'Nature',
+  minimal: 'Minimal',
+};
 
 export default function HomePage() {
   const router = useRouter();
@@ -54,6 +74,21 @@ export default function HomePage() {
       setIsLoading(false);
     }
   };
+
+  const grouped = templates.reduce<Record<string, Record<string, StaticTemplate[]>>>((acc, t) => {
+    const category = (t.category || t.type || 'other').toLowerCase();
+    const theme = (t.theme || 'all').toLowerCase();
+    if (!acc[category]) acc[category] = {};
+    if (!acc[category][theme]) acc[category][theme] = [];
+    acc[category][theme].push(t);
+    return acc;
+  }, {});
+
+  const sortedCategories = Object.keys(grouped).sort((a, b) => {
+    const labelA = CATEGORY_LABEL[a] || a;
+    const labelB = CATEGORY_LABEL[b] || b;
+    return labelA.localeCompare(labelB);
+  });
 
   return (
     <div style={{
@@ -141,9 +176,9 @@ export default function HomePage() {
                 <div key={i} style={{ background: '#14110d', border: '1px solid rgba(201,169,97,.08)', borderRadius: '12px', overflow: 'hidden' }}>
                   <div style={{ height: '200px', background: 'linear-gradient(90deg, rgba(201,169,97,.04) 25%, rgba(201,169,97,.1) 50%, rgba(201,169,97,.04) 75%)', backgroundSize: '200% 100%', animation: 'shimmer 1.5s infinite' }} />
                   <div style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '.75rem' }}>
-                    <div style={{ height: '20px', width: '60%', borderRadius: '4px', background: 'linear-gradient(90deg, rgba(201,169,97,.06) 25%, rgba(201,169,97,.14) 50%, rgba(201,169,97,.06) 75%)', backgroundSize: '200% 100%', animation: 'shimmer 1.5s infinite' }} />
-                    <div style={{ height: '14px', width: '90%', borderRadius: '4px', background: 'linear-gradient(90deg, rgba(201,169,97,.04) 25%, rgba(201,169,97,.1) 50%, rgba(201,169,97,.04) 75%)', backgroundSize: '200% 100%', animation: 'shimmer 1.5s infinite .2s' }} />
-                    <div style={{ height: '14px', width: '70%', borderRadius: '4px', background: 'linear-gradient(90deg, rgba(201,169,97,.04) 25%, rgba(201,169,97,.1) 50%, rgba(201,169,97,.04) 75%)', backgroundSize: '200% 100%', animation: 'shimmer 1.5s infinite .4s' }} />
+                    <div style={{ height: '20px', width: '60%', borderRadius: '4px', background: 'linear-gradient(90deg, rgba(201,169,97,.06) 25%, rgba(201,169,97,.14) 50%, rgba(201,169,97,.06) 75%)', backgroundSize: '200% 100%', animation: 'shimmer 1.5s infinite .2s' }} />
+                    <div style={{ height: '14px', width: '90%', borderRadius: '4px', background: 'linear-gradient(90deg, rgba(201,169,97,.04) 25%, rgba(201,169,97,.1) 50%, rgba(201,169,97,.04) 75%)', backgroundSize: '200% 100%', animation: 'shimmer 1.5s infinite .4s' }} />
+                    <div style={{ height: '14px', width: '70%', borderRadius: '4px', background: 'linear-gradient(90deg, rgba(201,169,97,.04) 25%, rgba(201,169,97,.1) 50%, rgba(201,169,97,.04) 75%)', backgroundSize: '200% 100%', animation: 'shimmer 1.5s infinite .6s' }} />
                   </div>
                 </div>
               ))}
@@ -154,106 +189,147 @@ export default function HomePage() {
                  No Templates Yet
                </h3>
               <p style={{ color: 'rgba(245,236,217,.4)', fontSize: '.9rem' }}>
-                Check back later.
+                 Check back later.
               </p>
             </div>
           ) : (
-            <div className="template-grid">
-              {templates.map((template, index) => {
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
+              {sortedCategories.map((category) => {
+                const categoryLabel = CATEGORY_LABEL[category] || category;
+                const themes = grouped[category];
+                const sortedThemeKeys = Object.keys(themes).sort((a, b) => {
+                  const labelA = THEME_LABEL[a] || a;
+                  const labelB = THEME_LABEL[b] || b;
+                  return labelA.localeCompare(labelB);
+                });
+
                 return (
-                  <div key={template.id}
-                    style={{
-                      background: '#14110d', border: '1px solid rgba(201,169,97,.1)',
-                      borderRadius: '12px', overflow: 'hidden',
-                      transition: 'all .4s cubic-bezier(.23,1,.32,1)', cursor: 'pointer',
-                      animation: 'fadeUp .5s ease-out backwards',
-                      animationDelay: `${index * 0.08}s`,
-                      display: 'flex', flexDirection: 'column',
-                    }}
-                    onClick={() => router.push(`/detail/${template.id}`)}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.borderColor = 'rgba(201,169,97,.35)';
-                      e.currentTarget.style.transform = 'translateY(-4px)';
-                      e.currentTarget.style.boxShadow = '0 16px 48px rgba(0,0,0,.4), 0 0 0 1px rgba(201,169,97,.08)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.borderColor = 'rgba(201,169,97,.1)';
-                      e.currentTarget.style.transform = 'translateY(0)';
-                      e.currentTarget.style.boxShadow = 'none';
-                    }}
-                  >
-                    {/* Cover / Thumbnail */}
-                    <div style={{
-                      height: '200px', position: 'relative', overflow: 'hidden',
-                      background: template.thumbnail ? 'none' : 'linear-gradient(135deg, #0a0807 0%, #1a1611 50%, #0a0807 100%)',
-                    }}>
-                      {template.thumbnail ? (
-                        <img src={template.thumbnail} alt={template.name}
-                          style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform .4s' }}
-                          onMouseEnter={(e) => { if (e.currentTarget.tagName === 'IMG') e.currentTarget.style.transform = 'scale(1.05)'; }}
-                          onMouseLeave={(e) => { if (e.currentTarget.tagName === 'IMG') e.currentTarget.style.transform = 'scale(1)'; }}
-                          onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
-                        />
-                      ) : (
-                         <div style={{ fontSize: '3.5rem', opacity: .6, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', fontFamily: "'Italiana', serif", color: '#c9a961' }}>
-                           {template.name.charAt(0).toUpperCase()}
-                         </div>
-                      )}
-                      {/* Price badge */}
-                      <div style={{
-                        position: 'absolute', top: '.75rem', right: '.75rem',
-                        padding: '.25rem .7rem', borderRadius: '100px',
-                        background: 'rgba(10,8,7,.7)', backdropFilter: 'blur(8px)',
-                        border: '1px solid rgba(201,169,97,.2)', color: '#c9a961',
-                        fontSize: isMobile ? '.7rem' : '.75rem', fontWeight: 500, letterSpacing: '.05em',
-                      }}>
-                        Rp 150.000
-                      </div>
-                      {template.isPopular && (
-                        <div style={{
-                          position: 'absolute', top: '.75rem', left: '.75rem',
-                          padding: '.25rem .6rem', borderRadius: '100px',
-                          background: 'rgba(201,169,97,.15)', backdropFilter: 'blur(8px)',
-                          border: '1px solid rgba(201,169,97,.3)', color: '#c9a961',
-                          fontSize: '.65rem', textTransform: 'uppercase', letterSpacing: '.08em',
-                        }}>
-                           Popular
-                        </div>
-                      )}
+                  <div key={category}>
+                    <div style={{ marginBottom: '1.25rem' }}>
+                      <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 'clamp(1.25rem,2.5vw,1.6rem)', color: '#f5ecd9', fontStyle: 'italic', margin: '0 0 .25rem' }}>
+                        {categoryLabel}
+                      </h3>
+                      <div style={{ width: '40px', height: '2px', background: 'linear-gradient(90deg, rgba(201,169,97,.35), transparent)' }} />
                     </div>
 
-                    {/* Info */}
-                    <div style={{ padding: '1.25rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '.5rem', marginBottom: '.35rem' }}>
-                        <span style={{ fontSize: isMobile ? '.7rem' : '.75rem', textTransform: 'uppercase', letterSpacing: '.08em', color: 'rgba(245,236,217,.35)', fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic' }}>
-                          {template.type}
-                        </span>
-                      </div>
-                      <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: isMobile ? '1.25rem' : '1.35rem', color: '#c9a961', margin: '0 0 .35rem', fontStyle: 'italic', lineHeight: 1.2 }}>
-                        {template.name}
-                      </h3>
-                      <p style={{
-                        fontSize: isMobile ? '.8rem' : '.85rem', color: isMobile ? 'rgba(245,236,217,.55)' : 'rgba(245,236,217,.65)',
-                        lineHeight: 1.5, margin: '0 0 1rem', flex: 1,
-                        display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
-                      }}>
-                        {template.description || 'No description'}
-                      </p>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                      {sortedThemeKeys.map((theme) => {
+                        const themeLabel = THEME_LABEL[theme] || theme;
+                        const items = themes[theme];
 
-                      <button
-                        style={{
-                          width: '100%', padding: isMobile ? '.6rem' : '.7rem', marginTop: 'auto',
-                          background: 'linear-gradient(135deg,#c9a961,#b8942e)',
-                          border: 'none', color: '#0a0807', borderRadius: '6px',
-                          fontSize: isMobile ? '.78rem' : '.85rem', fontWeight: 500, cursor: 'pointer',
-                          transition: 'all .2s', letterSpacing: '.03em',
-                        }}
-                        onClick={(e) => { e.stopPropagation(); router.push(`/detail/${template.id}`); }}
-                        onMouseEnter={(e) => { e.currentTarget.style.opacity = '.9'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
-                        onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'translateY(0)'; }}
-                      >
-                         Pilih Template Ini
-                      </button>
+                        return (
+                          <div key={theme}>
+                            <div style={{ marginBottom: '.75rem', paddingLeft: '.25rem' }}>
+                              <span style={{ fontSize: '.75rem', textTransform: 'uppercase', letterSpacing: '.12em', color: 'rgba(245,236,217,.45)', fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic' }}>
+                                {themeLabel}
+                              </span>
+                              <span style={{ marginLeft: '.5rem', fontSize: '.7rem', color: 'rgba(245,236,217,.25)' }}>
+                                {items.length}
+                              </span>
+                            </div>
+
+                            <div className="template-grid">
+                              {items.map((template, index) => (
+                                <div key={template.id}
+                                  style={{
+                                    background: '#14110d', border: '1px solid rgba(201,169,97,.1)',
+                                    borderRadius: '12px', overflow: 'hidden',
+                                    transition: 'all .4s cubic-bezier(.23,1,.32,1)', cursor: 'pointer',
+                                    animation: 'fadeUp .5s ease-out backwards',
+                                    animationDelay: `${index * 0.08}s`,
+                                    display: 'flex', flexDirection: 'column',
+                                  }}
+                                  onClick={() => router.push(`/detail/${template.id}`)}
+                                  onMouseEnter={(e) => {
+                                    e.currentTarget.style.borderColor = 'rgba(201,169,97,.35)';
+                                    e.currentTarget.style.transform = 'translateY(-4px)';
+                                    e.currentTarget.style.boxShadow = '0 16px 48px rgba(0,0,0,.4), 0 0 0 1px rgba(201,169,97,.08)';
+                                  }}
+                                  onMouseLeave={(e) => {
+                                    e.currentTarget.style.borderColor = 'rgba(201,169,97,.1)';
+                                    e.currentTarget.style.transform = 'translateY(0)';
+                                    e.currentTarget.style.boxShadow = 'none';
+                                  }}
+                                >
+                                  {/* Cover / Thumbnail */}
+                                  <div style={{
+                                    height: '200px', position: 'relative', overflow: 'hidden',
+                                    background: template.thumbnail ? 'none' : 'linear-gradient(135deg, #0a0807 0%, #1a1611 50%, #0a0807 100%)',
+                                  }}>
+                                    {template.thumbnail ? (
+                                      <img src={template.thumbnail} alt={template.name}
+                                        style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform .4s' }}
+                                        onMouseEnter={(e) => { if (e.currentTarget.tagName === 'IMG') e.currentTarget.style.transform = 'scale(1.05)'; }}
+                                        onMouseLeave={(e) => { if (e.currentTarget.tagName === 'IMG') e.currentTarget.style.transform = 'scale(1)'; }}
+                                        onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                                      />
+                                    ) : (
+                                       <div style={{ fontSize: '3.5rem', opacity: .6, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', fontFamily: "'Italiana', serif", color: '#c9a961' }}>
+                                        {template.name.charAt(0).toUpperCase()}
+                                      </div>
+                                    )}
+                                    {/* Price badge */}
+                                    <div style={{
+                                      position: 'absolute', top: '.75rem', right: '.75rem',
+                                      padding: '.25rem .7rem', borderRadius: '100px',
+                                      background: 'rgba(10,8,7,.7)', backdropFilter: 'blur(8px)',
+                                      border: '1px solid rgba(201,169,97,.2)', color: '#c9a961',
+                                      fontSize: isMobile ? '.7rem' : '.75rem', fontWeight: 500, letterSpacing: '.05em',
+                                    }}>
+                                      Rp 150.000
+                                    </div>
+                                    {template.isPopular && (
+                                      <div style={{
+                                        position: 'absolute', top: '.75rem', left: '.75rem',
+                                        padding: '.25rem .6rem', borderRadius: '100px',
+                                        background: 'rgba(201,169,97,.15)', backdropFilter: 'blur(8px)',
+                                        border: '1px solid rgba(201,169,97,.3)', color: '#c9a961',
+                                        fontSize: '.65rem', textTransform: 'uppercase', letterSpacing: '.08em',
+                                      }}>
+                                         Popular
+                                      </div>
+                                    )}
+                                  </div>
+
+                                  {/* Info */}
+                                  <div style={{ padding: '1.25rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '.5rem', marginBottom: '.35rem' }}>
+                                      <span style={{ fontSize: isMobile ? '.7rem' : '.75rem', textTransform: 'uppercase', letterSpacing: '.08em', color: 'rgba(245,236,217,.35)', fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic' }}>
+                                        {template.type}
+                                      </span>
+                                    </div>
+                                    <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: isMobile ? '1.25rem' : '1.35rem', color: '#c9a961', margin: '0 0 .35rem', fontStyle: 'italic', lineHeight: 1.2 }}>
+                                      {template.name}
+                                    </h3>
+                                    <p style={{
+                                      fontSize: isMobile ? '.8rem' : '.85rem', color: isMobile ? 'rgba(245,236,217,.55)' : 'rgba(245,236,217,.65)',
+                                      lineHeight: 1.5, margin: '0 0 1rem', flex: 1,
+                                      display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
+                                    }}>
+                                      {template.description || 'No description'}
+                                    </p>
+
+                                    <button
+                                      style={{
+                                        width: '100%', padding: isMobile ? '.6rem' : '.7rem', marginTop: 'auto',
+                                        background: 'linear-gradient(135deg,#c9a961,#b8942e)',
+                                        border: 'none', color: '#0a0807', borderRadius: '6px',
+                                        fontSize: isMobile ? '.78rem' : '.85rem', fontWeight: 500, cursor: 'pointer',
+                                        transition: 'all .2s', letterSpacing: '.03em',
+                                      }}
+                                      onClick={(e) => { e.stopPropagation(); router.push(`/detail/${template.id}`); }}
+                                      onMouseEnter={(e) => { e.currentTarget.style.opacity = '.9'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
+                                      onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'translateY(0)'; }}
+                                    >
+                                       Pilih Template Ini
+                                    </button>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 );
@@ -274,7 +350,7 @@ export default function HomePage() {
         @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes surface1 { 0% { transform: scale(.15) translateY(80px); opacity: 0; filter: blur(12px); } 25% { transform: scale(.4) translateY(40px) translateX(-20px); opacity: .15; filter: blur(8px); } 50% { transform: scale(.7) translateY(15px) translateX(10px); opacity: .35; filter: blur(4px); } 75% { transform: scale(.9) translateY(5px) translateX(-5px); opacity: .55; filter: blur(1px); } 100% { transform: scale(1) translateY(0) translateX(0); opacity: .65; filter: blur(0); } }
-        @keyframes surface2 { 0% { transform: scale(.15) translateY(80px); opacity: 0; filter: blur(12px); } 25% { transform: scale(.4) translateY(40px) translateX(25px); opacity: .15; filter: blur(8px); } 50% { transform: scale(.7) translateY(15px) translateX(-15px); opacity: .35; filter: blur(4px); } 75% { transform: scale(.9) translateY(5px) translateX(8px); opacity: .55; filter: blur(1px); } 100% { transform: scale(1) translateY(0) translateX(0); opacity: .65; filter: blur(0); } }
+        @keyframes surface2 { 0% { transform: scale(.15) translateY(80px); opacity: 0; filter: blur(12px); } 25% { transform: scale(.4) translateY(40px) translateX(25px); opacity: .15; filter: blur(8px); } 50% { transform: scale(.7) translateY(15px) translateX(-15px); opacity: .35; filter: blur(4px); } 75% { transform: scale(.9) translateY(3px) translateX(8px); opacity: .55; filter: blur(1px); } 100% { transform: scale(1) translateY(0) translateX(0); opacity: .65; filter: blur(0); } }
         @keyframes surface3 { 0% { transform: scale(.15) translateY(80px); opacity: 0; filter: blur(12px); } 25% { transform: scale(.4) translateY(35px) translateX(15px); opacity: .15; filter: blur(8px); } 50% { transform: scale(.7) translateY(10px) translateX(-25px); opacity: .35; filter: blur(4px); } 75% { transform: scale(.9) translateY(3px) translateX(12px); opacity: .55; filter: blur(1px); } 100% { transform: scale(1) translateY(0) translateX(0); opacity: .65; filter: blur(0); } }
         @keyframes surface4 { 0% { transform: scale(.15) translateY(80px); opacity: 0; filter: blur(12px); } 25% { transform: scale(.4) translateY(45px) translateX(-10px); opacity: .15; filter: blur(8px); } 50% { transform: scale(.7) translateY(20px) translateX(20px); opacity: .35; filter: blur(4px); } 75% { transform: scale(.9) translateY(8px) translateX(-12px); opacity: .55; filter: blur(1px); } 100% { transform: scale(1) translateY(0) translateX(0); opacity: .65; filter: blur(0); } }
         @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
