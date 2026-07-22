@@ -119,14 +119,21 @@ export default function AdminTemplates() {
                   <td style={tdStyle}>
                     {t.isPopular ? <span style={{ padding: '.2rem .55rem', borderRadius: '99px', fontSize: '.7rem', display: 'inline-block', background: 'rgba(212,175,55,.15)', color: '#d4af37' }}>Popular</span> : '-'}
                   </td>
-                  <td style={tdStyle}>
+                   <td style={tdStyle}>
                     <button onClick={async () => {
-                      await fetch(`/api/admin/templates/${t.id}`, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ isPublished: !t.isPublished }),
-                      });
-                      load();
+                      const next = !t.isPublished;
+                      setTemplates(prev => prev.map(x => x.id === t.id ? { ...x, isPublished: next } : x));
+                      try {
+                        const r = await fetch(`/api/admin/templates/${t.id}`, {
+                          method: 'PUT',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ isPublished: next }),
+                        });
+                        if (!r.ok) throw new Error();
+                      } catch {
+                        setTemplates(prev => prev.map(x => x.id === t.id ? { ...x, isPublished: !next } : x));
+                        alert('Failed to update publish status');
+                      }
                     }} style={{
                       width: '36px', height: '20px', borderRadius: '99px', border: 'none', cursor: 'pointer', position: 'relative', transition: 'background .2s',
                       background: t.isPublished ? '#22c55e' : 'rgba(253,246,227,.15)',
