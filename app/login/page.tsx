@@ -1,12 +1,11 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import { Suspense, useState, useEffect, useRef } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 
-export default function AuthPage() {
+function AuthForm() {
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const [mode, setMode] = useState<'login' | 'signup'>(pathname === '/signup' ? 'signup' : 'login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -19,10 +18,15 @@ export default function AuthPage() {
   const [needsVerification, setNeedsVerification] = useState(false);
   const [signupSuccess, setSignupSuccess] = useState(false);
   const [resending, setResending] = useState(false);
-  const [verifiedSuccess, setVerifiedSuccess] = useState(searchParams.get('verified') === 'true');
+  const [verifiedSuccess, setVerifiedSuccess] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState('');
   const turnstileRef = useRef<HTMLDivElement>(null);
   const [turnstileReady, setTurnstileReady] = useState(false);
+
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    setVerifiedSuccess(url.searchParams.get('verified') === 'true');
+  }, []);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -79,16 +83,11 @@ export default function AuthPage() {
         return;
       }
 
-      // Save session to localStorage
       localStorage.setItem('session', 'true');
       localStorage.setItem('sessionEmail', email);
       if (data.customer?.name) {
         localStorage.setItem('sessionName', data.customer.name);
       }
-
-      // The session cookie (httpOnly JWT) is set by the API server-side.
-      // No client-side cookie manipulation needed — the real session
-      // cookie is already set via Set-Cookie header from the API response.
 
       router.push('/dashboard');
     } catch {
@@ -455,6 +454,7 @@ export default function AuthPage() {
                   type={showConfirmPassword ? 'text' : 'password'} required value={confirmPassword}
                   onChange={e => setConfirmPassword(e.target.value)}
                   disabled={isLoading}
+                  placeholder="Ketik ulang password"
                   style={{
                     width: '100%', padding: '0.75rem', paddingRight: '2.5rem', background: '#0a0807',
                     border: '1px solid rgba(201, 169, 97, 0.15)', borderRadius: '4px',
@@ -527,5 +527,17 @@ export default function AuthPage() {
         @keyframes spin { to { transform: rotate(360deg); } }
       `}</style>
     </div>
+  );
+}
+
+export default function AuthPage() {
+  return (
+    <Suspense fallback={
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0a0807', color: '#f5ecd9', fontFamily: "'Jost', sans-serif" }}>
+        <p style={{ fontSize: '0.9rem', color: 'rgba(245,236,217,0.5)' }}>Loading...</p>
+      </div>
+    }>
+      <AuthForm />
+    </Suspense>
   );
 }

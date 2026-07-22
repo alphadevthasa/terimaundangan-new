@@ -90,7 +90,7 @@ function CheckoutContent() {
             const namePart = data.session.email.split('@')[0];
             const formatted = namePart
               .replace(/[._-]/g, ' ')
-              .replace(/\b\w/g, c => c.toUpperCase());
+              .replace(/\b\w/g, (c: string) => c.toUpperCase());
             setCustomerName(formatted);
           }
         }

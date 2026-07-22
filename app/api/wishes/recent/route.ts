@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+export const dynamic = 'force-dynamic';
+
 // GET /api/wishes/recent?since=ISO_TIMESTAMP - Get count and latest wishes created since timestamp
 export async function GET(request: NextRequest) {
   try {

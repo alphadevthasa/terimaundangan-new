@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 
-export default function VerifyEmailPage() {
+function VerifyEmailInner() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
@@ -19,7 +19,6 @@ export default function VerifyEmailPage() {
     fetch(`/api/auth/verify-email?token=${token}`)
       .then(async (res) => {
         if (res.redirected) {
-          // Browser follows the redirect to /login?verified=...
           window.location.href = res.url;
           return;
         }
@@ -55,5 +54,17 @@ export default function VerifyEmailPage() {
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     </div>
+  );
+}
+
+export default function VerifyEmailPage() {
+  return (
+    <Suspense fallback={
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0a0807', color: '#f5ecd9', fontFamily: "'Jost', sans-serif" }}>
+        <p style={{ fontSize: '0.9rem', color: 'rgba(245,236,217,0.5)' }}>Loading...</p>
+      </div>
+    }>
+      <VerifyEmailInner />
+    </Suspense>
   );
 }

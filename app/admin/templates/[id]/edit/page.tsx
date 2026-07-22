@@ -10,6 +10,7 @@ interface TemplateRecord {
   name: string;
   description: string;
   type: string;
+  category?: string;
   theme: string;
   price: string;
   thumbnail: string;
