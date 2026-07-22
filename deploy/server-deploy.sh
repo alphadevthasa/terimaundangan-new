@@ -23,6 +23,7 @@ docker run -d \
   --name "$CONTAINER_NAME" \
   --network "$NETWORK" \
   -p 3000:3000 \
+  -v "$PROJECT_DIR/public/uploads:/app/public/uploads" \
   --env-file "$PROJECT_DIR/.env" \
   "$IMAGE_NAME"
 
