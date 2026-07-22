@@ -184,7 +184,18 @@ export default function DashboardLayout({
     const sessionEmail = localStorage.getItem('sessionEmail');
 
     if (!session) {
-      router.replace('/login');
+      // No localStorage flag — still verify via API in case session cookie exists
+      fetch('/api/auth/session', { credentials: 'include' })
+        .then(r => {
+          if (r.ok) {
+            setAuthed(true);
+            if (sessionEmail) fetchUser(sessionEmail);
+            else setLoading(false);
+          } else {
+            router.replace('/login');
+          }
+        })
+        .catch(() => router.replace('/login'));
     } else {
       setAuthed(true);
       if (sessionEmail) {
@@ -206,7 +217,16 @@ export default function DashboardLayout({
   };
 
   if (pathname === '/login') return <>{children}</>;
-  if (!authed) return null;
+  if (!authed) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg)', color: 'var(--cream-dim)', fontFamily: "'Jost', sans-serif" }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ width: '40px', height: '40px', border: '2px solid var(--line)', borderTopColor: 'var(--gold)', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 1rem' }} />
+          <p style={{ fontSize: '.9rem' }}>Verifying session...</p>
+        </div>
+      </div>
+    );
+  }
 
   const userInitial = user?.name ? user.name.charAt(0).toUpperCase() : 'U';
 
