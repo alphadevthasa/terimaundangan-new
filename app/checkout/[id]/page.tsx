@@ -78,6 +78,29 @@ function CheckoutContent() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [templateId]);
 
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch('/api/auth/session', { credentials: 'include' });
+        if (!cancelled && res.ok) {
+          const data = await res.json();
+          if (data.session?.email) {
+            setCustomerEmail(data.session.email);
+            const namePart = data.session.email.split('@')[0];
+            const formatted = namePart
+              .replace(/[._-]/g, ' ')
+              .replace(/\b\w/g, c => c.toUpperCase());
+            setCustomerName(formatted);
+          }
+        }
+      } catch {
+        // ignore
+      }
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
   const fetchTemplate = async (id: string) => {
     try {
       const res = await fetch(`/api/static-templates/${id}`);

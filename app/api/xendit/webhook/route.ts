@@ -45,11 +45,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ received: true, skip: true, customerId: existing.id });
   }
 
-  await prisma.customer.updateMany({
-    where: { status: 'active' },
-    data: { status: 'draft' },
-  });
-
   let customer = customerEmail
     ? await prisma.customer.findFirst({ where: { email: customerEmail } })
     : null;

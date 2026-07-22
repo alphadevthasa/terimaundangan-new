@@ -1,16 +1,52 @@
 import { prisma } from '@/lib/prisma';
 import { TEMPLATE_CONFIGS, DEFAULT_TEMPLATE_CONFIG } from '@/app/lib/templates-config';
-import { kebabToCamel } from '@/app/lib/editor-sections';
+import { buildFieldMap, generatePublishedHtml } from '@/app/lib/publish-html';
 import { notFound } from 'next/navigation';
-import GuestWishes from '@/components/GuestWishes';
+import * as fs from 'fs';
+import * as path from 'path';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
+/**
+ * Published wedding page.
+ *
+ * Priority:
+ * 1. Serve pre-generated static HTML from public/undangan_publish/{slug}/index.html
+ *    (no flicker — data already baked in at publish time)
+ * 2. Fall back to dynamic rendering from DB if static file not found
+ *    (e.g. during development or if publish didn't generate file)
+ *
+ * The static file is generated at publish time by PATCH /api/template-data/publish
+ * via generatePublishedHtml() which bakes all customer data directly into the HTML.
+ */
 export default async function PublishedWeddingPage({ params }: PageProps) {
   const { slug } = await params;
 
+  // === TRY 1: Serve pre-generated static HTML ===
+  try {
+    const staticPath = path.join(process.cwd(), 'public', 'undangan_publish', slug, 'index.html');
+    if (fs.existsSync(staticPath)) {
+      const html = fs.readFileSync(staticPath, 'utf-8');
+      return (
+        <>
+          <head>
+            <meta charSet="UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            <title>Wedding Invitation</title>
+          </head>
+          <body style={{ margin: 0, padding: 0 }}>
+            <div id="wedding-root" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: html }} />
+          </body>
+        </>
+      );
+    }
+  } catch {
+    // Fall through to dynamic rendering
+  }
+
+  // === TRY 2: Dynamic rendering from DB (fallback) ===
   const td = await (prisma as any).templateData.findFirst({
     where: { slug, published: true },
     include: { template: true },
@@ -25,73 +61,11 @@ export default async function PublishedWeddingPage({ params }: PageProps) {
   const templateConfig = TEMPLATE_CONFIGS[templateName] || DEFAULT_TEMPLATE_CONFIG;
   const templateHtml = template.html || templateConfig.html;
 
-  // Map TemplateData camelCase fields to kebab-case for the HTML template
-  const fieldMappings: Record<string, string> = {
-    'bride-nick': td.brideNick,
-    'groom-nick': td.groomNick,
-    'date-text': td.dateText,
-    'countdown-master': td.countdownMaster,
-    'couple-title': td.coupleTitle,
-    'couple-sub': td.coupleSub,
-    'groom-full': td.groomFull,
-    'groom-role': td.groomRole,
-    'groom-photo': td.groomPhoto,
-    'groom-dad': td.groomDad,
-    'groom-mom': td.groomMom,
-    'bride-full': td.brideFull,
-    'bride-role': td.brideRole,
-    'bride-photo': td.bridePhoto,
-    'bride-dad': td.brideDad,
-    'bride-mom': td.brideMom,
-    'verse-text': td.verseText,
-    'verse-source': td.verseSource,
-    'story-date-1': td.storyDate1,
-    'story-title-1': td.storyTitle1,
-    'story-desc-1': td.storyDesc1,
-    'story-date-2': td.storyDate2,
-    'story-title-2': td.storyTitle2,
-    'story-desc-2': td.storyDesc2,
-    'akad-date': td.akadDate,
-    'akad-time': td.akadTime,
-    'akad-place': td.akadPlace,
-    'resepsi-date': td.resepsiDate,
-    'resepsi-time': td.resepsiTime,
-    'resepsi-place': td.resepsiPlace,
-    'gal-1': td.gal1,
-    'gal-2': td.gal2,
-    'gal-3': td.gal3,
-    'gal-4': td.gal4,
-    'gal-5': td.gal5,
-    'gal-6': td.gal6,
-    'rsvp-title': td.rsvpTitle,
-    'rsvp-desc': td.rsvpDesc,
-    'bank-name': td.bankName,
-    'bank-acc': td.bankAcc,
-    'bank-holder': td.bankHolder,
-    'stream-title': td.streamTitle,
-    'stream-desc': td.streamDesc,
-    'wishes-title': td.wishesTitle,
-    'wishes-desc': td.wishesDesc,
-    'closing-thanks': td.closingThanks,
-    'closing-fam': td.closingFam,
-  };
+  // Build fieldMap (shared utility with publish API)
+  const fieldMap = buildFieldMap(td, templateConfig);
 
-  // Build map using template's keyMap if available
-  const fieldMap: Record<string, string> = {};
-  if (templateConfig.keyMap) {
-    for (const [kebabKey, templateKey] of Object.entries(templateConfig.keyMap)) {
-      const camelKey = kebabToCamel(kebabKey);
-      if (td[camelKey]) {
-        fieldMap[templateKey] = td[camelKey];
-      }
-    }
-  } else {
-    for (const [key, value] of Object.entries(fieldMappings)) {
-      if (value) fieldMap[key] = value;
-    }
-  }
-
-  const scriptData = JSON.stringify(fieldMap);
+  // Bake data into HTML server-side
+  const bakedHtml = generatePublishedHtml(templateHtml, fieldMap);
 
   return (
     <>
@@ -100,55 +74,10 @@ export default async function PublishedWeddingPage({ params }: PageProps) {
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Wedding Invitation - {td.groomNick || td.brideNick || 'The Couple'}</title>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-        <style>{`
-          html, body { margin: 0; padding: 0; width: 100%; background: #0a0807; }
-          .wedding-frame { width: 100%; height: 100vh; border: none; display: block; }
-        `}</style>
+        <style>{`html,body{margin:0;padding:0;width:100%;background:#0a0807;}`}</style>
       </head>
       <body style={{ margin: 0, padding: 0, background: '#0a0807' }}>
-        <iframe
-          id="wedding-iframe"
-          className="wedding-frame"
-          srcDoc={templateHtml}
-          title="Wedding Invitation"
-        />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              var CUSTOMER_DATA = ${scriptData};
-              function applyData() {
-                var iframe = document.getElementById('wedding-iframe');
-                if (iframe && iframe.contentWindow) {
-                  try {
-                    iframe.contentWindow.postMessage({ type: 'UPDATE', payload: CUSTOMER_DATA }, '*');
-                  } catch(e) {}
-                }
-              }
-              var iframe = document.getElementById('wedding-iframe');
-              if (iframe) {
-                iframe.addEventListener('load', applyData);
-              }
-              setTimeout(applyData, 500);
-              setTimeout(applyData, 2000);
-            `
-          }}
-        />
-
-        {/* Guest Wishes Section */}
-        <div id="guest-wishes-section" style={{
-          background: '#0a0807',
-          minHeight: '100vh',
-          display: 'flex',
-          alignItems: 'flex-start',
-          justifyContent: 'center',
-          paddingTop: '2rem',
-        }}>
-          <GuestWishes
-            templateDataId={td.id}
-            title={td.wishesTitle || 'Guest Book'}
-            description={td.wishesDesc || 'Tinggalkan ucapan dan doa terbaik untuk kedua mempelai'}
-          />
-        </div>
+        <div id="wedding-root" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: bakedHtml }} />
       </body>
     </>
   );

@@ -8,5 +8,6 @@ tmp/
 public/*.png
 public/.tmp/
 public/uploads/
+public/undangan_publish/
 .DS_Store
 scripts/*.mjs

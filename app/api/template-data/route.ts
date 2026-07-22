@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { VALID_TEMPLATE_DATA_FIELDS } from '@/app/lib/template-data-fields';
 
 export async function GET(request: NextRequest) {
   try {
@@ -53,7 +54,10 @@ export async function PUT(request: Request) {
 
     const data: Record<string, unknown> = {};
     for (const [key, value] of Object.entries(fields)) {
-      if (value !== undefined) data[key] = value;
+      // Only include fields that exist in the Prisma schema
+      if (value !== undefined && VALID_TEMPLATE_DATA_FIELDS.has(key)) {
+        data[key] = value;
+      }
     }
 
     const updated = await prisma.templateData.update({

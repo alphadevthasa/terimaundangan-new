@@ -209,8 +209,115 @@ function KelolaTemplateContent() {
   const [browseMode, setBrowseMode] = useState(false);
   const [listLoading, setListLoading] = useState(false);
   const [installing, setInstalling] = useState<string | null>(null);
+  const [publishState, setPublishState] = useState<{
+    url: string;
+    slug: string;
+    loading: boolean;
+    error: string;
+    copied: boolean;
+  }>({
+    url: '',
+    slug: '',
+    loading: false,
+    error: '',
+    copied: false,
+  });
   const templateConfig = staticTemplate ? (TEMPLATE_CONFIGS[staticTemplate.name] || DEFAULT_TEMPLATE_CONFIG) : DEFAULT_TEMPLATE_CONFIG;
   const templateHtml = staticTemplate?.html || templateConfig.html;
+
+  // Publish handler
+  const handlePublish = async () => {
+    if (!templateDataId) return;
+    setPublishState(prev => ({ ...prev, loading: true, error: '' }));
+
+    const groomNick = formData['groom-nick'] || '';
+    const brideNick = formData['bride-nick'] || '';
+
+    if (!groomNick || !brideNick) {
+      setPublishState(prev => ({ ...prev, loading: false, error: 'Isi nama pengantin (Bride & Groom) terlebih dahulu' }));
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/template-data/publish', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: templateDataId, groomNick, brideNick }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setPublishState(prev => ({ ...prev, loading: false, error: data.error || 'Gagal publish' }));
+        return;
+      }
+
+      // If API returns relative URL, prepend origin
+      let publishUrl = data.url;
+      if (publishUrl && publishUrl.startsWith('/')) {
+        publishUrl = window.location.origin + publishUrl;
+      }
+
+      setPublishState(prev => ({
+        ...prev,
+        url: publishUrl,
+        slug: data.slug,
+        loading: false,
+        error: '',
+      }));
+    } catch {
+      setPublishState(prev => ({ ...prev, loading: false, error: 'Terjadi kesalahan. Silakan coba lagi.' }));
+    }
+  };
+
+  // Copy publish URL
+  const handleCopyPublishUrl = () => {
+    if (publishState.url) {
+      navigator.clipboard.writeText(publishState.url).then(() => {
+        setPublishState(prev => ({ ...prev, copied: true }));
+        setTimeout(() => setPublishState(prev => ({ ...prev, copied: false })), 2000);
+      });
+    }
+  };
+
+  // Unpublish handler
+  const handleUnpublish = async () => {
+    if (!templateDataId) return;
+    if (!confirm('Unpublish undangan ini? Tamu tidak akan bisa mengakses halaman undangan.')) return;
+
+    setPublishState(prev => ({ ...prev, loading: true, error: '' }));
+
+    try {
+      const res = await fetch('/api/template-data/unpublish', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: templateDataId }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setPublishState(prev => ({ ...prev, loading: false, error: data.error || 'Gagal unpublish' }));
+        return;
+      }
+
+      setPublishState(prev => ({
+        ...prev,
+        url: '',
+        slug: '',
+        loading: false,
+        error: '',
+      }));
+    } catch {
+      setPublishState(prev => ({ ...prev, loading: false, error: 'Terjadi kesalahan. Silakan coba lagi.' }));
+    }
+  };
+
+  // Regenerate URL handler
+  const handleRegenerateUrl = async () => {
+    if (!confirm('Regenerate URL? URL lama akan tidak bisa diakses. Lanjutkan?')) return;
+    await handlePublish();
+  };
 
   // Filter sections: hide Backgrounds for templates without background support
   const tmplName = staticTemplate?.name || '';
@@ -396,18 +503,53 @@ function KelolaTemplateContent() {
   // ---- TEMPLATE LIST / BROWSE VIEW (when no ?id=) ----
   useEffect(() => {
     if (templateId) return;
-    setListLoading(true);
-    const sessionEmail = localStorage.getItem('sessionEmail');
-    if (!sessionEmail) { setListLoading(false); return; }
-    fetch(`/api/customer?email=${encodeURIComponent(sessionEmail)}`)
-      .then(r => r.json())
-      .then(d => { setMyTemplates(d.customer?.templateData || []); setListLoading(false); })
-      .catch(() => setListLoading(false));
+    const loadMyTemplates = async () => {
+      setListLoading(true);
+      try {
+        let templateData: any[] = [];
+        const sessionEmail = localStorage.getItem('sessionEmail');
+        if (sessionEmail) {
+          const custRes = await fetch(`/api/customer?email=${encodeURIComponent(sessionEmail)}`);
+          const custData = await custRes.json();
+          templateData = custData.customer?.templateData || [];
+        } else {
+          const custRes = await fetch('/api/customer');
+          const custData = await custRes.json();
+          templateData = custData.customer?.templateData || [];
+        }
+        setMyTemplates(templateData);
+      } catch {
+        // ignore
+      } finally {
+        setListLoading(false);
+      }
+    };
+    loadMyTemplates();
   }, [templateId]);
 
   if (!templateId) {
     const priceColors: Record<string, string> = { Free: '#34d399', Premium: '#f59e0b' };
     const iconMap: Record<string, string> = { wedding: 'fas fa-heart', birthday: 'fas fa-cake-candles', corporate: 'fas fa-building' };
+    const [thumbnails, setThumbnails] = useState<Record<string, string>>({});
+
+    useEffect(() => {
+      if (!myTemplates?.length) return;
+      let cancelled = false;
+      (async () => {
+        const map: Record<string, string> = {};
+        for (const td of myTemplates) {
+          try {
+            const r = await fetch(`/api/static-templates/${td.templateId}`);
+            if (r.ok) {
+              const d = await r.json();
+              if (d.template?.thumbnail) map[td.templateId] = d.template.thumbnail;
+            }
+          } catch {}
+        }
+        if (!cancelled) setThumbnails(map);
+      })();
+      return () => { cancelled = true; };
+    }, [myTemplates]);
 
     if (browseMode) {
       if (!allTemplates) {
@@ -453,7 +595,7 @@ function KelolaTemplateContent() {
                         const r = await fetch('/api/customer/install', {
                           method: 'POST',
                           headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({ templateId: template.id, customerName: localStorage.getItem('sessionName'), customerEmail: localStorage.getItem('sessionEmail') }),
+                          body: JSON.stringify({ templateId: template.id }),
                         });
                         if (r.ok) {
                           const sessionEmail = localStorage.getItem('sessionEmail');
@@ -511,19 +653,76 @@ function KelolaTemplateContent() {
                   onClick={() => { const p = new URLSearchParams(window.location.search); p.set('id', td.templateId || ''); window.location.search = p.toString(); }}
                   onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(201,169,97,0.3)'; e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 12px 40px rgba(0,0,0,0.3)'; }}
                   onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--line)'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}>
-                  <div style={{ height: '120px', background: 'linear-gradient(135deg, #0a0807 0%, #1a1611 50%, #0a0807 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', borderBottom: '1px solid var(--line)' }}>
-                    <div style={{ fontSize: '2.5rem', opacity: 0.4 }}><i className="fas fa-heart"></i></div>
+                  <div style={{ height: '120px', background: 'linear-gradient(135deg, #0a0807 0%, #1a1611 50%, #0a0807 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', borderBottom: '1px solid var(--line)', position: 'relative', overflow: 'hidden' }}>
+                    {thumbnails[td.templateId] ? (
+                      <img src={thumbnails[td.templateId]} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.85 }} />
+                    ) : (
+                      <div style={{ fontSize: '2.5rem', opacity: 0.4 }}><i className="fas fa-heart"></i></div>
+                    )}
                   </div>
                   <div style={{ padding: '1.25rem' }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
                       <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.1rem', color: 'var(--gold)', fontStyle: 'italic' }}>{tmplName}</h3>
-                      <span style={{ fontSize: '0.7rem', color: 'var(--muted)' }}>#{td.slug || ''}</span>
+                      <span style={{
+                        fontSize: '0.6rem',
+                        padding: '0.15rem 0.45rem',
+                        borderRadius: '99px',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.05em',
+                        background: td.published ? 'rgba(34,197,94,0.12)' : 'rgba(107,114,128,0.12)',
+                        border: td.published ? '1px solid rgba(34,197,94,0.25)' : '1px solid rgba(107,114,128,0.2)',
+                        color: td.published ? '#34d399' : 'rgba(253,246,227,0.35)',
+                      }}>
+                        {td.published ? 'Published' : 'Draft'}
+                      </span>
                     </div>
                     <div style={{ fontSize: '0.8rem', color: 'var(--cream-dim)', marginBottom: '0.5rem' }}>{td.brideNick || ''} & {td.groomNick || ''}</div>
                     <div style={{ display: 'flex', gap: '0.5rem', fontSize: '0.7rem', color: 'var(--muted)' }}>
                       <span>Dibuat {new Date(td.createdAt).toLocaleDateString('id-ID')}</span>
                     </div>
-                    <div style={{ marginTop: '1rem', paddingTop: '0.75rem', borderTop: '1px solid var(--line-light)' }}>
+
+                    {/* Published link */}
+                    {td.published && td.slug ? (
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.35rem',
+                        marginTop: '0.5rem',
+                        padding: '0.3rem 0.5rem',
+                        background: 'rgba(34,197,94,0.04)',
+                        border: '1px solid rgba(34,197,94,0.1)',
+                        borderRadius: '4px',
+                        fontSize: '0.65rem',
+                        color: 'var(--cream-dim)',
+                      }}>
+                        <span style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          /{td.slug}
+                        </span>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const url = window.location.origin + '/' + td.slug;
+                            navigator.clipboard.writeText(url);
+                            alert('Link copied!');
+                          }}
+                          style={{
+                            flexShrink: 0,
+                            padding: '0.15rem 0.4rem',
+                            background: 'transparent',
+                            border: 'none',
+                            color: 'var(--gold)',
+                            fontSize: '0.6rem',
+                            cursor: 'pointer',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.03em',
+                          }}
+                        >
+                          Copy
+                        </button>
+                      </div>
+                    ) : null}
+
+                    <div style={{ marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid var(--line-light)' }}>
                       <button onClick={(e) => { e.stopPropagation(); window.location.href = `/dashboard/kelola-template?id=${td.templateId}`; }} style={{
                         width: '100%', padding: '0.5rem', background: 'var(--gold)', border: 'none', color: 'var(--bg)', borderRadius: 'var(--radius-sm)', fontSize: '0.75rem', cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.1em',
                       }}>Edit Template</button>
@@ -693,14 +892,180 @@ function KelolaTemplateContent() {
               onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--gold)'; e.currentTarget.style.color = 'var(--gold)'; }}
               onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--line)'; e.currentTarget.style.color = 'var(--cream-dim)'; }}
               onClick={() => {
-                const link = 'https://undangan.example.com/wedding';
-                navigator.clipboard?.writeText(link);
-                alert('Link copied! Share with your guests');
+                const link = publishState.url || window.location.origin + '/' + (publishState.slug || '');
+                if (link && link !== window.location.origin + '/') {
+                  navigator.clipboard?.writeText(link);
+                  alert('Link copied! Share with your guests');
+                } else {
+                  // Generate dulu jika belum publish
+                  handlePublish();
+                }
               }}
             >
               Share
             </button>
           </div>
+
+          {/* Publish URL Section */}
+          <div style={{
+            background: publishState.url ? 'rgba(34,197,94,0.05)' : 'var(--bg)',
+            border: publishState.url ? '1px solid rgba(34,197,94,0.2)' : '1px solid var(--line)',
+            borderRadius: 'var(--radius-sm)',
+            padding: '0.75rem',
+          }}>
+            {publishState.url ? (
+              <>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.4rem' }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#34d399" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                  <span style={{ fontSize: '0.7rem', color: '#34d399', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                    Published
+                  </span>
+                </div>
+                <div style={{
+                  display: 'flex', alignItems: 'center', gap: '0.35rem',
+                  padding: '0.35rem 0.5rem', background: 'var(--bg-2)',
+                  borderRadius: '2px', fontSize: '0.7rem', color: 'var(--cream)',
+                  wordBreak: 'break-all', lineHeight: 1.4,
+                }}>
+                  <span style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {publishState.url}
+                  </span>
+                  <button
+                    onClick={handleCopyPublishUrl}
+                    style={{
+                      flexShrink: 0,
+                      padding: '0.25rem 0.5rem',
+                      background: 'transparent',
+                      border: '1px solid var(--line)',
+                      color: publishState.copied ? '#34d399' : 'var(--gold)',
+                      borderRadius: '2px',
+                      fontSize: '0.65rem',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s',
+                    }}
+                  >
+                    {publishState.copied ? '✓ Copied' : 'Copy'}
+                  </button>
+                </div>
+                {/* Action buttons: Unpublish & Regenerate */}
+                <div style={{ display: 'flex', gap: '0.35rem', marginTop: '0.5rem' }}>
+                  <button
+                    onClick={handleUnpublish}
+                    disabled={publishState.loading}
+                    style={{
+                      flex: 1,
+                      padding: '0.35rem 0.5rem',
+                      background: 'rgba(239,68,68,0.08)',
+                      border: '1px solid rgba(239,68,68,0.2)',
+                      color: '#ef4444',
+                      borderRadius: '2px',
+                      fontSize: '0.62rem',
+                      cursor: publishState.loading ? 'not-allowed' : 'pointer',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.05em',
+                      fontWeight: 500,
+                      transition: 'all 0.15s',
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!publishState.loading) e.currentTarget.style.background = 'rgba(239,68,68,0.15)';
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!publishState.loading) e.currentTarget.style.background = 'rgba(239,68,68,0.08)';
+                    }}
+                  >
+                    Unpublish
+                  </button>
+                  <button
+                    onClick={handleRegenerateUrl}
+                    disabled={publishState.loading}
+                    style={{
+                      flex: 1,
+                      padding: '0.35rem 0.5rem',
+                      background: 'rgba(201,169,97,0.08)',
+                      border: '1px solid rgba(201,169,97,0.2)',
+                      color: 'var(--gold)',
+                      borderRadius: '2px',
+                      fontSize: '0.62rem',
+                      cursor: publishState.loading ? 'not-allowed' : 'pointer',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.05em',
+                      fontWeight: 500,
+                      transition: 'all 0.15s',
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!publishState.loading) e.currentTarget.style.background = 'rgba(201,169,97,0.15)';
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!publishState.loading) e.currentTarget.style.background = 'rgba(201,169,97,0.08)';
+                    }}
+                  >
+                    Regenerate URL
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={handlePublish}
+                  disabled={publishState.loading}
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem',
+                    background: publishState.loading ? 'var(--bg-3)' : 'rgba(34,197,94,0.1)',
+                    border: publishState.loading ? '1px solid var(--line)' : '1px solid rgba(34,197,94,0.25)',
+                    color: publishState.loading ? 'var(--cream-dim)' : '#34d399',
+                    borderRadius: 'var(--radius-sm)',
+                    fontSize: '0.72rem',
+                    cursor: publishState.loading ? 'not-allowed' : 'pointer',
+                    transition: 'all 0.2s',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.1em',
+                    fontWeight: 500,
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!publishState.loading) {
+                      e.currentTarget.style.background = 'rgba(34,197,94,0.18)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!publishState.loading) {
+                      e.currentTarget.style.background = 'rgba(34,197,94,0.1)';
+                    }
+                  }}
+                >
+                  {publishState.loading ? (
+                    <>
+                      <span style={{
+                        width: '12px', height: '12px',
+                        border: '2px solid rgba(52,211,153,0.3)',
+                        borderTopColor: '#34d399', borderRadius: '50%',
+                        display: 'inline-block',
+                        animation: 'pubSpin 0.6s linear infinite',
+                        marginRight: '0.3rem', verticalAlign: 'middle',
+                      }} />
+                      Generating...
+                    </>
+                  ) : (
+                    <>
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '0.3rem', verticalAlign: 'middle' }}>
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                      Generate Publish URL
+                    </>
+                  )}
+                </button>
+                {publishState.error && (
+                  <div style={{ fontSize: '0.68rem', color: '#ef4444', marginTop: '0.4rem', padding: '0.3rem 0.4rem', background: 'rgba(239,68,68,0.08)', borderRadius: '2px' }}>
+                    {publishState.error}
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+
+          <style>{`@keyframes pubSpin { to { transform: rotate(360deg); } }`}</style>
 
           {/* Preview button - mobile only */}
           {windowIsMobile && (

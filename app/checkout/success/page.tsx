@@ -20,35 +20,29 @@ function SuccessContent() {
       return;
     }
 
-    let isMounted = true;
-
-    const install = async () => {
-      try {
-        // Mark order as paid (redirect flow)
-        await fetch('/api/admin/orders/mark-paid', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ templateId }),
-        });
-
-        // Install customer
-        const res = await fetch('/api/customer/install', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ templateId }),
-        });
-
-        if (!res.ok) throw new Error('Installation failed');
-        if (isMounted) setStatus('success');
-      } catch (e) {
-        console.error('Install error:', e);
-        if (isMounted) setStatus('error');
-      }
-    };
-
-    install();
-    return () => { isMounted = false; };
-  }, [templateId]);
+    // If the user is already logged in, install the template on their behalf
+    // using the session identity. The Xendit webhook should also handle this
+    // on its own, so this is just a client-side fallback.
+    if (hasSession) {
+      fetch('/api/customer/install', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ templateId }),
+      }).then(async (res) => {
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          console.error('Install fallback failed:', err);
+        }
+        setStatus('success');
+      }).catch((e) => {
+        console.error('Install fallback error:', e);
+        setStatus('success');
+      });
+    } else {
+      // Not logged in: rely on the Xendit webhook to create/link the customer.
+      setStatus('success');
+    }
+  }, [templateId, hasSession]);
 
   // Auto-redirect to dashboard
   useEffect(() => {
