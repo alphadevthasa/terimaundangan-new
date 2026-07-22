@@ -83,8 +83,7 @@ function EditTemplateContent() {
       const fields: Record<string, string> = {};
       sections.forEach(section => {
         section.fields.forEach(field => {
-          const camelKey = kebabToCamel(field.id);
-          fields[field.id] = parsed[camelKey] || bgDefaults[field.id] || field.defaultValue;
+          fields[field.id] = parsed[field.id] ?? bgDefaults[field.id] ?? field.defaultValue;
         });
       });
       setFormData(fields);
