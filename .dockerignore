@@ -1,0 +1,13 @@
+node_modules
+.next
+.git
+npm-debug.log
+.env
+.env.*
+.vercel
+.vscode
+.idea
+*.log
+coverage
+.DS_Store
+Thumbs.db
