@@ -12,7 +12,7 @@ interface StaticTemplate {
   category?: string;
   theme?: string;
   thumbnail: string;
-  price: string;
+  price: number;
   isPopular: boolean;
   createdAt: string;
   updatedAt: string;

@@ -30,7 +30,7 @@ model Template {
   description String   @default("")
   type        String   @default("wedding")
   thumbnail   String   @default("")
-  price       String   @default("Free")
+  price       Int      @default(0)
   isPopular   Boolean  @default(false)
   isPublished Boolean  @default(true)
   category    String   @default("wedding")
@@ -38,6 +38,7 @@ model Template {
   theme       String   @default("")
   html        String   @default("") /// Full HTML content (for admin-managed templates)
   defaultData String   @default("{}") /// JSON: default values for bride/groom names, dates, venue etc.
+  features    String   @default("[]") /// JSON: [{ icon: string, label: string }]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   orders      Order[]

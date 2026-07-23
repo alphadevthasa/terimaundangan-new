@@ -56,6 +56,13 @@
 - Elemen yang bisa diedit harus pakai prefix `e-` pada id.
 - Tidak perlu modal saat preview — postMessage cukup untuk update live preview.
 
+## File Uploads
+
+- Semua upload **gambar dan video** WAJIB via R2 Cloudflare — **dilarang** menyimpan file di server lokal.
+- Upload menggunakan `handleImageUpload()` yang memanggil `/api/upload` → `uploadToR2()`.
+- File lama WAJIB dihapus dari R2 saat diganti (`deleteFromR2()` via `oldUrl` field).
+- Gunakan `@aws-sdk/client-s3` untuk operasi R2 (S3-compatible API).
+
 ## Code style
 
 - Gunakan inline styles (`style={{ }}`), jangan CSS modules atau Tailwind.

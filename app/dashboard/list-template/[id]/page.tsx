@@ -10,7 +10,7 @@ interface StaticTemplate {
   description: string;
   type: string;
   thumbnail: string;
-  price: string;
+  price: number;
   isPopular: boolean;
   html?: string;
   createdAt: string;

@@ -10,26 +10,10 @@ interface StaticTemplate {
   description: string;
   type: string;
   thumbnail: string;
-  price: string;
+  price: number;
   isPopular: boolean;
+  features?: string;
 }
-
-const PRICE_MAP: Record<string, number> = {
-  Premium: 150000,
-};
-
-const FEATURES = [
-  { icon: 'fas fa-clock', label: 'Countdown Timer', color: '#e74c3c' },
-  { icon: 'fas fa-heart', label: 'Couple Profile', color: '#e84393' },
-  { icon: 'fas fa-book', label: 'Holy Verse', color: '#8e44ad' },
-  { icon: 'fas fa-scroll', label: 'Love Story Timeline', color: '#3498db' },
-  { icon: 'fas fa-calendar-check', label: 'Wedding Events', color: '#16a085' },
-  { icon: 'fas fa-camera', label: 'Photo Gallery', color: '#f39c12' },
-  { icon: 'fas fa-envelope', label: 'RSVP Form', color: '#2ecc71' },
-  { icon: 'fas fa-gift', label: 'Wedding Gift Info', color: '#d4af37' },
-  { icon: 'fas fa-tv', label: 'Live Streaming', color: '#e67e22' },
-  { icon: 'fas fa-pen', label: 'Guest Book / Wishes', color: '#1abc9c' },
-];
 
 const iconMap: Record<string, string> = {
   wedding: 'fas fa-heart',
@@ -66,7 +50,7 @@ function CheckoutContent() {
 
   const templateId = params?.id as string;
 
-  const price = template ? PRICE_MAP[template.price] ?? 150000 : 0;
+  const price = template?.price ?? 0;
   const fee = Math.round(price * 0.11);
   const total = price + fee;
   const icon = template ? iconMap[template.type] || 'fas fa-file' : 'fas fa-file';
@@ -203,9 +187,9 @@ function CheckoutContent() {
                 <div style={{ borderTop: '1px solid rgba(201,169,97,.08)', padding: isMobile ? '1.25rem' : '1.5rem' }}>
                   <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: isMobile ? '.85rem' : '.9rem', color: '#c9a961', fontStyle: 'italic', marginBottom: '1rem', letterSpacing: '.02em' }}><i className="fas fa-crown" style={{fontSize:'.8rem',marginRight:'.35rem'}}></i> What&apos;s Included</h3>
                   <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '.6rem' }}>
-                    {FEATURES.map(f => (
+                    {(template.features ? JSON.parse(template.features) : []).map((f: any) => (
                       <div key={f.label} style={{ display: 'flex', alignItems: 'center', gap: '.5rem', fontSize: isMobile ? '.78rem' : '.82rem', color: 'rgba(245,236,217,.7)' }}>
-                        <span style={{ width: '18px', textAlign: 'center', flexShrink: 0 }}><i className={f.icon} style={{ color: f.color }}></i></span>
+                        <span style={{ width: '18px', textAlign: 'center', flexShrink: 0 }}><i className={f.icon} style={{ color: f.color || '#c9a961' }}></i></span>
                         <span>{f.label}</span>
                       </div>
                     ))}
