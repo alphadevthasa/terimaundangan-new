@@ -1,0 +1,89 @@
+name: CD
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma Client
+        run: npx prisma generate
+
+      - name: Build application
+        run: npm run build
+
+      - name: Install SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.VPS_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Create deployment package
+        run: |
+          tar -czf deploy.tar.gz \
+            .next \
+            node_modules \
+            package.json \
+            package-lock.json \
+            prisma \
+            public \
+            scripts
+
+      - name: Upload to VPS
+        run: |
+          scp deploy.tar.gz ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/opt/enginetemplate/
+
+      - name: Deploy on VPS
+        run: |
+          ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
+            set -e
+            cd /opt/enginetemplate
+            
+            # Backup current version
+            if [ -d .next ]; then
+              mkdir -p backup
+              tar -czf backup/backup-$(date +%Y%m%d-%H%M%S).tar.gz .next node_modules package.json
+            fi
+            
+            # Extract new version
+            tar -xzf deploy.tar.gz
+            rm deploy.tar.gz
+            
+            # Setup environment if needed
+            if [ ! -f .env ]; then
+              cp .env.example .env
+              echo "⚠️  .env file created from .env.example - please update with your configuration!"
+            fi
+            
+            # Run database migrations
+            npx prisma migrate deploy || true
+            
+            # Restart app with PM2
+            pm2 restart enginetemplate || pm2 start npm --name "enginetemplate" -- start
+            
+            # Wait for app to start
+            sleep 8
+            
+            # Verify app is running
+            pm2 status
+          EOF
+
+      - name: Cleanup
+        run: rm -f deploy.tar.gz

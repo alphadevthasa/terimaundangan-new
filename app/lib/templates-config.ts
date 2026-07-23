@@ -2625,7 +2625,6 @@ export const FOREST_NATURE_TEMPLATE = `<!DOCTYPE html>
                 if (window.updateInvitation) window.updateInvitation(e.data.payload);
             }
         });
-    </script>
     initLightbox();
     // Touch/swipe support for lightbox
     var touchStartX = 0;
@@ -2644,13 +2643,6 @@ export const FOREST_NATURE_TEMPLATE = `<!DOCTYPE html>
 
 
 
-<script>
-
-
-
-
-
-    <script>
     // Gallery Lightbox
     var lbImages = [];
     var lbIndex = 0;
@@ -3580,7 +3572,6 @@ export const WEST_SUMATRA_TEMPLATE = `<!DOCTYPE html>
       document.body.removeChild(textarea); alert(message);
     });
   }
-</script>
     initLightbox();
     // Touch/swipe support for lightbox
     var touchStartX = 0;
@@ -3620,13 +3611,6 @@ export const WEST_SUMATRA_TEMPLATE = `<!DOCTYPE html>
   });
 
 
-<script>
-
-
-
-
-
-    <script>
     // Gallery Lightbox
     var lbImages = [];
     var lbIndex = 0;
@@ -3866,6 +3850,8 @@ export interface TemplateConfig {
   // Elite Wedding: no keyMap needed (uses kebab-case directly via e- prefix)
   // Honey Wedding: maps kebab-case to camelCase for updateInvitation()
   keyMap?: Record<string, string>;
+  // Template has video background support (e.g. Parallax Video Cover)
+  supportsVideo?: boolean;
 }
 
 export const PARALLAX_VIDEO_COVER_TEMPLATE = `<!DOCTYPE html>
@@ -4240,8 +4226,8 @@ export const PARALLAX_VIDEO_COVER_TEMPLATE = `<!DOCTYPE html>
 
     <!-- Video overlay -->
     <div class="absolute inset-0 z-[1]">
-      <video autoplay muted loop playsinline class="w-full h-full object-cover opacity-40" poster="https://images.unsplash.com/photo-1519741497674-611481863552?w=1920&q=80">
-        <source src="https://videos.pexels.com/video-files/3209828/3209828-hd_1920_1080_25fps.mp4" type="video/mp4">
+      <video id="e-hero-video" autoplay muted loop playsinline class="w-full h-full object-cover opacity-40" poster="https://images.unsplash.com/photo-1519741497674-611481863552?w=1920&q=80">
+        <source id="e-hero-video-src" src="https://videos.pexels.com/video-files/3209828/3209828-hd_1920_1080_25fps.mp4" type="video/mp4">
       </video>
     </div>
 
@@ -4869,6 +4855,14 @@ export const PARALLAX_VIDEO_COVER_TEMPLATE = `<!DOCTYPE html>
         const el = document.getElementById('e-galleryBg');
         if (el) el.style.backgroundImage = 'url(' + data.galleryBg + ')';
       }
+      if (data.heroVideo) {
+        const src = document.getElementById('e-hero-video-src');
+        if (src) {
+          src.src = data.heroVideo;
+          const vid = document.getElementById('e-hero-video');
+          if (vid) vid.load();
+        }
+      }
     };
 
     window.addEventListener('message', function(e) {
@@ -5281,6 +5275,11 @@ export const TEMPLATE_CONFIGS: Record<string, TemplateConfig> = {
   'Parallax Video Cover': {
     html: PARALLAX_VIDEO_COVER_TEMPLATE,
     demoData: DEMO_DATA_PARALLAX_VIDEO_COVER,
+    supportsVideo: true,
+    keyMap: {
+      'gallery-bg': 'galleryBg',
+      'hero-video': 'heroVideo',
+    },
   },
 };
 

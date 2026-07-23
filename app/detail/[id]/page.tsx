@@ -35,6 +35,12 @@ function CheckoutContent() {
   const [mounted, setMounted] = useState(false);
   const [previewMode, setPreviewMode] = useState<'mobile' | 'desktop'>('desktop');
   const [scrolled, setScrolled] = useState(false);
+  const [featuresOpen, setFeaturesOpen] = useState(false);
+  const [previewActive, setPreviewActive] = useState(false);
+
+  useEffect(() => {
+    if (!isMobile) setPreviewActive(false);
+  }, [isMobile]);
 
   // Get template config based on template name
   const templateConfig = template ? (TEMPLATE_CONFIGS[template.name] || DEFAULT_TEMPLATE_CONFIG) : DEFAULT_TEMPLATE_CONFIG;
@@ -116,15 +122,16 @@ function CheckoutContent() {
       {status === 'failed' && (
         <div style={{ padding: '.75rem 2rem', background: 'rgba(239,68,68,.1)', borderBottom: '1px solid rgba(239,68,68,.2)', color: '#ef4444', fontSize: '.85rem', textAlign: 'center' }}>
           <i className="fas fa-triangle-exclamation" style={{marginRight:'.35rem'}}></i>Payment was cancelled or failed. Please try again.
-          </div>
-        )}
+        </div>
+      )}
 
       {/* Main: Preview + Checkout */}
       <div style={{
         flex: 1, display: 'flex',
         flexDirection: isMobile ? 'column' : 'row',
-        overflow: isMobile ? 'auto' : 'hidden',
-        minHeight: 0, paddingTop: isMobile ? '60px' : '72px',
+        overflow: isMobile ? (previewActive ? 'hidden' : 'auto') : 'hidden',
+        minHeight: 0, paddingTop: isMobile ? '76px' : '72px',
+        position: 'relative',
       }}>
         {/* Desktop: side-by-side preview + sidebar. Mobile: stacked */}
         {!isMobile && (
@@ -147,8 +154,7 @@ function CheckoutContent() {
                 onMouseEnter={(e) => { if (previewMode !== 'mobile') { e.currentTarget.style.background = 'rgba(201,169,97,.15)'; e.currentTarget.style.color = '#c9a961'; } }}
                 onMouseLeave={(e) => { if (previewMode !== 'mobile') { e.currentTarget.style.background = 'rgba(201,169,97,.08)'; e.currentTarget.style.color = 'rgba(245,236,217,.5)'; } }}
               >
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><rect x="2" y="3" width="20" height="18" rx="3" stroke="currentColor" strokeWidth="2"/><line x1="10" y1="18" x2="14" y2="18" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
-                Mobile
+                <i className="fas fa-mobile-screen-button"></i> Mobile
               </button>
               <button onClick={() => setPreviewMode('desktop')}
                 style={{
@@ -162,8 +168,7 @@ function CheckoutContent() {
                 onMouseEnter={(e) => { if (previewMode !== 'desktop') { e.currentTarget.style.background = 'rgba(201,169,97,.15)'; e.currentTarget.style.color = '#c9a961'; } }}
                 onMouseLeave={(e) => { if (previewMode !== 'desktop') { e.currentTarget.style.background = 'rgba(201,169,97,.08)'; e.currentTarget.style.color = 'rgba(245,236,217,.5)'; } }}
               >
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><rect x="2" y="3" width="20" height="14" rx="2" stroke="currentColor" strokeWidth="2"/><line x1="8" y1="20" x2="16" y2="20" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/><line x1="12" y1="17" x2="12" y2="20" stroke="currentColor" strokeWidth="2"/></svg>
-                Desktop
+                <i className="fas fa-desktop"></i> Desktop
               </button>
             </div>
 
@@ -235,104 +240,107 @@ function CheckoutContent() {
             </div>
         )}
 
-        {/* Mobile: stacked with tabs */}
+        {/* Mobile: stacked preview + sidebar */}
         {isMobile && (
-          <div style={{ padding: '1rem 1rem 0', background: 'radial-gradient(ellipse at center, #1a1611 0%, #0a0807 100%)' }}>
-            {/* Tab switcher */}
-            <div style={{ display: 'flex', gap: '.35rem', marginBottom: '.75rem' }}>
-              <button onClick={() => setPreviewMode('mobile')}
-                style={{ padding: '.35rem .85rem', borderRadius: '6px', fontSize: '.7rem', fontFamily: "'Jost', sans-serif", cursor: 'pointer', transition: 'all .2s', background: previewMode === 'mobile' ? '#c9a961' : 'rgba(201,169,97,.08)', border: '1px solid rgba(201,169,97,.15)', color: previewMode === 'mobile' ? '#0a0807' : 'rgba(245,236,217,.5)', fontWeight: previewMode === 'mobile' ? 500 : 400, display: 'flex', alignItems: 'center', gap: '.35rem' }}>
-                📱 Mobile
-              </button>
-              <button onClick={() => setPreviewMode('desktop')}
-                style={{ padding: '.35rem .85rem', borderRadius: '6px', fontSize: '.7rem', fontFamily: "'Jost', sans-serif", cursor: 'pointer', transition: 'all .2s', background: previewMode === 'desktop' ? '#c9a961' : 'rgba(201,169,97,.08)', border: '1px solid rgba(201,169,97,.15)', color: previewMode === 'desktop' ? '#0a0807' : 'rgba(245,236,217,.5)', fontWeight: previewMode === 'desktop' ? 500 : 400, display: 'flex', alignItems: 'center', gap: '.35rem' }}>
-                💻 Desktop
-              </button>
-            </div>
-            {previewMode === 'mobile' ? (
-              <div style={{
-                width: '100%', background: '#1c1c1e', borderRadius: '20px', overflow: 'hidden',
-                boxShadow: '0 0 0 1px #1a1a1a, 0 10px 40px rgba(0,0,0,.6)',
-              }}>
-                <div style={{
-                  position: 'relative', height: '28px', background: '#2c2c2e',
-                  borderBottom: '1px solid rgba(255,255,255,.06)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                }}>
-                  <div style={{ width: '100px', height: '20px', background: '#111', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px' }}>
-                    <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#333' }} />
-                    <div style={{ width: '30px', height: '3px', borderRadius: '2px', background: '#222' }} />
-                    <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#333' }} />
-                  </div>
-                </div>
-                <div style={{ height: '450px', background: '#0a0807' }}>
-                  <iframe ref={desktopRef} srcDoc={templateHtml} onLoad={handleIframeLoad} style={{ width: '100%', height: '100%', border: 'none', background: '#0a0807' }} title="Mobile Preview" />
-                </div>
-              </div>
-            ) : (
-              <div style={{
-                width: '100%', background: '#1c1c1e', borderRadius: '10px', overflow: 'hidden',
-                boxShadow: '0 0 0 1px rgba(255,255,255,.06), 0 10px 40px rgba(0,0,0,.5)',
-              }}>
-                <div style={{ padding: '.5rem .85rem', background: '#2c2c2e', borderBottom: '1px solid rgba(255,255,255,.06)', display: 'flex', alignItems: 'center', gap: '.5rem' }}>
-                  <div style={{ display: 'flex', gap: '5px' }}><div style={{ width: '9px', height: '9px', borderRadius: '50%', background: '#ff5f56' }} /><div style={{ width: '9px', height: '9px', borderRadius: '50%', background: '#ffbd2e' }} /><div style={{ width: '9px', height: '9px', borderRadius: '50%', background: '#28c840' }} /></div>
-                  <div style={{ flex: 1, textAlign: 'center', fontSize: '.65rem', color: 'rgba(255,255,255,.3)' }}>{template.name}</div>
-                </div>
-                <div style={{ height: '360px', background: '#0a0807' }}>
-                  <iframe ref={desktopRef} srcDoc={templateHtml} onLoad={handleIframeLoad} style={{ width: '100%', height: '100%', border: 'none', background: '#0a0807' }} title="Desktop Preview" />
-                </div>
-              </div>
-            )}
-            </div>
-        )}
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, overflow: 'hidden' }}>
+            {/* Preview area */}
+            <div style={{
+              flex: previewActive ? 1 : '0 0 50vh',
+              minHeight: previewActive ? 0 : '320px',
+              position: 'relative',
+              background: '#0a0807',
+              transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+            }}>
+              <iframe ref={mobileRef} srcDoc={templateHtml} onLoad={handleIframeLoad} style={{ width: '100%', height: '100%', border: 'none', background: '#0a0807', display: 'block' }} title="Mobile Preview" />
 
-        {/* Sidebar — always visible */}
-        <div style={{
-          width: isMobile ? '100%' : '400px',
-          borderLeft: isMobile ? 'none' : '1px solid rgba(201,169,97,.1)',
-          background: isMobile ? '#0a0807' : '#14110d',
-          display: 'flex', flexDirection: 'column', flexShrink: 0,
-          overflowY: isMobile ? 'visible' : 'auto',
-          height: isMobile ? 'auto' : '100%',
-        }}>
-          {/* Template info */}
-          <div style={{ padding: '1.5rem', borderBottom: '1px solid rgba(201,169,97,.08)' }}>
-            <div style={{ fontSize: isMobile ? '.7rem' : '.75rem', textTransform: 'uppercase', letterSpacing: '.1em', color: 'rgba(245,236,217,.35)', marginBottom: '.35rem' }}>{template.type}</div>
-            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: isMobile ? '1.4rem' : '1.6rem', color: '#c9a961', fontStyle: 'italic', margin: '0 0 .75rem', lineHeight: 1.2 }}>{template.name}</h2>
-            <p style={{ fontSize: isMobile ? '.82rem' : '.9rem', color: isMobile ? 'rgba(245,236,217,.6)' : 'rgba(245,236,217,.65)', lineHeight: 1.7, margin: '0 0 1rem' }}>{template.description}</p>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '.75rem', borderTop: '1px solid rgba(201,169,97,.08)' }}>
-              <span style={{ fontSize: isMobile ? '.75rem' : '.8rem', color: 'rgba(245,236,217,.4)' }}>Harga</span>
-              <span style={{ fontSize: isMobile ? '1.1rem' : '1.2rem', color: '#c9a961', fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic', fontWeight: 600 }}>Rp 150.000</span>
+              {/* Floating preview button */}
+              <button
+                onClick={() => setPreviewActive(!previewActive)}
+                style={{
+                  position: 'absolute',
+                  top: '12px',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  padding: '.45rem 1.25rem',
+                  background: 'rgba(201,169,97,0.95)',
+                  border: 'none',
+                  borderRadius: '20px',
+                  color: '#0a0807',
+                  fontSize: '.78rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  zIndex: 20,
+                  backdropFilter: 'blur(6px)',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+                  transition: 'all 0.3s ease',
+                }}
+              >
+                {previewActive ? 'Kembali' : 'Preview'}
+              </button>
             </div>
-          </div>
 
-          {/* Features list */}
-          <div style={{ padding: '1.5rem', borderBottom: '1px solid rgba(201,169,97,.08)' }}>
-            <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: isMobile ? '.9rem' : '1rem', color: '#c9a961', marginBottom: '1rem', fontStyle: 'italic', letterSpacing: '.02em' }}><i className="fas fa-crown" style={{fontSize:isMobile ? '.8rem' : '.9rem',marginRight:'.35rem'}}></i> Features Included</h3>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '.5rem' }}>
-              {[
-                { icon: 'fas fa-clock', label: 'Countdown Timer' },
-                { icon: 'fas fa-heart', label: 'Couple Profile' },
-                { icon: 'fas fa-book', label: 'Holy Verse' },
-                { icon: 'fas fa-scroll', label: 'Love Story Timeline' },
-                { icon: 'fas fa-calendar-check', label: 'Wedding Events' },
-                { icon: 'fas fa-camera', label: 'Photo Gallery' },
-                { icon: 'fas fa-envelope', label: 'RSVP Form' },
-                { icon: 'fas fa-gift', label: 'Wedding Gift Info' },
-                { icon: 'fas fa-tv', label: 'Live Streaming' },
-                { icon: 'fas fa-pen', label: 'Guest Book / Wishes' },
-              ].map(f => (
-                <div key={f.label} style={{ display: 'flex', alignItems: 'center', gap: '.5rem', fontSize: isMobile ? '.78rem' : '.82rem', color: 'rgba(245,236,217,.7)' }}>
-                  <span style={{ width: '18px', textAlign: 'center', flexShrink: 0 }}><i className={f.icon}></i></span>
-                  <span>{f.label}</span>
-                </div>
-              ))}
-            </div>
-          </div>
+            {/* Sidebar sections below template */}
+            <div style={{
+              flex: previewActive ? 0 : 1,
+              minHeight: previewActive ? 0 : 'auto',
+              maxHeight: previewActive ? 0 : '100%',
+              overflow: 'hidden',
+              transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+              background: '#0a0807',
+            }}>
+           {/* Template info */}
+           <div style={{ padding: '1.5rem', borderBottom: '1px solid rgba(201,169,97,.08)' }}>
+             <div style={{ fontSize: isMobile ? '.7rem' : '.75rem', textTransform: 'uppercase', letterSpacing: '.1em', color: 'rgba(245,236,217,.35)', marginBottom: '.35rem' }}>{template.type}</div>
+             <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: isMobile ? '1.4rem' : '1.6rem', color: '#c9a961', fontStyle: 'italic', margin: '0 0 .75rem', lineHeight: 1.2 }}>{template.name}</h2>
+             <p style={{ fontSize: isMobile ? '.82rem' : '.9rem', color: isMobile ? 'rgba(245,236,217,.6)' : 'rgba(245,236,217,.65)', lineHeight: 1.7, margin: '0 0 1rem' }}>{template.description}</p>
+             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '.75rem', borderTop: '1px solid rgba(201,169,97,.08)' }}>
+               <span style={{ fontSize: isMobile ? '.75rem' : '.8rem', color: 'rgba(245,236,217,.4)' }}>Harga</span>
+               <span style={{ fontSize: isMobile ? '1.1rem' : '1.2rem', color: '#c9a961', fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic', fontWeight: 600 }}>Rp 150.000</span>
+             </div>
+           </div>
+  
+           {/* Features list */}
+           <div style={{ padding: '1.5rem', borderBottom: '1px solid rgba(201,169,97,.08)' }}>
+             {isMobile && (
+               <button
+                 onClick={() => setFeaturesOpen(!featuresOpen)}
+                 style={{
+                   width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                   background: 'none', border: 'none', color: '#c9a961', cursor: 'pointer', padding: 0, marginBottom: isMobile && featuresOpen ? '1rem' : 0,
+                 }}
+               >
+                 <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: isMobile ? '.9rem' : '1rem', color: '#c9a961', margin: 0, fontStyle: 'italic', letterSpacing: '.02em', display: 'flex', alignItems: 'center', gap: '.4rem' }}>
+                   <i className="fas fa-crown" style={{fontSize:isMobile ? '.8rem' : '.9rem'}}></i> Features Included
+                 </h3>
+                 <i className="fas fa-chevron-down" style={{ fontSize: '.65rem', transition: 'transform .2s', transform: featuresOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}></i>
+               </button>
+             )}
+             {(!isMobile || featuresOpen) && (
+               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '.5rem' }}>
+                 {[
+                   { icon: 'fas fa-clock', label: 'Countdown Timer' },
+                   { icon: 'fas fa-heart', label: 'Couple Profile' },
+                   { icon: 'fas fa-book', label: 'Holy Verse' },
+                   { icon: 'fas fa-scroll', label: 'Love Story Timeline' },
+                   { icon: 'fas fa-calendar-check', label: 'Wedding Events' },
+                   { icon: 'fas fa-camera', label: 'Photo Gallery' },
+                   { icon: 'fas fa-envelope', label: 'RSVP Form' },
+                   { icon: 'fas fa-gift', label: 'Wedding Gift Info' },
+                   { icon: 'fas fa-tv', label: 'Live Streaming' },
+                   { icon: 'fas fa-pen', label: 'Guest Book / Wishes' },
+                 ].map(f => (
+                   <div key={f.label} style={{ display: 'flex', alignItems: 'center', gap: '.5rem', fontSize: isMobile ? '.78rem' : '.82rem', color: 'rgba(245,236,217,.7)' }}>
+                     <span style={{ width: '18px', textAlign: 'center', flexShrink: 0 }}><i className={f.icon}></i></span>
+                     <span>{f.label}</span>
+                   </div>
+                 ))}
+               </div>
+             )}
+           </div>
 
 
           {/* Purchase button */}
-          <div style={{ padding: '1.5rem', marginTop: 'auto' }}>
+          <div style={{ padding: '1.5rem' }}>
             {error && (
               <div style={{ fontSize: '.75rem', color: '#ef4444', marginBottom: '.75rem', background: 'rgba(239,68,68,.1)', padding: '.5rem .75rem', borderRadius: '4px', border: '1px solid rgba(239,68,68,.2)' }}>
                 {error}
@@ -351,7 +359,9 @@ function CheckoutContent() {
               Proceed to Checkout
             </button>
           </div>
-        </div>
+            </div>
+            </div>
+        )}
       </div>
     </div>
   );

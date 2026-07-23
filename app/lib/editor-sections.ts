@@ -4,7 +4,7 @@ import { birthdayKidsSchema } from '@/app/lib/template-schemas/birthday-kids';
 export interface EditorField {
   id: string;
   label: string;
-  type: 'text' | 'textarea' | 'url' | 'datetime-local' | 'number' | 'select' | 'image';
+  type: 'text' | 'textarea' | 'url' | 'datetime-local' | 'number' | 'select' | 'image' | 'video';
   defaultValue: string;
   options?: { value: string; label: string }[];
 }
@@ -132,8 +132,20 @@ export const editorSections: EditorSection[] = [
     ],
   },
   {
+    id: 'backgrounds',
+    title: '12. Backgrounds',
+    fields: [
+      { id: 'hero-bg', label: 'Hero / Cover Background', type: 'image', defaultValue: '' },
+      { id: 'couple-bg', label: 'Couple Section Background', type: 'image', defaultValue: '' },
+      { id: 'story-bg', label: 'Story Section Background', type: 'image', defaultValue: '' },
+      { id: 'gallery-bg', label: 'Gallery Section Background', type: 'image', defaultValue: '' },
+      { id: 'gifts-bg', label: 'Gifts Section Background', type: 'image', defaultValue: '' },
+      { id: 'wishes-bg', label: 'Wishes Section Background', type: 'image', defaultValue: '' },
+    ],
+  },
+  {
     id: 'stream',
-    title: '12. Live Stream',
+    title: '13. Live Stream',
     fields: [
       { id: 'stream-title', label: 'Stream Title', type: 'text', defaultValue: 'Virtual Wedding' },
       { id: 'stream-desc', label: 'Stream Description', type: 'textarea', defaultValue: 'For friends and family who cannot attend physically.' },
@@ -141,7 +153,7 @@ export const editorSections: EditorSection[] = [
   },
   {
     id: 'wishes',
-    title: '13. Wishes',
+    title: '14. Wishes',
     fields: [
       { id: 'wishes-title', label: 'Wishes Title', type: 'text', defaultValue: 'Guest Book' },
       { id: 'wishes-desc', label: 'Wishes Description', type: 'textarea', defaultValue: 'Leave your warmest wishes and blessings for our marriage.' },
@@ -149,7 +161,7 @@ export const editorSections: EditorSection[] = [
   },
   {
     id: 'closing',
-    title: '14. Closing',
+    title: '15. Closing',
     fields: [
       { id: 'closing-thanks', label: 'Thank You Text', type: 'text', defaultValue: 'Terima Kasih' },
       { id: 'closing-fam', label: 'Family Signatures', type: 'text', defaultValue: 'The Pierce & Laurent Families' },
@@ -183,6 +195,7 @@ const TEMPLATE_SECTION_FILTER: Record<string, SectionFilter | null> = {
     gallery: ['gal-1', 'gal-2', 'gal-3', 'gal-4'],
     gifts: null,
     closing: ['closing-thanks'],
+    backgrounds: null,
   },
   'Java Batik': {
     cover: null,
@@ -193,6 +206,7 @@ const TEMPLATE_SECTION_FILTER: Record<string, SectionFilter | null> = {
     gallery: null,
     gifts: null,
     closing: null,
+    backgrounds: null,
   },
   'West Sumatra': null,
   'Parallax Video Cover': {
@@ -202,6 +216,7 @@ const TEMPLATE_SECTION_FILTER: Record<string, SectionFilter | null> = {
     bride: ['bride-full', 'bride-photo', 'bride-role'],
     events: null,
     gallery: null,
+    backgrounds: null,
   },
   'Kids Birthday White': null,
 };
@@ -230,7 +245,7 @@ export const BACKGROUND_DEFAULTS: Record<string, Record<string, string>> = {
     'gallery-bg': 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=1920&auto=format&fit=crop',
   },
   'Parallax Video Cover': {
-    'gallery-bg': 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=1920&auto=format&fit=crop',
+    'gallery-bg': 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1920&auto=format&fit=crop',
   },
 };
 

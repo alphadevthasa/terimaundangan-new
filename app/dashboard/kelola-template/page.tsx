@@ -3,156 +3,7 @@
 import { useState, useEffect, useRef, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { TEMPLATE_CONFIGS, DEFAULT_TEMPLATE_CONFIG } from '../../lib/templates-config';
-
-// Editor sections configuration
-const editorSections = [
-  {
-    id: 'cover',
-    title: '1. Cover',
-    defaultOpen: true,
-    fields: [
-      { id: 'bride-nick', label: 'Bride Nickname', type: 'text', defaultValue: 'Sophia' },
-      { id: 'groom-nick', label: 'Groom Nickname', type: 'text', defaultValue: 'Alexander' },
-      { id: 'date-text', label: 'Wedding Date (Text)', type: 'text', defaultValue: 'Saturday, October 24th, 2026' },
-    ],
-  },
-  {
-    id: 'countdown',
-    title: '2. Countdown',
-    fields: [
-      { id: 'countdown-master', label: 'Master Wedding Date', type: 'datetime-local', defaultValue: '2026-10-24T10:00' },
-    ],
-  },
-  {
-    id: 'couple',
-    title: '3. The Couple',
-    defaultOpen: true,
-    fields: [
-      { id: 'couple-title', label: 'Intro Title', type: 'text', defaultValue: 'Two Souls, One Heart' },
-      { id: 'couple-sub', label: 'Intro Subtitle', type: 'textarea', defaultValue: 'We invite you to share in our joy as we exchange our vows and begin our new life together.' },
-    ],
-  },
-  {
-    id: 'groom',
-    title: '4. The Groom',
-    fields: [
-      { id: 'groom-full', label: 'Full Name', type: 'text', defaultValue: 'Alexander Pierce' },
-      { id: 'groom-role', label: 'Role', type: 'text', defaultValue: 'The Groom' },
-      { id: 'groom-photo', label: 'Groom Photo', type: 'image', defaultValue: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=400&q=80' },
-      { id: 'groom-dad', label: "Father's Name", type: 'text', defaultValue: 'Mr. Robert Pierce' },
-      { id: 'groom-mom', label: "Mother's Name", type: 'text', defaultValue: 'Mrs. Elena Pierce' },
-    ],
-  },
-  {
-    id: 'bride',
-    title: '5. The Bride',
-    fields: [
-      { id: 'bride-full', label: 'Full Name', type: 'text', defaultValue: 'Sophia Laurent' },
-      { id: 'bride-role', label: 'Role', type: 'text', defaultValue: 'The Bride' },
-      { id: 'bride-photo', label: 'Bride Photo', type: 'image', defaultValue: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80' },
-      { id: 'bride-dad', label: "Father's Name", type: 'text', defaultValue: 'Mr. Arthur Laurent' },
-      { id: 'bride-mom', label: "Mother's Name", type: 'text', defaultValue: 'Mrs. Clara Laurent' },
-    ],
-  },
-  {
-    id: 'verse',
-    title: '6. Holy Verse',
-    fields: [
-      { id: 'holy-verse-label', label: 'Section Label', type: 'text', defaultValue: 'Holy Verse' },
-      { id: 'verse-text', label: 'Verse Text', type: 'textarea', defaultValue: '"And above all these put on love, which binds everything together in perfect harmony."' },
-      { id: 'verse-source', label: 'Source', type: 'text', defaultValue: 'Colossians 3:14' },
-    ],
-  },
-  {
-    id: 'story',
-    title: '7. Love Story',
-    fields: [
-      { id: 'story-date-1', label: 'Date 1', type: 'text', defaultValue: 'June 2018' },
-      { id: 'story-title-1', label: 'Title 1', type: 'text', defaultValue: 'First Meeting' },
-      { id: 'story-desc-1', label: 'Desc 1', type: 'textarea', defaultValue: 'We met at a small coffee shop in the city.' },
-      { id: 'story-date-2', label: 'Date 2', type: 'text', defaultValue: 'Dec 2024' },
-      { id: 'story-title-2', label: 'Title 2', type: 'text', defaultValue: 'The Proposal' },
-      { id: 'story-desc-2', label: 'Desc 2', type: 'textarea', defaultValue: 'Under the stars, a promise was made to last forever.' },
-    ],
-  },
-  {
-    id: 'events',
-    title: '8. Events',
-    fields: [
-      { id: 'akad-date', label: 'Akad Date', type: 'text', defaultValue: 'Saturday, October 24, 2026' },
-      { id: 'akad-time', label: 'Akad Time', type: 'text', defaultValue: '08:00 AM - 10:00 AM' },
-      { id: 'akad-place', label: 'Akad Place', type: 'text', defaultValue: 'Grand Heritage Mosque' },
-      { id: 'resepsi-date', label: 'Resepsi Date', type: 'text', defaultValue: 'Saturday, October 24, 2026' },
-      { id: 'resepsi-time', label: 'Resepsi Time', type: 'text', defaultValue: '07:00 PM - End' },
-      { id: 'resepsi-place', label: 'Resepsi Place', type: 'text', defaultValue: 'The Ritz-Carlton Ballroom' },
-    ],
-  },
-  {
-    id: 'gallery',
-    title: '9. Gallery',
-    fields: [
-      { id: 'gal-1', label: 'Photo 1', type: 'image', defaultValue: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=400&q=80' },
-      { id: 'gal-2', label: 'Photo 2', type: 'image', defaultValue: 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=400&q=80' },
-      { id: 'gal-3', label: 'Photo 3', type: 'image', defaultValue: 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?auto=format&fit=crop&w=400&q=80' },
-      { id: 'gal-4', label: 'Photo 4', type: 'image', defaultValue: 'https://images.unsplash.com/photo-1606800052052-a08af7148866?auto=format&fit=crop&w=400&q=80' },
-      { id: 'gal-5', label: 'Photo 5', type: 'image', defaultValue: 'https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=400&q=80' },
-      { id: 'gal-6', label: 'Photo 6', type: 'image', defaultValue: 'https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&w=400&q=80' },
-    ],
-  },
-  {
-    id: 'rsvp',
-    title: '10. RSVP',
-    fields: [
-      { id: 'rsvp-title', label: 'RSVP Title', type: 'text', defaultValue: 'Will You Join Us?' },
-      { id: 'rsvp-desc', label: 'RSVP Description', type: 'textarea', defaultValue: 'Please kindly confirm your attendance by October 1st, 2026.' },
-    ],
-  },
-  {
-    id: 'gifts',
-    title: '11. Gifts',
-    fields: [
-      { id: 'bank-name', label: 'Bank Name', type: 'text', defaultValue: 'BCA' },
-      { id: 'bank-acc', label: 'Account Number', type: 'text', defaultValue: '1234567890' },
-      { id: 'bank-holder', label: 'Account Holder', type: 'text', defaultValue: 'Alexander Pierce' },
-    ],
-  },
-  {
-    id: 'backgrounds',
-    title: '12. Backgrounds',
-    fields: [
-      { id: 'hero-bg', label: 'Hero / Cover Background', type: 'image', defaultValue: '' },
-      { id: 'couple-bg', label: 'Couple Section Background', type: 'image', defaultValue: '' },
-      { id: 'story-bg', label: 'Story Section Background', type: 'image', defaultValue: '' },
-      { id: 'gallery-bg', label: 'Gallery Section Background', type: 'image', defaultValue: '' },
-      { id: 'gifts-bg', label: 'Gifts Section Background', type: 'image', defaultValue: '' },
-      { id: 'wishes-bg', label: 'Wishes Section Background', type: 'image', defaultValue: '' },
-    ],
-  },
-  {
-    id: 'stream',
-    title: '13. Live Stream',
-    fields: [
-      { id: 'stream-title', label: 'Stream Title', type: 'text', defaultValue: 'Virtual Wedding' },
-      { id: 'stream-desc', label: 'Stream Description', type: 'textarea', defaultValue: 'For friends and family who cannot attend physically.' },
-    ],
-  },
-  {
-    id: 'wishes',
-    title: '14. Wishes',
-    fields: [
-      { id: 'wishes-title', label: 'Wishes Title', type: 'text', defaultValue: 'Guest Book' },
-      { id: 'wishes-desc', label: 'Wishes Description', type: 'textarea', defaultValue: 'Leave your warmest wishes and blessings for our marriage.' },
-    ],
-  },
-  {
-    id: 'closing',
-    title: '15. Closing',
-    fields: [
-      { id: 'closing-thanks', label: 'Thank You Text', type: 'text', defaultValue: 'Terima Kasih' },
-      { id: 'closing-fam', label: 'Family Signatures', type: 'text', defaultValue: 'The Pierce & Laurent Families' },
-    ],
-  },
-];
+import { getTemplateSections, BACKGROUND_DEFAULTS, kebabToCamel } from '../../lib/editor-sections';
 
 // Type for API response
 interface TemplateData {
@@ -160,39 +11,7 @@ interface TemplateData {
   [key: string]: string | number | boolean | Date;
 }
 
-// Convert kebab-case to camelCase (e.g., "bride-nick" -> "brideNick", "story-date-1" -> "storyDate1")
-function kebabToCamel(str: string): string {
-  return str.replace(/-([a-z0-9])/g, (_, c) => c.toUpperCase());
-}
-
-// Default background images for templates that support backgrounds
-const BACKGROUND_DEFAULTS: Record<string, Record<string, string>> = {
-  'Java Batik': {
-    'hero-bg': 'https://images.unsplash.com/photo-1564419320508-2e3d3a7d7bf5?q=80&w=1200&auto=format&fit=crop',
-    'couple-bg': 'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?q=80&w=1200&auto=format&fit=crop',
-    'story-bg': 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1200&auto=format&fit=crop',
-    'gallery-bg': 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?q=80&w=1200&auto=format&fit=crop',
-    'gifts-bg': 'https://images.unsplash.com/photo-1510076857177-7470076d4098?q=80&w=1200&auto=format&fit=crop',
-    'wishes-bg': 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=1200&auto=format&fit=crop',
-  },
-  'West Sumatra': {
-    'hero-bg': 'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=1200&auto=format&fit=crop',
-    'couple-bg': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=1200&auto=format&fit=crop',
-    'story-bg': 'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?q=80&w=1200&auto=format&fit=crop',
-    'gallery-bg': 'https://images.unsplash.com/photo-1431440869543-efaf3388c585?q=80&w=1200&auto=format&fit=crop',
-    'gifts-bg': 'https://images.unsplash.com/photo-1510076857177-7470076d4098?q=80&w=1200&auto=format&fit=crop',
-    'wishes-bg': 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=1200&auto=format&fit=crop',
-  },
-  'Forest Nature': {
-    'hero-bg': 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?q=80&w=1920&auto=format&fit=crop',
-    'couple-bg': 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=1920&auto=format&fit=crop',
-    'story-bg': 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?q=80&w=1920&auto=format&fit=crop',
-    'gallery-bg': 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=1920&auto=format&fit=crop',
-  },
-  'Parallax Video Cover': {
-    'gallery-bg': 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=1920&auto=format&fit=crop',
-  },
-};
+// ponytail: kebabToCamel, BACKGROUND_DEFAULTS imported from shared lib
 
 function KelolaTemplateContent() {
   const searchParams = useSearchParams();
@@ -322,12 +141,13 @@ function KelolaTemplateContent() {
     await handlePublish();
   };
 
-  // Filter sections: hide Backgrounds for templates without background support
+  // Filter sections: use per-template filter + hide backgrounds for unsupported templates
   const tmplName = staticTemplate?.name || '';
+  const templateSections = getTemplateSections(tmplName);
   const hasBackgrounds = !!BACKGROUND_DEFAULTS[tmplName];
-  const visibleSections = hasBackgrounds
-    ? editorSections
-    : editorSections.filter(s => s.id !== 'backgrounds');
+  const visibleSections = !hasBackgrounds
+    ? templateSections.filter(s => s.id !== 'backgrounds')
+    : templateSections;
 
   // Fetch template from API on mount
   // Detect mobile
@@ -389,7 +209,8 @@ function KelolaTemplateContent() {
 
         // Map database fields to form fields
         const formFields: Record<string, string> = {};
-        editorSections.forEach(section => {
+        const loadSections = getTemplateSections(fetchedTmplName);
+        loadSections.forEach(section => {
           section.fields.forEach(field => {
             const camelKey = kebabToCamel(field.id);
             // Try DB value first, then template background default, then field default
@@ -402,7 +223,8 @@ function KelolaTemplateContent() {
       console.error('Error fetching template:', error);
       // Fallback to defaults
       const initial: Record<string, string> = {};
-      editorSections.forEach(section => {
+      const fallbackSections = getTemplateSections('');
+      fallbackSections.forEach(section => {
         section.fields.forEach(field => {
           initial[field.id] = field.defaultValue;
         });
@@ -482,6 +304,7 @@ function KelolaTemplateContent() {
   const handleImageUpload = async (fieldId: string, file: File) => {
     const fd = new FormData();
     fd.append('file', file);
+    if (formData[fieldId]) fd.append('oldUrl', formData[fieldId]);
 
     try {
       const res = await fetch('/api/upload', {
@@ -1261,6 +1084,45 @@ function KelolaTemplateContent() {
             </div>
           </details>
         ))}
+
+        {templateConfig.supportsVideo && (
+          <details key="hero-video" style={{ marginBottom: '0.75rem', borderBottom: '1px solid var(--line)', paddingBottom: '0.5rem' }}>
+            <summary style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic', fontSize: '1rem', color: 'var(--gold)', textTransform: 'uppercase', letterSpacing: '0.4em', cursor: 'pointer', outline: 'none', listStyle: 'none', padding: '0.5rem 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', userSelect: 'none' }}>
+              Cover Video
+              <span style={{ fontFamily: "'Jost', sans-serif", fontStyle: 'normal', fontSize: '1rem' }}>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
+              </span>
+            </summary>
+            <div style={{ padding: '0.5rem 0' }}>
+              <div style={{ marginBottom: '0.75rem' }}>
+                <label style={{ display: 'block', fontFamily: "'Jost', sans-serif", fontSize: '0.7rem', letterSpacing: '0.1em', color: 'var(--cream-dim)', marginBottom: '0.3rem', textTransform: 'uppercase' }}>
+                  Hero Cover Video URL
+                </label>
+                <div>
+                  {formData['hero-video'] && (
+                    <div style={{ width: '100%', height: windowIsMobile ? '80px' : '120px', borderRadius: '4px', overflow: 'hidden', marginBottom: '0.5rem', background: 'var(--bg-2)', border: '1px solid var(--line)', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }} className="video-preview-wrapper">
+                      <video muted style={{ width: '100%', height: '100%', objectFit: 'cover' }}>
+                        <source src={formData['hero-video']} />
+                      </video>
+                      <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none' }}>
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="rgba(201,169,97,.8)" stroke="#0a0807" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                          <polygon points="6 3 20 12 6 21 6 3" />
+                        </svg>
+                      </div>
+                    </div>
+                  )}
+                  <div style={{ display: 'flex', gap: '0.4rem', marginBottom: '0.5rem' }}>
+                    <input type="text" value={formData['hero-video'] || ''} onChange={(e) => handleFieldChange('hero-video', e.target.value)} placeholder="Paste video URL or upload..." style={{ flex: 1, padding: '0.5rem 0.7rem', background: 'var(--bg-2)', border: '1px solid var(--line)', color: 'var(--cream)', borderRadius: '2px', fontFamily: "'Jost', sans-serif", fontSize: '0.85rem', outline: 'none', transition: 'border-color 0.2s' }} onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--gold)'; }} onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--line)'; }} />
+                    <label style={{ flexShrink: 0, padding: '0.45rem 0.6rem', background: 'var(--bg-2)', border: '1px dashed var(--line)', color: 'var(--gold)', borderRadius: '2px', fontSize: '0.75rem', cursor: 'pointer', textAlign: 'center', textTransform: 'uppercase', letterSpacing: '0.05em', transition: 'all 0.2s' }} onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--gold)'; e.currentTarget.style.background = 'rgba(201,169,97,0.08)'; }} onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--line)'; e.currentTarget.style.background = 'var(--bg-2)'; }}>
+                      Upload Video
+                      <input type="file" accept="video/mp4,video/webm,video/quicktime" style={{ display: 'none' }} onChange={(e) => { const file = e.target.files?.[0]; if (file) { handleImageUpload('hero-video', file); e.target.value = ''; } }} />
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </details>
+        )}
       </div>
 
       {/* RIGHT PANE: PREVIEW - Desktop only, hidden on mobile */}

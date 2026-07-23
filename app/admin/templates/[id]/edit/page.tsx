@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback, Suspense } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { TEMPLATE_CONFIGS, DEFAULT_TEMPLATE_CONFIG } from '@/app/lib/templates-config';
-import { editorSections, getTemplateSections, BACKGROUND_DEFAULTS, kebabToCamel } from '@/app/lib/editor-sections';
+import { getTemplateSections, BACKGROUND_DEFAULTS, kebabToCamel } from '@/app/lib/editor-sections';
 
 interface TemplateRecord {
   id: string;
@@ -43,8 +43,11 @@ function EditTemplateContent() {
   const templateConfig = staticTemplateName ? (TEMPLATE_CONFIGS[staticTemplateName] || DEFAULT_TEMPLATE_CONFIG) : DEFAULT_TEMPLATE_CONFIG;
   const templateHtml = templateConfig.html;
 
+  const templateSections = getTemplateSections(staticTemplateName);
   const hasBackgrounds = !!BACKGROUND_DEFAULTS[staticTemplateName];
-  const visibleSections = hasBackgrounds ? editorSections : editorSections.filter(s => s.id !== 'backgrounds');
+  const visibleSections = !hasBackgrounds
+    ? templateSections.filter(s => s.id !== 'backgrounds')
+    : templateSections;
 
   useEffect(() => {
     const checkMobile = () => setWindowIsMobile(window.innerWidth < 768);
@@ -173,6 +176,7 @@ function EditTemplateContent() {
   const handleImageUpload = async (fieldId: string, file: File) => {
     const fd = new FormData();
     fd.append('file', file);
+    if (formData[fieldId]) fd.append('oldUrl', formData[fieldId]);
     try {
       const res = await fetch('/api/upload', { method: 'POST', body: fd });
       if (!res.ok) {
@@ -351,6 +355,45 @@ function EditTemplateContent() {
                 </div>
               </details>
             ))}
+
+            {templateConfig.supportsVideo && (
+              <details key="hero-video" style={{ marginBottom: '0.75rem', borderBottom: '1px solid rgba(212,175,55,.1)', paddingBottom: '0.5rem' }}>
+                <summary style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic', fontSize: '1rem', color: '#d4af37', textTransform: 'uppercase', letterSpacing: '0.4em', cursor: 'pointer', outline: 'none', listStyle: 'none', padding: '0.5rem 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', userSelect: 'none' }}>
+                  Cover Video
+                  <span style={{ fontFamily: "'Jost', sans-serif", fontStyle: 'normal', fontSize: '1rem' }}>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
+                  </span>
+                </summary>
+                <div style={{ padding: '0.5rem 0' }}>
+                  <div style={{ marginBottom: '0.75rem' }}>
+                    <label style={{ display: 'block', fontFamily: "'Jost', sans-serif", fontSize: '0.7rem', letterSpacing: '0.1em', color: 'rgba(253,246,227,.6)', marginBottom: '0.3rem', textTransform: 'uppercase' }}>
+                      Hero Cover Video URL
+                    </label>
+                    <div>
+                      {formData['hero-video'] && (
+                        <div style={{ width: '100%', height: windowIsMobile ? '80px' : '120px', borderRadius: '4px', overflow: 'hidden', marginBottom: '0.5rem', background: '#060b14', border: '1px solid rgba(212,175,55,.15)', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }} className="video-preview-wrapper">
+                          <video muted style={{ width: '100%', height: '100%', objectFit: 'cover' }}>
+                            <source src={formData['hero-video']} />
+                          </video>
+                          <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none' }}>
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="rgba(212,175,55,.8)" stroke="#0a0807" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                              <polygon points="6 3 20 12 6 21 6 3" />
+                            </svg>
+                          </div>
+                        </div>
+                      )}
+                      <div style={{ display: 'flex', gap: '0.4rem', marginBottom: '0.5rem' }}>
+                        <input type="text" value={formData['hero-video'] || ''} onChange={(e) => handleFieldChange('hero-video', e.target.value)} placeholder="Paste video URL or upload..." style={{ flex: 1, padding: '0.5rem 0.7rem', background: '#060b14', border: '1px solid rgba(212,175,55,.15)', color: '#fdf6e3', borderRadius: '2px', fontFamily: "'Jost', sans-serif", fontSize: '0.85rem', outline: 'none', transition: 'border-color 0.2s' }} onFocus={(e) => { e.currentTarget.style.borderColor = '#d4af37'; }} onBlur={(e) => { e.currentTarget.style.borderColor = 'rgba(212,175,55,.15)'; }} />
+                        <label style={{ flexShrink: 0, padding: '0.45rem 0.6rem', background: '#060b14', border: '1px dashed rgba(212,175,55,.15)', color: '#d4af37', borderRadius: '2px', fontSize: '0.75rem', cursor: 'pointer', textAlign: 'center', textTransform: 'uppercase', letterSpacing: '0.05em', transition: 'all 0.2s' }} onMouseEnter={e => { e.currentTarget.style.borderColor = '#d4af37'; e.currentTarget.style.background = 'rgba(212,175,55,.08)'; }} onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(212,175,55,.15)'; e.currentTarget.style.background = '#060b14'; }}>
+                          Upload Video
+                          <input type="file" accept="video/mp4,video/webm,video/quicktime" style={{ display: 'none' }} onChange={(e) => { const file = e.target.files?.[0]; if (file) { handleImageUpload('hero-video', file); e.target.value = ''; } }} />
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </details>
+            )}
 
             <div style={{ height: '2rem' }} />
           </>

@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { writeFile, mkdir } from 'fs/promises';
-import path from 'path';
+import { uploadToR2, deleteFromR2 } from '@/app/lib/r2';
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,34 +11,30 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate file type
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'video/mp4', 'video/webm', 'video/quicktime'];
     if (!allowedTypes.includes(file.type)) {
       return NextResponse.json(
-        { error: 'Invalid file type. Allowed: JPEG, PNG, WebP, GIF' },
+        { error: 'Invalid file type. Allowed: JPEG, PNG, WebP, GIF, MP4, WebM, MOV' },
         { status: 400 }
       );
     }
 
-    // Max 5MB
-    if (file.size > 5 * 1024 * 1024) {
-      return NextResponse.json({ error: 'File too large. Max 5MB' }, { status: 400 });
+    // Max 5MB for images, 50MB for videos
+    const maxSize = file.type.startsWith('video/') ? 50 * 1024 * 1024 : 5 * 1024 * 1024;
+    if (file.size > maxSize) {
+      const label = file.type.startsWith('video/') ? '50MB' : '5MB';
+      return NextResponse.json({ error: `File too large. Max ${label}` }, { status: 400 });
     }
 
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
+    // Delete old file from R2 if provided (best-effort before upload)
+    const oldUrl = formData.get('oldUrl') as string | null;
+    if (oldUrl) {
+      await deleteFromR2(oldUrl).catch(() => {});
+    }
 
-    // Generate unique filename
-    const ext = file.name.split('.').pop() || 'jpg';
-    const filename = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads');
-
-    // Ensure directory exists
-    await mkdir(uploadDir, { recursive: true });
-
-    const filepath = path.join(uploadDir, filename);
-    await writeFile(filepath, buffer);
-
-    const url = `/uploads/${filename}`;
+    const url = await uploadToR2(file);
+    // Extract filename for backward compatibility
+    const filename = url.split('/').pop() || 'file';
 
     return NextResponse.json({ url, filename });
   } catch (error) {
