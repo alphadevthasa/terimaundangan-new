@@ -183,6 +183,7 @@ model TemplateData {
 
   // Relations
   wishes Wish[]
+  rsvps  Rsvp[]
 
   @@index([customerId])
   @@index([templateId])
@@ -193,6 +194,21 @@ model Wish {
   id             String       @id @default(uuid())
   templateDataId String
   name           String       @default("")
+  message        String       @default("")
+  createdAt      DateTime     @default(now())
+
+  templateData   TemplateData @relation(fields: [templateDataId], references: [id])
+
+  @@index([templateDataId])
+}
+
+/// Guest RSVP responses for wedding invitations
+model Rsvp {
+  id             String       @id @default(uuid())
+  templateDataId String
+  name           String       @default("")
+  status         String       @default("hadir") /// hadir | tidak
+  guestCount     Int          @default(1)
   message        String       @default("")
   createdAt      DateTime     @default(now())
 
