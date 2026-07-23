@@ -2,7 +2,43 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+const DEFAULT_CATEGORIES = [
+  { name: 'Wedding', slug: 'wedding', description: 'Undangan pernikahan untuk berbagai tema dan gaya', icon: 'fas fa-heart', sortOrder: 1 },
+  { name: 'Birthday', slug: 'birthday', description: 'Undangan ulang tahun untuk segala usia', icon: 'fas fa-cake-candles', sortOrder: 2 },
+  { name: 'Corporate', slug: 'corporate', description: 'Undangan corporate event dan seminar', icon: 'fas fa-building', sortOrder: 3 },
+  { name: 'Other', slug: 'other', description: 'Kategori lainnya', icon: 'fas fa-file', sortOrder: 4 },
+];
+
+async function seedCategories() {
+  for (const cat of DEFAULT_CATEGORIES) {
+    const existing = await prisma.category.findUnique({ where: { slug: cat.slug } });
+    if (!existing) {
+      await prisma.category.create({ data: cat });
+      console.log(`  ✅ Created category: ${cat.name}`);
+    } else {
+      console.log(`  ⏭️  Category already exists: ${cat.name}`);
+    }
+  }
+}
+
 async function main() {
+  // Seed categories first
+  console.log('Seeding categories...');
+  await seedCategories();
+  console.log('✅ Categories seeded successfully!');
+
+  // Link existing templates to categories
+  const allCategories = await prisma.category.findMany();
+  for (const cat of allCategories) {
+    const result = await prisma.template.updateMany({
+      where: { category: cat.slug, categoryId: null },
+      data: { categoryId: cat.id },
+    });
+    if (result.count > 0) {
+      console.log(`  🔗 Linked ${result.count} template(s) to category: ${cat.name}`);
+    }
+  }
+
   const existing = await prisma.template.count();
   if (existing === 0) {
     await prisma.template.createMany({
@@ -131,6 +167,28 @@ async function main() {
             "bank-name": "BCA", "bank-acc": "1234 5678 9012", "bank-holder": "Rizky Aditya Pratama",
           }),
         },
+        {
+          name: 'Parallax Video Cover',
+          description: 'Undangan pernikahan sinematik dengan parallax video cover dan nuansa gold elegan.',
+          type: 'wedding',
+          theme: 'Modern',
+          thumbnail: '',
+          price: 'Free',
+          isPopular: false,
+          defaultData: JSON.stringify({
+            "bride-nick": "Amanda", "groom-nick": "Rizky",
+            "date-text": "12 . 12 . 2026", "countdown-master": "2026-12-12T08:00:00+07:00",
+            "bride-full": "Amanda Putri Lestari", "groom-full": "Rizky Aditya Pratama",
+            "akad-date": "Sabtu, 12 Desember 2026", "akad-time": "08.00 - 10.00 WIB", "akad-place": "Masjid Al-Ikhlas, Jakarta",
+            "resepsi-date": "Sabtu, 12 Desember 2026", "resepsi-time": "11.00 - 15.00 WIB", "resepsi-place": "The Grand Ballroom, Jakarta",
+            "gal-1": "https://images.unsplash.com/photo-1519741497674-611481863552?w=800&q=80",
+            "gal-2": "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=800&q=80",
+            "gal-3": "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=800&q=80",
+            "gal-4": "https://images.unsplash.com/photo-1591604466107-ec97de577aff?w=800&q=80",
+            "gal-5": "https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=800&q=80",
+            "gal-6": "https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=800&q=80",
+          }),
+        },
       ],
     });
     console.log('✅ Static templates seeded successfully!');
@@ -146,6 +204,7 @@ async function main() {
       'West Sumatra': JSON.stringify({"bride-nick":"Sri","groom-nick":"Raka","bride-full":"Sri Wahyuni Zainul","groom-full":"Raka Pratama Bukhari","countdown-master":"2025-12-20T08:00:00+07:00","hero-date":"20 . 12 . 2025"}),
       'Fogging 3D Cinematic Wedding': JSON.stringify({"bride-nick":"Juliet","groom-nick":"Romeo","bride-full":"Juliet Capulet, S.Ked.","groom-full":"Romeo Montague, S.T.","date-text":"25.12.2026","countdown-master":"2026-12-25T08:00:00+07:00","akad-date":"Jumat, 25 Desember 2026","akad-time":"08.00 - 10.00 WIB","akad-place":"Grand Ballroom Hotel Indonesia, Jakarta","resepsi-date":"Jumat, 25 Desember 2026","resepsi-time":"11.00 - Selesai","resepsi-place":"Grand Ballroom Hotel Indonesia, Jakarta","bank-name":"BCA","bank-acc":"1234567890","bank-holder":"Romeo Montague"}),
       'Cover Video': JSON.stringify({"bride-nick":"Amanda","groom-nick":"Rizky","date-text":"12 . 12 . 2026","countdown-master":"2026-12-12T08:00:00+07:00","bride-full":"Amanda Putri Lestari","groom-full":"Rizky Aditya Pratama","akad-date":"Sabtu, 12 Desember 2026","akad-time":"08.00 - 10.00 WIB","akad-place":"Masjid Al-Ikhlas, Jakarta","resepsi-date":"Sabtu, 12 Desember 2026","resepsi-time":"11.00 - 15.00 WIB","resepsi-place":"The Grand Ballroom, Jakarta","bank-name":"BCA","bank-acc":"1234 5678 9012","bank-holder":"Rizky Aditya Pratama"}),
+      'Parallax Video Cover': JSON.stringify({"bride-nick":"Amanda","groom-nick":"Rizky","date-text":"12 . 12 . 2026","countdown-master":"2026-12-12T08:00:00+07:00","bride-full":"Amanda Putri Lestari","groom-full":"Rizky Aditya Pratama","akad-date":"Sabtu, 12 Desember 2026","akad-time":"08.00 - 10.00 WIB","akad-place":"Masjid Al-Ikhlas, Jakarta","resepsi-date":"Sabtu, 12 Desember 2026","resepsi-time":"11.00 - 15.00 WIB","resepsi-place":"The Grand Ballroom, Jakarta","gal-1":"https://images.unsplash.com/photo-1519741497674-611481863552?w=800&q=80","gal-2":"https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=800&q=80","gal-3":"https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=800&q=80","gal-4":"https://images.unsplash.com/photo-1591604466107-ec97de577aff?w=800&q=80","gal-5":"https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=800&q=80","gal-6":"https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=800&q=80"}),
     };
     for (const t of emptyDefaults) {
       const d = defaultsMap[t.name];

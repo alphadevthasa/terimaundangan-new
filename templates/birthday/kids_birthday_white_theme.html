@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Undangan Ulang Tahun Leo</title>
+    <!-- Font Lucu & Modern -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-white: #ffffff;
+            --text-main: #555555;
+            --pastel-blue: #88d4f0;
+            --pastel-pink: #ffb6c1;
+            --pastel-yellow: #ffdf85;
+            --pastel-mint: #a8e6cf;
+            --pastel-purple: #dcd3ff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: var(--bg-white);
+            color: var(--text-main);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Fredoka', sans-serif;
+            color: #333;
+        }
+
+        /* Struktur Section Full Width */
+        section {
+            width: 100%;
+            padding: 80px 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Container Pembungkus Konten di Tengah */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: center;
+            position: relative;
+            z-index: 20;
+        }
+
+        /* --- GLOBAL ORNAMENTS & PARALLAX --- */
+        .parallax-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 15; /* Di atas background section, tapi tidak menutupi klik form */
+        }
+        
+        .ornament-svg {
+            position: absolute;
+            filter: drop-shadow(0px 10px 15px rgba(0,0,0,0.08));
+        }
+
+        /* ==================================================
+           BACKGROUND TIAP SECTION (TEMA PUTIH & PASTEL LEMBUT)
+           ================================================== */
+        
+        /* 1. Cover Background (Gambar Anak Cerah Parallax) */
+        .bg-cover {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            background-image: url('https://images.unsplash.com/photo-1602083995893-6b71350a4d04?q=80&w=2070&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed; /* Efek parallax bawaan CSS */
+            /* TANPA OVERLAY GELAP */
+        }
+
+        /* 2 & 3. Profile & Opening Background (Polka Dot Putih-Biru Sangat Pudar) */
+        .bg-profile {
+            background-color: #ffffff;
+            background-image: radial-gradient(#e6f7ff 20%, transparent 20%);
+            background-size: 20px 20px;
+        }
+
+        /* 4. Countdown Background (Gradien Putih ke Ungu Muda) */
+        .bg-countdown {
+            background: linear-gradient(135deg, #ffffff 0%, #f4f0ff 100%);
+        }
+
+        /* 5 & 6. Detail Acara & Maps (Garis Diagonal Putih-Mint) */
+        .bg-detail {
+            background: repeating-linear-gradient(
+                45deg,
+                #ffffff,
+                #ffffff 15px,
+                #f0fffa 15px,
+                #f0fffa 30px
+            );
+        }
+
+        /* 7. Gallery Background (Gradien Putih ke Pink Lembut) */
+        .bg-gallery {
+            background: linear-gradient(to bottom, #ffffff, #fff0f3);
+        }
+
+        /* 8 & 9. RSVP & Wish Wall Background (Pola Kotak/Grid Kuning Pudar) */
+        .bg-rsvp {
+            background-color: #ffffff;
+            background-image: 
+                linear-gradient(#fff9e6 1px, transparent 1px),
+                linear-gradient(90deg, #fff9e6 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+
+        /* 10. Gift Background (Gelombang Biru Muda / Putih) */
+        .bg-gift {
+            background: linear-gradient(to top, #ffffff, #eaf8ff);
+        }
+
+        /* 11. Thank You Background (Gambar Terang Parallax) */
+        .bg-thankyou {
+            background-image: url('https://images.unsplash.com/photo-1530103043960-ef38714abb15?q=80&w=2069&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 60vh;
+            display: flex;
+            align-items: center;
+        }
+
+        /* ==================================================
+           STYLING KONTEN KARTU & ELEMEN
+           ================================================== */
+
+        .cover-content {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px 30px;
+            border-radius: 40px;
+            border: 4px dashed var(--pastel-yellow);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            width: 90%;
+            max-width: 450px;
+            margin: auto;
+        }
+        .cover-content h2 { color: var(--pastel-blue); font-size: 1.5rem; margin-bottom: 10px; }
+        .cover-content h1 { color: var(--pastel-pink); font-size: 3rem; margin-bottom: 10px; text-shadow: 2px 2px 0px #fff; line-height: 1.1; }
+        .cover-content p { font-size: 1.2rem; font-weight: 700; color: #666; }
+
+        .white-card {
+            background: #fff;
+            border: 3px solid #f0f0f0;
+            border-radius: 30px;
+            padding: 40px 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+            position: relative;
+            margin-top: 20px;
+        }
+        
+        .profile-img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid var(--pastel-blue);
+            margin: 0 auto 20px;
+            box-shadow: 0 10px 20px rgba(136, 212, 240, 0.3);
+        }
+
+        .countdown-wrapper { display: flex; justify-content: center; gap: 15px; margin-top: 30px; }
+        .time-box {
+            background: var(--pastel-purple);
+            color: #333;
+            padding: 15px;
+            border-radius: 20px;
+            min-width: 80px;
+            box-shadow: 0 8px 15px rgba(220, 211, 255, 0.5);
+            border: 3px solid #fff;
+        }
+        .time-box span { display: block; font-size: 2rem; font-family: 'Fredoka'; font-weight: 700; }
+        .time-box p { font-size: 0.9rem; margin: 0; font-weight: 700; }
+
+        .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 30px; }
+        .detail-card {
+            background: #fff;
+            padding: 30px;
+            border-radius: 25px;
+            border: 3px solid var(--pastel-yellow);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.03);
+            transition: transform 0.3s;
+        }
+        .detail-card:hover { transform: translateY(-5px); }
+        .detail-card h3 { color: var(--pastel-pink); margin-bottom: 15px; font-size: 1.5rem; }
+
+        .map-container {
+            margin-top: 30px;
+            border-radius: 25px;
+            overflow: hidden;
+            border: 4px solid var(--pastel-mint);
+            box-shadow: 0 10px 20px rgba(168, 230, 207, 0.3);
+        }
+
+        .gallery-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 30px; }
+        .gallery-item { width: 100%; height: 200px; border-radius: 20px; object-fit: cover; border: 4px solid #fff; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+
+        .form-container { background: #fff; padding: 30px; border-radius: 30px; border: 3px solid var(--pastel-blue); margin-top: 20px; text-align: left; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-weight: 700; margin-bottom: 5px; }
+        .form-control { width: 100%; padding: 12px 15px; border: 2px solid #ddd; border-radius: 15px; font-family: 'Quicksand'; font-size: 1rem; outline: none; background: #fafafa; }
+        .form-control:focus { border-color: var(--pastel-blue); background: #fff; }
+        
+        .btn { display: block; width: 100%; padding: 15px; font-size: 1.2rem; font-family: 'Fredoka'; border: none; border-radius: 20px; cursor: pointer; transition: 0.3s; text-align: center; text-decoration: none; }
+        .btn-rsvp { background: var(--pastel-pink); color: #fff; box-shadow: 0 8px 15px rgba(255, 182, 193, 0.5); border: 2px solid #fff; }
+        .btn-rsvp:hover { background: #ff9fb0; transform: translateY(-3px); }
+
+        .wish-list { margin-top: 20px; max-height: 250px; overflow-y: auto; text-align: left; }
+        .wish-item { background: #fff; padding: 15px; border-radius: 15px; margin-bottom: 10px; border-left: 5px solid var(--pastel-yellow); box-shadow: 0 2px 5px rgba(0,0,0,0.02); border: 1px solid #eee; }
+        
+        .gift-box { background: #fff; border: 3px dashed var(--pastel-mint); padding: 30px; border-radius: 30px; margin-top: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.03); }
+        .rek-box { background: #f0fffa; padding: 15px; border-radius: 15px; margin: 15px 0; font-size: 1.2rem; font-weight: bold; letter-spacing: 1px; color: #333; }
+        .btn-copy { background: var(--pastel-mint); color: #333; margin-top: 10px; }
+
+        @media (max-width: 600px) {
+            .cover-content h1 { font-size: 2.3rem; }
+            .time-box { min-width: 65px; padding: 10px; }
+            .time-box span { font-size: 1.5rem; }
+            .gallery-item { height: 150px; }
+            section { padding: 50px 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- LAYER ORNAMEN PARALLAX GLOBAL (Murni SVG) -->
+    <div class="parallax-layer">
+        <svg class="ornament-svg prlx" data-speed="0.8" style="top: 15%; left: 10%; width: 60px;" viewBox="0 0 100 150" xmlns="http://www.w3.org/2000/svg">
+            <path fill="#ffb6c1" d="M50 10 C20 10, 10 35, 10 60 C10 85, 30 110, 50 120 C70 110, 90 85, 90 60 C90 35, 80 10, 50 10 Z"/>
+            <path fill="none" stroke="#ccc" stroke-width="2" d="M50 120 Q40 135, 50 150"/>
+        </svg>
+        <svg class="ornament-svg prlx" data-speed="0.5" style="top: 60%; right: 10%; width: 50px;" viewBox="0 0 100 150" xmlns="http://www.w3.org/2000/svg">
+            <path fill="#ffdf85" d="M50 10 C20 10, 10 35, 10 60 C10 85, 30 110, 50 120 C70 110, 90 85, 90 60 C90 35, 80 10, 50 10 Z"/>
+            <path fill="none" stroke="#ccc" stroke-width="2" d="M50 120 Q60 135, 50 150"/>
+        </svg>
+        <svg class="ornament-svg prlx" data-speed="0.3" style="top: 25%; right: 5%; width: 100px;" viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg">
+            <path fill="#ffffff" stroke="#88d4f0" stroke-width="2" d="M25 45 C10 45, 5 35, 10 25 C15 15, 25 15, 30 20 C35 5, 55 5, 65 15 C75 10, 90 15, 90 30 C95 40, 85 45, 75 45 Z"/>
+        </svg>
+        <svg class="ornament-svg prlx" data-speed="0.6" style="top: 75%; left: 5%; width: 80px;" viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg">
+            <path fill="#ffffff" stroke="#a8e6cf" stroke-width="2" d="M25 45 C10 45, 5 35, 10 25 C15 15, 25 15, 30 20 C35 5, 55 5, 65 15 C75 10, 90 15, 90 30 C95 40, 85 45, 75 45 Z"/>
+        </svg>
+        <svg class="ornament-svg prlx" data-speed="0.4" style="top: 40%; left: 20%; width: 40px;" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <path fill="#ffdf85" d="M50 5 L65 35 L95 40 L70 60 L75 95 L50 75 L25 95 L30 60 L5 40 L35 35 Z"/>
+        </svg>
+    </div>
+
+    <!-- 1. COVER / HERO -->
+    <section class="bg-cover">
+        <div class="container prlx" data-speed="-0.1">
+            <div class="cover-content">
+                <h2>Kamu Diundang!</h2>
+                <h1>Ulang Tahun<br>Leo Ke-5</h1>
+                <p>Mari bermain dan bersenang-senang!</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 2 & 3. OPENING, PROFILE & MESSAGE -->
+    <section class="bg-profile" id="profile">
+        <div class="container white-card">
+            <h2>Halo Om, Tante & Teman-teman!</h2>
+            <br>
+            <img src="https://images.unsplash.com/photo-1519689680058-324335c77eba?q=80&w=2070&auto=format&fit=crop" alt="Leo" class="profile-img">
+            <h3 style="color: var(--pastel-pink); font-size: 1.8rem;">Leonard (Leo)</h3>
+            <p style="font-size: 1.1rem; line-height: 1.6; margin-top: 15px;">
+                Leo akan berulang tahun yang ke-5! Leo suka dinosaurus dan mobil-mobilan.<br>
+                Kehadiran teman-teman semua akan membuat hari spesial Leo menjadi semakin bahagia. Sampai jumpa di acara nanti ya!
+            </p>
+        </div>
+    </section>
+
+    <!-- 4. COUNTDOWN -->
+    <section class="bg-countdown" id="countdown">
+        <div class="container">
+            <h2>Menuju Hari Bahagia</h2>
+            <p>Tidak sabar untuk bertemu kalian!</p>
+            <div class="countdown-wrapper">
+                <div class="time-box"><span id="hari">00</span><p>Hari</p></div>
+                <div class="time-box"><span id="jam">00</span><p>Jam</p></div>
+                <div class="time-box"><span id="menit">00</span><p>Menit</p></div>
+                <div class="time-box"><span id="detik">00</span><p>Detik</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5 & 6. DETAIL ACARA & GOOGLE MAPS -->
+    <section class="bg-detail" id="detail">
+        <div class="container">
+            <h2>Detail Acara</h2>
+            <div class="card-grid">
+                <div class="detail-card">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--pastel-pink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 10px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                    <h3>Waktu</h3>
+                    <p><strong>Minggu, 15 Agustus 2026</strong></p>
+                    <p>Pukul 15.00 WIB - Selesai</p>
+                </div>
+                <div class="detail-card" style="border-color: var(--pastel-blue);">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--pastel-blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 10px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                    <h3 style="color: var(--pastel-blue);">Tempat</h3>
+                    <p><strong>Taman Bermain Ceria</strong></p>
+                    <p>Jl. Pelangi Indah No. 12, Jakarta</p>
+                </div>
+            </div>
+
+            <h2 style="margin-top: 60px;">Peta Lokasi</h2>
+            <div class="map-container">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.381440733857!2d106.82283871476906!3d-6.213271195502662!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNsKwMTInNDcuOCJTIDEwNsKwNDknMzAuMSJF!5e0!3m2!1sid!2sid!4v1628151234567!5m2!1sid!2sid" width="100%" height="300" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+            </div>
+            <a href="#" target="_blank" class="btn btn-rsvp" style="background: var(--pastel-blue); margin-top: 20px; width: auto; display: inline-block; padding: 10px 30px;">Buka di Google Maps</a>
+        </div>
+    </section>
+
+    <!-- 7. GALLERY -->
+    <section class="bg-gallery" id="gallery">
+        <div class="container">
+            <h2>Galeri Leo</h2>
+            <div class="gallery-grid">
+                <img src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?q=80&w=2070&auto=format&fit=crop" class="gallery-item" alt="Gallery 1">
+                <img src="https://images.unsplash.com/photo-1545042745-f092040ce2ec?q=80&w=2070&auto=format&fit=crop" class="gallery-item" alt="Gallery 3">
+            </div>
+        </div>
+    </section>
+
+    <!-- 8 & 9. RSVP & WISH WALL -->
+    <section class="bg-rsvp" id="rsvp">
+        <div class="container">
+            <h2>Konfirmasi Kehadiran (RSVP)</h2>
+            <div class="form-container">
+                <form action="#" method="get">
+                    <div class="form-group">
+                        <label>Nama Tamu / Anak</label>
+                        <input type="text" class="form-control" placeholder="Masukkan nama..." required>
+                    </div>
+                    <div class="form-group">
+                        <label>Jumlah Kehadiran</label>
+                        <select class="form-control">
+                            <option>1 Orang</option>
+                            <option>2 Orang</option>
+                            <option>3 Orang</option>
+                        </select>
+                    </div>
+                    <button type="button" class="btn btn-rsvp">Kirim Konfirmasi</button>
+                </form>
+            </div>
+
+            <h2 style="margin-top: 60px;">Ucapan & Doa</h2>
+            <div class="form-container" style="border-color: var(--pastel-yellow);">
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="Nama..." style="margin-bottom: 10px;">
+                    <textarea class="form-control" rows="3" placeholder="Tulis ucapan selamat ulang tahun untuk Leo..."></textarea>
+                </div>
+                <button type="button" class="btn btn-rsvp" style="background: var(--pastel-yellow); color: #333;">Kirim Ucapan</button>
+
+                <div class="wish-list">
+                    <div class="wish-item">
+                        <strong style="color: var(--pastel-blue);">Tante Sarah</strong>
+                        <p>Selamat ulang tahun Leo sayang! Tumbuh jadi anak pintar dan sehat selalu ya.</p>
+                    </div>
+                    <div class="wish-item">
+                        <strong style="color: var(--pastel-blue);">Keluarga Budi</strong>
+                        <p>Happy birthday Leo! Nanti kita main mobil-mobilan bareng ya.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 10. GIFT (OPSIONAL) -->
+    <section class="bg-gift" id="gift">
+        <div class="container">
+            <h2>Tanda Kasih (Opsional)</h2>
+            <p>Bagi keluarga & sahabat yang ingin memberikan tanda kasih untuk Leo:</p>
+            <div class="gift-box">
+                <h3>BCA</h3>
+                <p>Atas Nama: Orang Tua Leo</p>
+                <div class="rek-box" id="rek-bca">1234567890</div>
+                <button class="btn btn-copy" onclick="copyRekening()">Salin No. Rekening</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 11. THANK YOU -->
+    <section class="bg-thankyou">
+        <div class="container white-card" style="margin-top: 0;">
+            <h2 style="font-size: 2.5rem; color: var(--pastel-blue);">Terima Kasih!</h2>
+            <p style="font-size: 1.2rem; margin-top: 10px;">Kehadiran dan doa kalian adalah hadiah terindah untuk Leo.</p>
+            <br>
+            <p><strong>Salam Hangat,</strong></p>
+            <p style="font-size: 1.5rem; font-family: 'Fredoka'; color: var(--pastel-pink); margin-top: 5px;">Leo & Keluarga</p>
+        </div>
+    </section>
+
+    <script>
+        // --- 1. EFEK PARALLAX (Hanya diterapkan pada elemen dengan class prlx) ---
+        document.addEventListener("scroll", function() {
+            const scrolled = window.pageYOffset;
+            const parallaxElements = document.querySelectorAll(".prlx");
+            
+            parallaxElements.forEach(function(el) {
+                let speed = el.getAttribute("data-speed");
+                let yPos = (scrolled * speed); 
+                el.style.transform = `translateY(${yPos}px)`;
+            });
+        });
+
+        // --- 2. COUNTDOWN TIMER ---
+        const countdownDate = new Date(2026, 7, 15, 15, 0, 0).getTime();
+
+        const timer = setInterval(function() {
+            const now = new Date().getTime();
+            const distance = countdownDate - now;
+
+            if (distance < 0) {
+                clearInterval(timer);
+                document.getElementById("hari").innerHTML = "00";
+                document.getElementById("jam").innerHTML = "00";
+                document.getElementById("menit").innerHTML = "00";
+                document.getElementById("detik").innerHTML = "00";
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById("hari").innerHTML = days.toString().padStart(2, '0');
+            document.getElementById("jam").innerHTML = hours.toString().padStart(2, '0');
+            document.getElementById("menit").innerHTML = minutes.toString().padStart(2, '0');
+            document.getElementById("detik").innerHTML = seconds.toString().padStart(2, '0');
+        }, 1000);
+
+        // --- 3. COPY REKENING ---
+        function copyRekening() {
+            const rekText = document.getElementById("rek-bca").innerText;
+            navigator.clipboard.writeText(rekText).then(() => {
+                alert("Nomor Rekening berhasil disalin: " + rekText);
+            }).catch(err => {
+                console.error('Gagal menyalin', err);
+            });
+        }
+    </script>
+</body>
+</html>

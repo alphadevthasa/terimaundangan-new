@@ -19,13 +19,17 @@ export async function POST(request: NextRequest) {
   if (response) return response;
   try {
     const body = await request.json();
+    const catSlug = body.category ?? 'wedding';
+    // Look up Category record to link via categoryId
+    const categoryRecord = await prisma.category.findUnique({ where: { slug: catSlug } });
     const template = await prisma.template.create({
       data: {
         name: body.name,
         description: body.description ?? '',
         type: body.type ?? 'wedding',
         theme: body.theme ?? '',
-        category: 'wedding',
+        category: catSlug,
+        categoryId: categoryRecord?.id ?? null,
         thumbnail: body.thumbnail ?? '',
         price: body.price ?? 'Free',
         isPopular: body.isPopular ?? false,

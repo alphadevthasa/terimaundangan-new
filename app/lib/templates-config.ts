@@ -2616,7 +2616,7 @@ export const FOREST_NATURE_TEMPLATE = `<!DOCTYPE html>
             if (data.heroBg) document.getElementById('cover').style.backgroundImage = 'url(' + data.heroBg + ')';
             if (data.coupleBg) document.getElementById('holy-verse').style.backgroundImage = 'url(' + data.coupleBg + ')';
             if (data.storyBg) document.getElementById('events').style.backgroundImage = 'url(' + data.storyBg + ')';
-            if (data.galleryBg) document.getElementById('closing').style.backgroundImage = 'url(' + data.galleryBg + ')';
+            if (data.galleryBg) document.getElementById('e-galleryBg').style.backgroundImage = 'url(' + data.galleryBg + ')';
         };
 
         // Listen for postMessage from parent (for detail page preview and editor)
@@ -3868,6 +3868,1314 @@ export interface TemplateConfig {
   keyMap?: Record<string, string>;
 }
 
+export const PARALLAX_VIDEO_COVER_TEMPLATE = `<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Wedding of Rizky & Amanda</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --gold: #c9a96e;
+      --gold-light: #e8d5a3;
+      --warm: #b8860b;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      color: #fff;
+      overflow-x: hidden;
+      background: #1a1209;
+    }
+
+    .font-playfair { font-family: 'Playfair Display', serif; }
+
+    /* ===== PARALLAX SECTIONS ===== */
+    .parallax-section {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .parallax-bg {
+      position: absolute;
+      top: -20%;
+      left: 0;
+      width: 100%;
+      height: 140%;
+      background-size: cover;
+      background-position: center;
+      will-change: transform;
+      z-index: 0;
+    }
+
+    .parallax-bg::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        rgba(10, 6, 2, 0.85) 0%,
+        rgba(26, 18, 9, 0.7) 30%,
+        rgba(26, 18, 9, 0.6) 50%,
+        rgba(26, 18, 9, 0.7) 70%,
+        rgba(10, 6, 2, 0.9) 100%
+      );
+    }
+
+    /* Warm overlay for photography theme */
+    .warm-overlay::after {
+      background: linear-gradient(
+        180deg,
+        rgba(20, 12, 4, 0.88) 0%,
+        rgba(40, 25, 10, 0.65) 25%,
+        rgba(30, 18, 8, 0.55) 50%,
+        rgba(40, 25, 10, 0.7) 75%,
+        rgba(15, 9, 3, 0.92) 100%
+      ) !important;
+    }
+
+    .sepia-overlay::after {
+      background: linear-gradient(
+        180deg,
+        rgba(30, 20, 8, 0.9) 0%,
+        rgba(50, 35, 15, 0.6) 30%,
+        rgba(45, 30, 12, 0.5) 50%,
+        rgba(50, 35, 15, 0.65) 70%,
+        rgba(25, 16, 6, 0.92) 100%
+      ) !important;
+    }
+
+    .dark-warm-overlay::after {
+      background: linear-gradient(
+        180deg,
+        rgba(8, 5, 2, 0.92) 0%,
+        rgba(20, 12, 5, 0.75) 20%,
+        rgba(15, 9, 4, 0.6) 50%,
+        rgba(20, 12, 5, 0.75) 80%,
+        rgba(8, 5, 2, 0.95) 100%
+      ) !important;
+    }
+
+    /* ===== ANIMATIONS ===== */
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(50px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeInDown { from { opacity: 0; transform: translateY(-40px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes scaleIn { from { opacity: 0; transform: scale(0.85); } to { opacity: 1; transform: scale(1); } }
+    @keyframes slideInLeft { from { opacity: 0; transform: translateX(-80px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes slideInRight { from { opacity: 0; transform: translateX(80px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes bounceSlow { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+    @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-12px); } }
+    @keyframes shimmer { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
+    @keyframes pulseGlow { 0%, 100% { box-shadow: 0 0 15px rgba(201,169,110,0.2); } 50% { box-shadow: 0 0 35px rgba(201,169,110,0.5); } }
+    @keyframes grain {
+      0%, 100% { transform: translate(0, 0); }
+      10% { transform: translate(-5%, -10%); }
+      20% { transform: translate(-15%, 5%); }
+      30% { transform: translate(7%, -25%); }
+      40% { transform: translate(-5%, 25%); }
+      50% { transform: translate(-15%, 10%); }
+      60% { transform: translate(15%, 0%); }
+      70% { transform: translate(0%, 15%); }
+      80% { transform: translate(3%, 35%); }
+      90% { transform: translate(-10%, 10%); }
+    }
+    @keyframes kenBurns {
+      0% { transform: scale(1.1) translate(0, 0); }
+      50% { transform: scale(1.15) translate(-1%, -1%); }
+      100% { transform: scale(1.1) translate(0, 0); }
+    }
+
+    .anim-fade { animation: fadeIn 1.2s ease-out forwards; }
+    .anim-fade-up { animation: fadeInUp 1s ease-out forwards; opacity: 0; }
+    .anim-fade-down { animation: fadeInDown 1s ease-out forwards; opacity: 0; }
+    .anim-scale { animation: scaleIn 1s ease-out forwards; opacity: 0; }
+    .anim-slide-left { animation: slideInLeft 1s ease-out forwards; opacity: 0; }
+    .anim-slide-right { animation: slideInRight 1s ease-out forwards; opacity: 0; }
+    .anim-bounce { animation: bounceSlow 2.5s ease-in-out infinite; }
+    .anim-float { animation: float 3s ease-in-out infinite; }
+    .anim-kenburns { animation: kenBurns 20s ease-in-out infinite; }
+
+    .d1 { animation-delay: 0.1s; }
+    .d2 { animation-delay: 0.2s; }
+    .d3 { animation-delay: 0.3s; }
+    .d4 { animation-delay: 0.4s; }
+    .d5 { animation-delay: 0.5s; }
+    .d6 { animation-delay: 0.6s; }
+    .d7 { animation-delay: 0.7s; }
+    .d8 { animation-delay: 0.8s; }
+    .d10 { animation-delay: 1s; }
+    .d12 { animation-delay: 1.2s; }
+    .d15 { animation-delay: 1.5s; }
+
+    /* ===== FILM EFFECTS ===== */
+    .film-grain::before {
+      content: "";
+      position: fixed;
+      top: -50%; left: -50%; right: -50%; bottom: -50%;
+      width: 200%; height: 200%;
+      background: transparent url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E") repeat;
+      animation: grain 8s steps(10) infinite;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    .vignette::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse at center, transparent 40%, rgba(10, 6, 2, 0.5) 100%);
+      pointer-events: none;
+      z-index: 9998;
+    }
+
+    /* ===== SCROLLBAR ===== */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(201,169,110,0.3); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(201,169,110,0.5); }
+
+    /* ===== TYPOGRAPHY ===== */
+    .text-gold-grad {
+      background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 50%, var(--gold-light) 100%);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: shimmer 3s linear infinite;
+    }
+
+    /* ===== GLASS CARD ===== */
+    .glass {
+      background: rgba(20, 14, 6, 0.55);
+      backdrop-filter: blur(24px) saturate(1.2);
+      -webkit-backdrop-filter: blur(24px) saturate(1.2);
+      border: 1px solid rgba(201, 169, 110, 0.08);
+    }
+
+    .glass:hover {
+      border-color: rgba(201, 169, 110, 0.2);
+      background: rgba(20, 14, 6, 0.65);
+    }
+
+    /* ===== PHOTO FRAME ===== */
+    .pframe {
+      position: relative;
+    }
+    .pframe::before {
+      content: "";
+      position: absolute;
+      inset: -10px;
+      border: 1px solid rgba(201, 169, 110, 0.15);
+      border-radius: inherit;
+      pointer-events: none;
+    }
+    .pframe::after {
+      content: "";
+      position: absolute;
+      inset: -6px;
+      border: 1px solid rgba(201, 169, 110, 0.08);
+      border-radius: inherit;
+      pointer-events: none;
+    }
+
+    /* ===== INPUTS ===== */
+    input, textarea, select {
+      background: rgba(30, 20, 8, 0.5) !important;
+      border: 1px solid rgba(201, 169, 110, 0.12) !important;
+      color: #fff !important;
+      transition: all 0.4s ease;
+    }
+    input:focus, textarea:focus, select:focus {
+      border-color: rgba(201, 169, 110, 0.4) !important;
+      background: rgba(30, 20, 8, 0.7) !important;
+      outline: none !important;
+      box-shadow: 0 0 30px rgba(201, 169, 110, 0.08);
+    }
+    input::placeholder, textarea::placeholder { color: rgba(255,255,255,0.15) !important; }
+
+    /* ===== GALLERY ===== */
+    .gitem { overflow: hidden; position: relative; }
+    .gitem img { 
+      transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), filter 0.5s ease; 
+      filter: brightness(0.85) saturate(0.9);
+    }
+    .gitem:hover img { 
+      transform: scale(1.12); 
+      filter: brightness(1) saturate(1);
+    }
+    .gitem::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(10,6,2,0.7) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+    .gitem:hover::after { opacity: 1; }
+
+    /* ===== LIGHTBOX ===== */
+    .lb-active { overflow: hidden; }
+
+    /* ===== MUSIC SPIN ===== */
+    @keyframes spinSlow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    .spinning { animation: spinSlow 4s linear infinite; }
+
+    /* ===== REVEAL ===== */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ===== NAV DOTS ===== */
+    .nav-dot {
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .nav-dot.active {
+      background: var(--gold) !important;
+      transform: scale(1.6);
+      box-shadow: 0 0 10px rgba(201,169,110,0.5);
+    }
+
+    /* ===== TIMELINE ===== */
+    .tline {
+      background: linear-gradient(to bottom, 
+        transparent, 
+        rgba(201,169,110,0.25) 15%, 
+        rgba(201,169,110,0.35) 50%, 
+        rgba(201,169,110,0.25) 85%, 
+        transparent
+      );
+    }
+
+    /* ===== LETTERBOX ===== */
+    .letterbox-top, .letterbox-bottom {
+      position: absolute;
+      left: 0; right: 0;
+      height: 7vh;
+      background: linear-gradient(to bottom, rgba(8,5,2,0.95), rgba(8,5,2,0.7));
+      z-index: 5;
+      pointer-events: none;
+    }
+    .letterbox-bottom {
+      bottom: 0;
+      background: linear-gradient(to top, rgba(8,5,2,0.95), rgba(8,5,2,0.7));
+    }
+
+    /* ===== WISH CARD ===== */
+    .wish-card {
+      background: rgba(25, 16, 6, 0.4);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(201, 169, 110, 0.06);
+      transition: all 0.3s ease;
+    }
+    .wish-card:hover {
+      border-color: rgba(201, 169, 110, 0.15);
+      background: rgba(25, 16, 6, 0.5);
+    }
+
+    /* ===== BUTTON GOLD ===== */
+    .btn-gold {
+      background: linear-gradient(135deg, var(--gold), var(--gold-light));
+      color: #1a1209;
+      transition: all 0.4s ease;
+    }
+    .btn-gold:hover {
+      box-shadow: 0 0 30px rgba(201, 169, 110, 0.3);
+      transform: translateY(-2px);
+    }
+
+    /* ===== SECTION DIVIDER ===== */
+    .section-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(201,169,110,0.2), transparent);
+    }
+  </style>
+<base target="_blank">
+</head>
+<body class="film-grain vignette">
+
+  <!-- ==================== AUDIO ==================== -->
+  <audio id="bg-music" loop>
+    <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=romantic-piano-10691.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- Music Toggle -->
+  <button id="music-toggle" onclick="toggleMusic()" class="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full glass flex items-center justify-center hover:scale-110 transition-all duration-500" style="animation: pulseGlow 2s ease-in-out infinite;">
+    <svg id="music-icon" class="w-6 h-6 text-[var(--gold)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2z"/>
+    </svg>
+  </button>
+
+  <!-- Navigation Dots -->
+  <nav class="fixed right-6 top-1/2 -translate-y-1/2 z-40 hidden md:flex flex-col gap-3">
+    <a href="#cover" class="nav-dot w-2 h-2 rounded-full bg-white/20" data-section="cover"></a>
+    <a href="#countdown" class="nav-dot w-2 h-2 rounded-full bg-white/20" data-section="countdown"></a>
+    <a href="#couple" class="nav-dot w-2 h-2 rounded-full bg-white/20" data-section="couple"></a>
+    <a href="#verse" class="nav-dot w-2 h-2 rounded-full bg-white/20" data-section="verse"></a>
+    <a href="#story" class="nav-dot w-2 h-2 rounded-full bg-white/20" data-section="story"></a>
+    <a href="#events" class="nav-dot w-2 h-2 rounded-full bg-white/20" data-section="events"></a>
+    <a href="#gallery" class="nav-dot w-2 h-2 rounded-full bg-white/20" data-section="gallery"></a>
+    <a href="#rsvp" class="nav-dot w-2 h-2 rounded-full bg-white/20" data-section="rsvp"></a>
+    <a href="#gifts" class="nav-dot w-2 h-2 rounded-full bg-white/20" data-section="gifts"></a>
+    <a href="#live" class="nav-dot w-2 h-2 rounded-full bg-white/20" data-section="live"></a>
+    <a href="#wishes" class="nav-dot w-2 h-2 rounded-full bg-white/20" data-section="wishes"></a>
+  </nav>
+
+  <!-- ==================== COVER ==================== -->
+  <section id="cover" class="parallax-section w-full h-screen">
+    <div class="parallax-bg warm-overlay" id="cover-bg" style="background-image: url('https://images.unsplash.com/photo-1519741497674-611481863552?w=1920&q=85');">
+      <div class="absolute inset-0 anim-kenburns" style="background-image: url('https://images.unsplash.com/photo-1519741497674-611481863552?w=1920&q=85'); background-size: cover; background-position: center;"></div>
+    </div>
+
+    <!-- Video overlay -->
+    <div class="absolute inset-0 z-[1]">
+      <video autoplay muted loop playsinline class="w-full h-full object-cover opacity-40" poster="https://images.unsplash.com/photo-1519741497674-611481863552?w=1920&q=80">
+        <source src="https://videos.pexels.com/video-files/3209828/3209828-hd_1920_1080_25fps.mp4" type="video/mp4">
+      </video>
+    </div>
+
+    <!-- Letterbox -->
+    <div class="letterbox-top"></div>
+    <div class="letterbox-bottom"></div>
+
+    <!-- Content -->
+    <div class="relative z-10 flex flex-col items-center justify-center h-full text-center px-6" id="cover-content">
+      <p class="text-[10px] md:text-xs tracking-[0.6em] uppercase text-white/40 mb-8 anim-fade-down">The Wedding Of</p>
+
+      <h1 class="text-6xl md:text-8xl lg:text-9xl font-light tracking-wide mb-4 anim-scale d2" style="font-family: 'Playfair Display', serif;">
+        <span class="block" id="e-groom-nick">Rizky</span>
+        <span class="text-2xl md:text-4xl text-[var(--gold)] mx-4">&</span>
+        <span class="block" id="e-bride-nick">Amanda</span>
+      </h1>
+
+      <div class="w-20 h-px bg-gradient-to-r from-transparent via-[var(--gold)] to-transparent my-8 anim-fade d5"></div>
+
+      <p class="text-xs md:text-sm tracking-[0.5em] text-white/30 anim-fade d6" id="e-date-text">12 . 12 . 2026</p>
+
+      <button onclick="scrollToSection('countdown')" class="mt-20 px-12 py-4 border border-[var(--gold)]/40 rounded-full text-xs tracking-[0.4em] uppercase text-[var(--gold-light)] hover:bg-[var(--gold)] hover:text-[#1a1209] transition-all duration-700 anim-bounce d10">
+        Open Invitation
+      </button>
+    </div>
+  </section>
+
+  <!-- ==================== COUNTDOWN ==================== -->
+  <section id="countdown" class="parallax-section w-full py-32 px-6">
+    <div class="parallax-bg sepia-overlay" id="countdown-bg" style="background-image: url('https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=1920&q=85');"></div>
+
+    <div class="relative z-10 max-w-5xl mx-auto text-center">
+      <p class="text-[10px] tracking-[0.5em] uppercase text-[var(--gold)]/50 mb-4 reveal">Save The Date</p>
+      <h2 class="text-4xl md:text-6xl lg:text-7xl font-light mb-16 reveal" style="font-family: 'Playfair Display', serif;">
+        Menuju Hari <span class="text-gold-grad">Bahagia</span>
+      </h2>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 max-w-3xl mx-auto reveal">
+        <div class="glass rounded-3xl p-6 md:p-8 group hover:scale-105 transition-all duration-500">
+          <div id="days" class="text-4xl md:text-6xl lg:text-7xl font-light text-[var(--gold)]">00</div>
+          <div class="text-[10px] md:text-xs tracking-[0.3em] uppercase text-white/25 mt-3">Days</div>
+        </div>
+        <div class="glass rounded-3xl p-6 md:p-8 group hover:scale-105 transition-all duration-500">
+          <div id="hours" class="text-4xl md:text-6xl lg:text-7xl font-light text-[var(--gold)]">00</div>
+          <div class="text-[10px] md:text-xs tracking-[0.3em] uppercase text-white/25 mt-3">Hours</div>
+        </div>
+        <div class="glass rounded-3xl p-6 md:p-8 group hover:scale-105 transition-all duration-500">
+          <div id="minutes" class="text-4xl md:text-6xl lg:text-7xl font-light text-[var(--gold)]">00</div>
+          <div class="text-[10px] md:text-xs tracking-[0.3em] uppercase text-white/25 mt-3">Minutes</div>
+        </div>
+        <div class="glass rounded-3xl p-6 md:p-8 group hover:scale-105 transition-all duration-500">
+          <div id="seconds" class="text-4xl md:text-6xl lg:text-7xl font-light text-[var(--gold)]">00</div>
+          <div class="text-[10px] md:text-xs tracking-[0.3em] uppercase text-white/25 mt-3">Seconds</div>
+        </div>
+      </div>
+
+      <div class="mt-14 reveal">
+        <p class="text-base text-white/30" id="e-countdown-date">Sabtu, 12 Desember 2026</p>
+        <p class="text-sm text-white/15 mt-2" id="e-countdown-time">08:00 WIB</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== THE COUPLE ==================== -->
+  <section id="couple" class="parallax-section w-full py-32 px-6">
+    <div class="parallax-bg warm-overlay" id="couple-bg" style="background-image: url('https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=1920&q=85');"></div>
+
+    <div class="relative z-10 max-w-6xl mx-auto">
+      <p class="text-[10px] tracking-[0.5em] uppercase text-[var(--gold)]/50 text-center mb-4 reveal">The Couple</p>
+      <h2 class="text-4xl md:text-6xl lg:text-7xl font-light text-center mb-20 reveal" style="font-family: 'Playfair Display', serif;">
+        Mempelai <span class="text-gold-grad">Bahagia</span>
+      </h2>
+
+      <div class="grid md:grid-cols-2 gap-16 md:gap-24 items-center">
+        <!-- Groom -->
+        <div class="text-center reveal">
+          <div class="pframe relative w-72 h-[420px] mx-auto mb-10 overflow-hidden rounded-2xl group">
+            <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=600&q=80" 
+                 alt="Groom" 
+                 id="e-groom-photo" class="w-full h-full object-cover transition-all duration-1000 group-hover:scale-110">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+            <div class="absolute bottom-8 left-0 right-0 text-center">
+              <p class="text-[10px] tracking-[0.4em] uppercase text-[var(--gold)]">The Groom</p>
+            </div>
+          </div>
+          <h3 class="text-3xl md:text-4xl font-light mb-2" style="font-family: 'Playfair Display', serif;" id="e-groom-full">Rizky Aditya Pratama</h3>
+          <div class="w-10 h-px bg-[var(--gold)]/30 mx-auto my-5"></div>
+          <p class="text-[10px] tracking-[0.3em] text-white/25 uppercase mb-4" id="e-groom-role">Putra Pertama</p>
+          <p class="text-sm text-white/35 max-w-xs mx-auto leading-relaxed" id="e-groom-parents">Putra dari Bapak Surya Wijaya<br>& Ibu Dewi Kusumaningrum</p>
+        </div>
+
+        <!-- Heart divider mobile -->
+        <div class="flex md:hidden justify-center my-4">
+          <svg class="w-10 h-10 text-[var(--gold)]/30 anim-float" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+        </div>
+
+        <!-- Bride -->
+        <div class="text-center reveal">
+          <div class="pframe relative w-72 h-[420px] mx-auto mb-10 overflow-hidden rounded-2xl group">
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&q=80" 
+                 alt="Bride" 
+                 id="e-bride-photo" class="w-full h-full object-cover transition-all duration-1000 group-hover:scale-110">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+            <div class="absolute bottom-8 left-0 right-0 text-center">
+              <p class="text-[10px] tracking-[0.4em] uppercase text-[var(--gold)]">The Bride</p>
+            </div>
+          </div>
+          <h3 class="text-3xl md:text-4xl font-light mb-2" style="font-family: 'Playfair Display', serif;" id="e-bride-full">Amanda Putri Lestari</h3>
+          <div class="w-10 h-px bg-[var(--gold)]/30 mx-auto my-5"></div>
+          <p class="text-[10px] tracking-[0.3em] text-white/25 uppercase mb-4" id="e-bride-role">Putri Kedua</p>
+          <p class="text-sm text-white/35 max-w-xs mx-auto leading-relaxed" id="e-bride-parents">Putri dari Bapak Hartono Santoso<br>& Ibu Rina Setyawati</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== HOLY VERSE ==================== -->
+  <section id="verse" class="parallax-section w-full py-32 px-6">
+    <div class="parallax-bg dark-warm-overlay" id="verse-bg" style="background-image: url('https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=1920&q=85');"></div>
+
+    <div class="relative z-10 max-w-3xl mx-auto text-center">
+      <div class="w-16 h-16 mx-auto mb-12 rounded-full glass flex items-center justify-center reveal">
+        <svg class="w-8 h-8 text-[var(--gold)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+        </svg>
+      </div>
+      <p class="text-xl md:text-2xl lg:text-3xl font-light leading-loose text-white/60 italic mb-10 reveal" style="font-family: 'Playfair Display', serif;">
+        "Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan untukmu pasangan-pasangan dari jenismu sendiri, supaya kamu cenderung dan merasa tenteram kepadanya, dan dijadikan-Nya di antaramu rasa kasih dan sayang."
+      </p>
+      <div class="w-16 h-px bg-gradient-to-r from-transparent via-[var(--gold)] to-transparent mx-auto mb-8 reveal"></div>
+      <p class="text-xs tracking-[0.4em] uppercase text-[var(--gold)]/50 reveal">QS. Ar-Rum : 21</p>
+    </div>
+  </section>
+
+  <!-- ==================== LOVE STORY ==================== -->
+  <section id="story" class="parallax-section w-full py-32 px-6">
+    <div class="parallax-bg warm-overlay" id="story-bg" style="background-image: url('https://images.unsplash.com/photo-1591604466107-ec97de577aff?w=1920&q=85');"></div>
+
+    <div class="relative z-10 max-w-4xl mx-auto">
+      <p class="text-[10px] tracking-[0.5em] uppercase text-[var(--gold)]/50 text-center mb-4 reveal">Our Journey</p>
+      <h2 class="text-4xl md:text-6xl lg:text-7xl font-light text-center mb-20 reveal" style="font-family: 'Playfair Display', serif;">
+        Love <span class="text-gold-grad">Story</span>
+      </h2>
+
+      <div class="relative">
+        <div class="absolute left-1/2 top-0 bottom-0 w-px tline transform -translate-x-1/2 hidden md:block"></div>
+
+        <!-- Story 1 -->
+        <div class="relative flex flex-col md:flex-row items-center mb-24 reveal">
+          <div class="md:w-1/2 md:pr-16 md:text-right text-center mb-8 md:mb-0">
+            <span class="text-[10px] tracking-[0.3em] text-[var(--gold)] uppercase">Januari 2019</span>
+            <h4 class="text-2xl md:text-3xl font-light mt-3 mb-4" style="font-family: 'Playfair Display', serif;">Pertemuan Pertama</h4>
+            <p class="text-sm text-white/35 leading-relaxed">Pertemuan tak terduga di sebuah galeri foto di Jakarta. Sebuah pandangan yang mengubah segalanya menjadi lebih indah dari yang pernah kami bayangkan.</p>
+          </div>
+          <div class="absolute left-1/2 transform -translate-x-1/2 w-5 h-5 bg-[var(--gold)] rounded-full border-4 border-[#1a1209] hidden md:block" style="box-shadow: 0 0 20px rgba(201,169,110,0.4);"></div>
+          <div class="md:w-1/2 md:pl-16"></div>
+        </div>
+
+        <!-- Story 2 -->
+        <div class="relative flex flex-col md:flex-row items-center mb-24 reveal">
+          <div class="md:w-1/2 md:pr-16"></div>
+          <div class="absolute left-1/2 transform -translate-x-1/2 w-5 h-5 bg-[var(--gold)] rounded-full border-4 border-[#1a1209] hidden md:block" style="box-shadow: 0 0 20px rgba(201,169,110,0.4);"></div>
+          <div class="md:w-1/2 md:pl-16 text-center md:text-left mt-8 md:mt-0">
+            <span class="text-[10px] tracking-[0.3em] text-[var(--gold)] uppercase">Juni 2019</span>
+            <h4 class="text-2xl md:text-3xl font-light mt-3 mb-4" style="font-family: 'Playfair Display', serif;">Mulai Berpacaran</h4>
+            <p class="text-sm text-white/35 leading-relaxed">Dari teman menjadi kekasih. Setiap momen bersamamu adalah foto terindah dalam album hidup yang terus kami tulis bersama.</p>
+          </div>
+        </div>
+
+        <!-- Story 3 -->
+        <div class="relative flex flex-col md:flex-row items-center mb-24 reveal">
+          <div class="md:w-1/2 md:pr-16 md:text-right text-center mb-8 md:mb-0">
+            <span class="text-[10px] tracking-[0.3em] text-[var(--gold)] uppercase">Mei 2026</span>
+            <h4 class="text-2xl md:text-3xl font-light mt-3 mb-4" style="font-family: 'Playfair Display', serif;">Lamaran</h4>
+            <p class="text-sm text-white/35 leading-relaxed">Di bawah sinar senja yang keemasan, aku melamarmu dengan sebuah cincin dan janji seumur hidup untuk selalu bersama.</p>
+          </div>
+          <div class="absolute left-1/2 transform -translate-x-1/2 w-5 h-5 bg-[var(--gold)] rounded-full border-4 border-[#1a1209] hidden md:block" style="box-shadow: 0 0 20px rgba(201,169,110,0.4);"></div>
+          <div class="md:w-1/2 md:pl-16"></div>
+        </div>
+
+        <!-- Story 4 -->
+        <div class="relative flex flex-col md:flex-row items-center reveal">
+          <div class="md:w-1/2 md:pr-16"></div>
+          <div class="absolute left-1/2 transform -translate-x-1/2 w-5 h-5 bg-[var(--gold)] rounded-full border-4 border-[#1a1209] hidden md:block" style="box-shadow: 0 0 20px rgba(201,169,110,0.4);"></div>
+          <div class="md:w-1/2 md:pl-16 text-center md:text-left mt-8 md:mt-0">
+            <span class="text-[10px] tracking-[0.3em] text-[var(--gold)] uppercase">Desember 2026</span>
+            <h4 class="text-2xl md:text-3xl font-light mt-3 mb-4" style="font-family: 'Playfair Display', serif;">Hari Pernikahan</h4>
+            <p class="text-sm text-white/35 leading-relaxed">Akhirnya, kita akan bersama selamanya. Babak baru dalam kisah cinta yang akan kami tulis bersama sepanjang hayat.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== EVENTS ==================== -->
+  <section id="events" class="parallax-section w-full py-32 px-6">
+    <div class="parallax-bg sepia-overlay" id="events-bg" style="background-image: url('https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=1920&q=85');"></div>
+
+    <div class="relative z-10 max-w-5xl mx-auto">
+      <p class="text-[10px] tracking-[0.5em] uppercase text-[var(--gold)]/50 text-center mb-4 reveal">Wedding Events</p>
+      <h2 class="text-4xl md:text-6xl lg:text-7xl font-light text-center mb-20 reveal" style="font-family: 'Playfair Display', serif;">
+        Rangkaian <span class="text-gold-grad">Acara</span>
+      </h2>
+
+      <div class="grid md:grid-cols-2 gap-8">
+        <!-- Akad -->
+        <div class="glass rounded-3xl p-8 md:p-10 text-center group hover:scale-[1.02] transition-all duration-500 reveal">
+          <div class="w-20 h-20 mx-auto mb-8 rounded-full glass flex items-center justify-center group-hover:bg-[var(--gold)]/10 transition-all">
+            <svg class="w-10 h-10 text-[var(--gold)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+            </svg>
+          </div>
+          <h3 class="text-3xl md:text-4xl font-light mb-3" style="font-family: 'Playfair Display', serif;">Akad Nikah</h3>
+          <div class="w-12 h-px bg-[var(--gold)]/25 mx-auto my-6"></div>
+          <p class="text-sm text-white/30 mb-10 leading-relaxed">Rangkaian inti pernikahan yang penuh khidmat dan berkah.</p>
+
+          <div class="space-y-4 text-sm">
+            <div class="flex items-center justify-center gap-3 text-white/40">
+              <svg class="w-4 h-4 text-[var(--gold)]/50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+              <span id="e-akad-date">Sabtu, 12 Desember 2026</span>
+            </div>
+            <div class="flex items-center justify-center gap-3 text-white/40">
+              <svg class="w-4 h-4 text-[var(--gold)]/50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              <span id="e-akad-time">08:00 - 10:00 WIB</span>
+            </div>
+            <div class="flex items-center justify-center gap-3 text-white/40">
+              <svg class="w-4 h-4 text-[var(--gold)]/50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+              <span id="e-akad-place">Masjid Al-Ikhlas, Jakarta</span>
+            </div>
+          </div>
+
+          <a id="e-akad-maps" href="https://maps.google.com/?q=Masjid+Al-Ikhlas+Jakarta" target="_blank" 
+             class="inline-block mt-10 px-10 py-3 border border-[var(--gold)]/25 rounded-full text-xs tracking-[0.2em] uppercase text-[var(--gold-light)] hover:bg-[var(--gold)] hover:text-[#1a1209] transition-all duration-300">
+            Lihat Lokasi
+          </a>
+        </div>
+
+        <!-- Resepsi -->
+        <div class="glass rounded-3xl p-8 md:p-10 text-center group hover:scale-[1.02] transition-all duration-500 reveal">
+          <div class="w-20 h-20 mx-auto mb-8 rounded-full glass flex items-center justify-center group-hover:bg-[var(--gold)]/10 transition-all">
+            <svg class="w-10 h-10 text-[var(--gold)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+            </svg>
+          </div>
+          <h3 class="text-3xl md:text-4xl font-light mb-3" style="font-family: 'Playfair Display', serif;">Resepsi</h3>
+          <div class="w-12 h-px bg-[var(--gold)]/25 mx-auto my-6"></div>
+          <p class="text-sm text-white/30 mb-10 leading-relaxed">Perayaan cinta dan kebahagiaan bersama keluarga & sahabat tercinta.</p>
+
+          <div class="space-y-4 text-sm">
+            <div class="flex items-center justify-center gap-3 text-white/40">
+              <svg class="w-4 h-4 text-[var(--gold)]/50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+              <span id="e-resepsi-date">Sabtu, 12 Desember 2026</span>
+            </div>
+            <div class="flex items-center justify-center gap-3 text-white/40">
+              <svg class="w-4 h-4 text-[var(--gold)]/50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              <span id="e-resepsi-time">11:00 - 15:00 WIB</span>
+            </div>
+            <div class="flex items-center justify-center gap-3 text-white/40">
+              <svg class="w-4 h-4 text-[var(--gold)]/50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+              <span id="e-resepsi-place">The Grand Ballroom, Jakarta</span>
+            </div>
+          </div>
+
+          <a id="e-resepsi-maps" href="https://maps.google.com/?q=Grand+Ballroom+Jakarta" target="_blank" 
+             class="inline-block mt-10 px-10 py-3 border border-[var(--gold)]/25 rounded-full text-xs tracking-[0.2em] uppercase text-[var(--gold-light)] hover:bg-[var(--gold)] hover:text-[#1a1209] transition-all duration-300">
+            Lihat Lokasi
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== PHOTO GALLERY ==================== -->
+  <section id="gallery" class="parallax-section w-full py-32 px-6">
+    <div class="parallax-bg dark-warm-overlay" id="e-galleryBg" style="background-image: url('https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?w=1920&q=85');"></div>
+
+    <div class="relative z-10 max-w-6xl mx-auto">
+      <p class="text-[10px] tracking-[0.5em] uppercase text-[var(--gold)]/50 text-center mb-4 reveal">Captured Moments</p>
+      <h2 class="text-4xl md:text-6xl lg:text-7xl font-light text-center mb-16 reveal" style="font-family: 'Playfair Display', serif;">
+        Photo <span class="text-gold-grad">Gallery</span>
+      </h2>
+
+      <div class="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
+        <div class="gitem relative aspect-[3/4] rounded-xl overflow-hidden cursor-pointer reveal" onclick="openLightbox(0)">
+          <img src="https://images.unsplash.com/photo-1519741497674-611481863552?w=800&q=80" class="w-full h-full object-cover" id="e-gal-1" alt="Gallery 1">
+        </div>
+        <div class="gitem relative aspect-[3/4] rounded-xl overflow-hidden cursor-pointer reveal" onclick="openLightbox(1)">
+          <img src="https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=800&q=80" class="w-full h-full object-cover" id="e-gal-2" alt="Gallery 2">
+        </div>
+        <div class="gitem relative aspect-[3/4] rounded-xl overflow-hidden cursor-pointer reveal" onclick="openLightbox(2)">
+          <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=800&q=80" class="w-full h-full object-cover" id="e-gal-3" alt="Gallery 3">
+        </div>
+        <div class="gitem relative aspect-[3/4] rounded-xl overflow-hidden cursor-pointer reveal" onclick="openLightbox(3)">
+          <img src="https://images.unsplash.com/photo-1591604466107-ec97de577aff?w=800&q=80" class="w-full h-full object-cover" id="e-gal-4" alt="Gallery 4">
+        </div>
+        <div class="gitem relative aspect-[3/4] rounded-xl overflow-hidden cursor-pointer reveal" onclick="openLightbox(4)">
+          <img src="https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=800&q=80" class="w-full h-full object-cover" id="e-gal-5" alt="Gallery 5">
+        </div>
+        <div class="gitem relative aspect-[3/4] rounded-xl overflow-hidden cursor-pointer reveal" onclick="openLightbox(5)">
+          <img src="https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=800&q=80" class="w-full h-full object-cover" id="e-gal-6" alt="Gallery 6">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== RSVP ==================== -->
+  <section id="rsvp" class="parallax-section w-full py-32 px-6">
+    <div class="parallax-bg warm-overlay" id="rsvp-bg" style="background-image: url('https://images.unsplash.com/photo-1510076857177-7470076d4098?w=1920&q=85');"></div>
+
+    <div class="relative z-10 max-w-2xl mx-auto">
+      <p class="text-[10px] tracking-[0.5em] uppercase text-[var(--gold)]/50 text-center mb-4 reveal">Reservation</p>
+      <h2 class="text-4xl md:text-6xl lg:text-7xl font-light text-center mb-12 reveal" style="font-family: 'Playfair Display', serif;">
+        <span class="text-gold-grad">RSVP</span>
+      </h2>
+
+      <div class="glass rounded-3xl p-8 md:p-12 reveal">
+        <p class="text-center text-sm text-white/30 mb-10 leading-relaxed">Mohon konfirmasi kehadiran Anda untuk membantu kami dalam persiapan acara yang lebih baik.</p>
+
+        <form onsubmit="handleRSVP(event)" class="space-y-6">
+          <div>
+            <label class="block text-[10px] tracking-[0.3em] uppercase text-white/25 mb-2">Nama Lengkap</label>
+            <input type="text" required class="w-full rounded-xl px-5 py-4 text-sm" placeholder="Masukkan nama lengkap Anda">
+          </div>
+          <div>
+            <label class="block text-[10px] tracking-[0.3em] uppercase text-white/25 mb-2">Konfirmasi Kehadiran</label>
+            <select required class="w-full rounded-xl px-5 py-4 text-sm appearance-none cursor-pointer">
+              <option value="" class="bg-[#1a1209]">Pilih konfirmasi kehadiran</option>
+              <option value="hadir" class="bg-[#1a1209]">Ya, Saya akan hadir</option>
+              <option value="tidak" class="bg-[#1a1209]">Maaf, Saya tidak bisa hadir</option>
+              <option value="ragu" class="bg-[#1a1209]">Masih ragu-ragu</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[10px] tracking-[0.3em] uppercase text-white/25 mb-2">Jumlah Tamu</label>
+            <input type="number" min="1" max="5" class="w-full rounded-xl px-5 py-4 text-sm" placeholder="Jumlah tamu yang akan hadir (1-5)">
+          </div>
+          <div>
+            <label class="block text-[10px] tracking-[0.3em] uppercase text-white/25 mb-2">Ucapan (Opsional)</label>
+            <textarea rows="4" class="w-full rounded-xl px-5 py-4 text-sm resize-none" placeholder="Tulis ucapan untuk mempelai..."></textarea>
+          </div>
+          <button type="submit" class="w-full py-4 btn-gold rounded-xl text-sm tracking-[0.2em] uppercase font-semibold">
+            Kirim Konfirmasi
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== WEDDING GIFTS ==================== -->
+  <section id="gifts" class="parallax-section w-full py-32 px-6">
+    <div class="parallax-bg sepia-overlay" id="gifts-bg" style="background-image: url('https://images.unsplash.com/photo-1529636798458-92182e662485?w=1920&q=85');"></div>
+
+    <div class="relative z-10 max-w-2xl mx-auto text-center">
+      <p class="text-[10px] tracking-[0.5em] uppercase text-[var(--gold)]/50 mb-4 reveal">Wedding Gift</p>
+      <h2 class="text-4xl md:text-6xl lg:text-7xl font-light mb-10 reveal" style="font-family: 'Playfair Display', serif;">
+        Kado <span class="text-gold-grad">Pernikahan</span>
+      </h2>
+      <p class="text-sm text-white/30 mb-14 max-w-md mx-auto leading-relaxed reveal">Doa restu Anda adalah hadiah terindah. Bagi yang ingin memberikan tanda kasih, dapat melalui:</p>
+
+      <div class="grid md:grid-cols-2 gap-6 reveal">
+        <div class="glass rounded-2xl p-8 group hover:border-[var(--gold)]/20 transition-all duration-500">
+          <div class="w-14 h-14 mx-auto mb-6 rounded-full glass flex items-center justify-center group-hover:bg-[var(--gold)]/10 transition-all">
+            <svg class="w-7 h-7 text-[var(--gold)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+            </svg>
+          </div>
+          <p class="text-[10px] tracking-[0.3em] uppercase text-white/25 mb-3">Transfer Bank</p>
+          <p class="text-2xl font-light text-[var(--gold)] mb-1">BCA</p>
+          <p class="text-lg text-white/50 mb-2 font-mono tracking-wider">1234 5678 9012</p>
+          <p class="text-xs text-white/15">a.n. Rizky Aditya Pratama</p>
+          <button onclick="copyToClipboard('1234 5678 9012')" 
+                  class="mt-6 px-6 py-2 border border-white/10 rounded-full text-xs tracking-[0.2em] uppercase hover:bg-[var(--gold)] hover:text-[#1a1209] hover:border-[var(--gold)] transition-all duration-300">
+            Salin Nomor
+          </button>
+        </div>
+
+        <div class="glass rounded-2xl p-8 group hover:border-[var(--gold)]/20 transition-all duration-500">
+          <div class="w-14 h-14 mx-auto mb-6 rounded-full glass flex items-center justify-center group-hover:bg-[var(--gold)]/10 transition-all">
+            <svg class="w-7 h-7 text-[var(--gold)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+            </svg>
+          </div>
+          <p class="text-[10px] tracking-[0.3em] uppercase text-white/25 mb-3">Kirim Kado</p>
+          <p class="text-2xl font-light text-[var(--gold)] mb-1">Alamat</p>
+          <p class="text-sm text-white/50 mb-2 leading-relaxed">Jl. Mawar Indah No. 123<br>Kebayoran Baru, Jakarta Selatan</p>
+          <p class="text-xs text-white/15">a.n. Amanda Putri Lestari</p>
+          <button onclick="copyToClipboard('Jl. Mawar Indah No. 123, Kebayoran Baru, Jakarta Selatan')" 
+                  class="mt-6 px-6 py-2 border border-white/10 rounded-full text-xs tracking-[0.2em] uppercase hover:bg-[var(--gold)] hover:text-[#1a1209] hover:border-[var(--gold)] transition-all duration-300">
+            Salin Alamat
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== LIVE STREAMING ==================== -->
+  <section id="live" class="parallax-section w-full py-32 px-6">
+    <div class="parallax-bg dark-warm-overlay" id="live-bg" style="background-image: url('https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=1920&q=85');"></div>
+
+    <div class="relative z-10 max-w-4xl mx-auto text-center">
+      <p class="text-[10px] tracking-[0.5em] uppercase text-[var(--gold)]/50 mb-4 reveal">Virtual Attendance</p>
+      <h2 class="text-4xl md:text-6xl lg:text-7xl font-light mb-10 reveal" style="font-family: 'Playfair Display', serif;">
+        Live <span class="text-gold-grad">Streaming</span>
+      </h2>
+      <p class="text-sm text-white/30 mb-14 max-w-lg mx-auto leading-relaxed reveal">Bagi yang tidak dapat hadir secara fisik, kami menyediakan siaran langsung acara pernikahan kami.</p>
+
+      <div class="relative aspect-video glass rounded-2xl overflow-hidden reveal">
+        <div class="absolute inset-0 flex flex-col items-center justify-center">
+          <div class="w-24 h-24 rounded-full glass flex items-center justify-center mb-6 animate-pulse cursor-pointer hover:bg-[var(--gold)]/20 transition-all group" onclick="showToast('Live streaming akan dimulai pada hari H')">
+            <svg class="w-10 h-10 text-[var(--gold)] ml-1 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          </div>
+          <p class="text-base text-white/40 mb-2">Live Streaming akan dimulai pada hari H</p>
+          <p class="text-xs text-white/15">Sabtu, 12 Desember 2026 | 08:00 WIB</p>
+        </div>
+        <div class="absolute top-4 left-4 flex gap-2">
+          <div class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
+          <span class="text-[10px] text-white/20 tracking-wider">OFFLINE</span>
+        </div>
+      </div>
+
+      <div class="mt-10 flex flex-col sm:flex-row justify-center gap-4 reveal">
+        <a href="#" onclick="showToast('Link YouTube Live akan aktif pada hari H')" 
+           class="px-8 py-4 bg-red-700/80 rounded-full text-sm hover:bg-red-600 transition-all flex items-center justify-center gap-3 glass border-red-500/20">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+          YouTube Live
+        </a>
+        <a href="#" onclick="showToast('Link Zoom akan aktif pada hari H')" 
+           class="px-8 py-4 bg-blue-700/80 rounded-full text-sm hover:bg-blue-600 transition-all flex items-center justify-center gap-3 glass border-blue-500/20">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+          Zoom Meeting
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== WISHES ==================== -->
+  <section id="wishes" class="parallax-section w-full py-32 px-6">
+    <div class="parallax-bg warm-overlay" id="wishes-bg" style="background-image: url('https://images.unsplash.com/photo-1520854221256-17451cc330e7?w=1920&q=85');"></div>
+
+    <div class="relative z-10 max-w-3xl mx-auto">
+      <p class="text-[10px] tracking-[0.5em] uppercase text-[var(--gold)]/50 text-center mb-4 reveal">Words of Love</p>
+      <h2 class="text-4xl md:text-6xl lg:text-7xl font-light text-center mb-14 reveal" style="font-family: 'Playfair Display', serif;">
+        Ucapan & <span class="text-gold-grad">Doa</span>
+      </h2>
+
+      <!-- Form -->
+      <div class="glass rounded-2xl p-6 md:p-8 mb-10 reveal">
+        <form onsubmit="handleWish(event)" class="space-y-5">
+          <div class="grid md:grid-cols-2 gap-5">
+            <div>
+              <label class="block text-[10px] tracking-[0.3em] uppercase text-white/25 mb-2">Nama</label>
+              <input type="text" id="wish-name" required class="w-full rounded-xl px-5 py-4 text-sm" placeholder="Nama Anda">
+            </div>
+            <div>
+              <label class="block text-[10px] tracking-[0.3em] uppercase text-white/25 mb-2">Hubungan</label>
+              <select id="wish-relation" class="w-full rounded-xl px-5 py-4 text-sm appearance-none cursor-pointer">
+                <option value="" class="bg-[#1a1209]">Pilih hubungan</option>
+                <option value="Keluarga" class="bg-[#1a1209]">Keluarga</option>
+                <option value="Teman" class="bg-[#1a1209]">Teman</option>
+                <option value="Rekan Kerja" class="bg-[#1a1209]">Rekan Kerja</option>
+                <option value="Tetangga" class="bg-[#1a1209]">Tetangga</option>
+                <option value="Sahabat" class="bg-[#1a1209]">Sahabat</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label class="block text-[10px] tracking-[0.3em] uppercase text-white/25 mb-2">Ucapan & Doa</label>
+            <textarea id="wish-message" required rows="4" class="w-full rounded-xl px-5 py-4 text-sm resize-none" placeholder="Tulis ucapan dan doa untuk mempelai..."></textarea>
+          </div>
+          <button type="submit" class="w-full py-4 btn-gold rounded-xl text-sm tracking-[0.2em] uppercase font-semibold">
+            Kirim Ucapan
+          </button>
+        </form>
+      </div>
+
+      <!-- List -->
+      <div id="wishes-list" class="space-y-4 max-h-[500px] overflow-y-auto pr-2">
+        <div class="wish-card rounded-xl p-6 reveal">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-4">
+              <div class="w-10 h-10 rounded-full bg-gradient-to-br from-[var(--gold)]/30 to-[var(--gold)]/5 flex items-center justify-center text-sm font-medium text-[var(--gold)]">A</div>
+              <div>
+                <p class="text-sm font-medium">Andi Wijaya</p>
+                <p class="text-[10px] text-white/20">Teman</p>
+              </div>
+            </div>
+            <p class="text-[10px] text-white/15">2 jam yang lalu</p>
+          </div>
+          <p class="text-sm text-white/40 leading-relaxed">Selamat ya Rizky dan Amanda! Semoga pernikahan kalian penuh berkah dan kebahagiaan selamanya. Bahagia terus! 🎉</p>
+        </div>
+
+        <div class="wish-card rounded-xl p-6 reveal">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-4">
+              <div class="w-10 h-10 rounded-full bg-gradient-to-br from-[var(--gold)]/30 to-[var(--gold)]/5 flex items-center justify-center text-sm font-medium text-[var(--gold)]">S</div>
+              <div>
+                <p class="text-sm font-medium">Siti Rahayu</p>
+                <p class="text-[10px] text-white/20">Keluarga</p>
+              </div>
+            </div>
+            <p class="text-[10px] text-white/15">5 jam yang lalu</p>
+          </div>
+          <p class="text-sm text-white/40 leading-relaxed">Barakallahu laka wa baraka alaika wa jama'a bainakuma fi khair. Semoga menjadi keluarga yang sakinah mawaddah warahmah. Aamiin. ❤️</p>
+        </div>
+
+        <div class="wish-card rounded-xl p-6 reveal">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-4">
+              <div class="w-10 h-10 rounded-full bg-gradient-to-br from-[var(--gold)]/30 to-[var(--gold)]/5 flex items-center justify-center text-sm font-medium text-[var(--gold)]">D</div>
+              <div>
+                <p class="text-sm font-medium">Dewi Kusuma</p>
+                <p class="text-[10px] text-white/20">Rekan Kerja</p>
+              </div>
+            </div>
+            <p class="text-[10px] text-white/15">1 hari yang lalu</p>
+          </div>
+          <p class="text-sm text-white/40 leading-relaxed">Happy wedding! Wishing you both a lifetime of love and happiness together. Can't wait to celebrate with you! ✨</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== CLOSING ==================== -->
+  <section id="closing" class="parallax-section w-full py-40 px-6">
+    <div class="parallax-bg dark-warm-overlay" id="closing-bg" style="background-image: url('https://images.unsplash.com/photo-1519741497674-611481863552?w=1920&q=85');">
+      <div class="absolute inset-0 anim-kenburns" style="background-image: url('https://images.unsplash.com/photo-1519741497674-611481863552?w=1920&q=85'); background-size: cover; background-position: center;"></div>
+    </div>
+
+    <div class="relative z-10 max-w-2xl mx-auto text-center">
+      <p class="text-[10px] tracking-[0.5em] uppercase text-[var(--gold)]/40 mb-8 reveal">Terima Kasih</p>
+      <h2 class="text-4xl md:text-6xl lg:text-7xl font-light mb-10 reveal" style="font-family: 'Playfair Display', serif;">
+        Rizky <span class="text-[var(--gold)]">&</span> Amanda
+      </h2>
+      <p class="text-sm text-white/30 leading-loose mb-14 max-w-md mx-auto reveal">
+        Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir untuk memberikan doa restu kepada kami.
+      </p>
+      <div class="flex items-center justify-center gap-6 mb-10 reveal">
+        <div class="w-16 h-px bg-gradient-to-r from-transparent to-[var(--gold)]/25"></div>
+        <svg class="w-6 h-6 text-[var(--gold)]/40 anim-float" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+        <div class="w-16 h-px bg-gradient-to-l from-transparent to-[var(--gold)]/25"></div>
+      </div>
+      <p class="text-xs tracking-[0.4em] text-white/15 uppercase reveal">Wassalamu'alaikum Wr. Wb.</p>
+    </div>
+  </section>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="w-full py-8 bg-[#0d0904] border-t border-white/[0.03] text-center relative z-10">
+    <p class="text-[10px] tracking-[0.3em] text-white/10 uppercase">Made with love for our special day</p>
+  </footer>
+
+  <!-- ==================== LIGHTBOX ==================== -->
+  <div id="lightbox" class="fixed inset-0 z-[100] bg-black/95 hidden items-center justify-center backdrop-blur-md" onclick="closeLightbox()">
+    <button class="absolute top-6 right-6 text-white/40 hover:text-white text-5xl transition-colors z-10">&times;</button>
+    <button class="absolute left-6 top-1/2 -translate-y-1/2 text-white/20 hover:text-white text-5xl transition-colors hidden md:block" onclick="prevImage(event)">&#8249;</button>
+    <button class="absolute right-6 top-1/2 -translate-y-1/2 text-white/20 hover:text-white text-5xl transition-colors hidden md:block" onclick="nextImage(event)">&#8250;</button>
+    <img id="lightbox-img" src="" class="max-w-[90%] max-h-[85vh] object-contain rounded-lg shadow-2xl transition-opacity duration-300" alt="">
+    <p id="lightbox-counter" class="absolute bottom-6 left-1/2 -translate-x-1/2 text-xs text-white/25 tracking-wider"></p>
+  </div>
+
+  <!-- ==================== TOAST ==================== -->
+  <div id="toast" class="fixed bottom-24 left-1/2 -translate-x-1/2 bg-gradient-to-r from-[var(--gold)] to-[var(--gold-light)] text-[#1a1209] px-8 py-3 rounded-full text-sm font-semibold shadow-lg shadow-[var(--gold)]/20 opacity-0 transition-all duration-300 pointer-events-none z-50" style="transform: translateX(-50%) translateY(16px);">
+    <span id="toast-msg">Tersalin ke clipboard</span>
+  </div>
+
+  <!-- ==================== JAVASCRIPT ==================== -->
+  <script>
+    // ===== EDITOR INTEGRATION =====
+    window.updateInvitation = function(data) {
+      if (data['bride-nick']) {
+        document.getElementById('e-bride-nick').textContent = data['bride-nick'];
+      }
+      if (data['groom-nick']) {
+        document.getElementById('e-groom-nick').textContent = data['groom-nick'];
+      }
+      if (data['date-text']) {
+        document.getElementById('e-date-text').textContent = data['date-text'];
+      }
+      if (data['countdown-master']) {
+        WEDDING_DATE = new Date(data['countdown-master']).getTime();
+        updateCountdown();
+      }
+      if (data['bride-full']) {
+        document.getElementById('e-bride-full').textContent = data['bride-full'];
+      }
+      if (data['groom-full']) {
+        document.getElementById('e-groom-full').textContent = data['groom-full'];
+      }
+      if (data['bride-photo']) {
+        document.getElementById('e-bride-photo').src = data['bride-photo'];
+      }
+      if (data['groom-photo']) {
+        document.getElementById('e-groom-photo').src = data['groom-photo'];
+      }
+      if (data['bride-parents']) {
+        document.getElementById('e-bride-parents').innerHTML = data['bride-parents'];
+      }
+      if (data['groom-parents']) {
+        document.getElementById('e-groom-parents').innerHTML = data['groom-parents'];
+      }
+      if (data['akad-date']) {
+        document.getElementById('e-akad-date').textContent = data['akad-date'];
+      }
+      if (data['akad-time']) {
+        document.getElementById('e-akad-time').textContent = data['akad-time'];
+      }
+      if (data['akad-place']) {
+        document.getElementById('e-akad-place').innerHTML = data['akad-place'];
+      }
+      if (data['resepsi-date']) {
+        document.getElementById('e-resepsi-date').textContent = data['resepsi-date'];
+      }
+      if (data['resepsi-time']) {
+        document.getElementById('e-resepsi-time').textContent = data['resepsi-time'];
+      }
+      if (data['resepsi-place']) {
+        document.getElementById('e-resepsi-place').innerHTML = data['resepsi-place'];
+      }
+      if (data['gal-1']) document.getElementById('e-gal-1').src = data['gal-1'];
+      if (data['gal-2']) document.getElementById('e-gal-2').src = data['gal-2'];
+      if (data['gal-3']) document.getElementById('e-gal-3').src = data['gal-3'];
+      if (data['gal-4']) document.getElementById('e-gal-4').src = data['gal-4'];
+      if (data['gal-5']) document.getElementById('e-gal-5').src = data['gal-5'];
+      if (data['gal-6']) document.getElementById('e-gal-6').src = data['gal-6'];
+      if (data.galleryBg) {
+        const el = document.getElementById('e-galleryBg');
+        if (el) el.style.backgroundImage = 'url(' + data.galleryBg + ')';
+      }
+    };
+
+    window.addEventListener('message', function(e) {
+      if (e.data.type === 'UPDATE') {
+        if (window.updateInvitation) window.updateInvitation(e.data.payload);
+      }
+    });
+
+    // ===== CONFIG =====
+    let WEDDING_DATE = new Date('2026-12-12T08:00:00').getTime();
+
+    // ===== PARALLAX ENGINE =====
+    const parallaxElements = [];
+
+    function initParallax() {
+      document.querySelectorAll('.parallax-section').forEach(section => {
+        const bg = section.querySelector('.parallax-bg');
+        if (bg) {
+          parallaxElements.push({
+            element: bg,
+            section: section,
+            speed: 0.4
+          });
+        }
+      });
+    }
+
+    let ticking = false;
+    function updateParallax() {
+      const scrollY = window.pageYOffset;
+      const windowHeight = window.innerHeight;
+
+      parallaxElements.forEach(({ element, section, speed }) => {
+        const rect = section.getBoundingClientRect();
+        const sectionTop = rect.top;
+        const sectionHeight = rect.height;
+
+        // Only animate when section is in viewport
+        if (sectionTop < windowHeight && sectionTop > -sectionHeight) {
+          const progress = (windowHeight - sectionTop) / (windowHeight + sectionHeight);
+          const offset = (progress - 0.5) * sectionHeight * speed * 2;
+          element.style.transform = \`translateY(\${offset}px)\`;
+        }
+      });
+
+      // Cover special parallax
+      const cover = document.getElementById('cover');
+      const coverContent = document.getElementById('cover-content');
+      if (cover && scrollY < windowHeight) {
+        const coverProgress = scrollY / windowHeight;
+        if (coverContent) {
+          coverContent.style.transform = \`translateY(\${scrollY * 0.35}px)\`;
+          coverContent.style.opacity = 1 - coverProgress * 1.2;
+        }
+      }
+
+      ticking = false;
+    }
+
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        requestAnimationFrame(updateParallax);
+        ticking = true;
+      }
+    });
+
+    initParallax();
+    updateParallax();
+
+    // ===== COUNTDOWN =====
+    function updateCountdown() {
+      const now = Date.now();
+      const distance = WEDDING_DATE - now;
+
+      if (distance < 0) {
+        ['days','hours','minutes','seconds'].forEach(id => document.getElementById(id).textContent = '00');
+        return;
+      }
+
+      const d = Math.floor(distance / 86400000);
+      const h = Math.floor((distance % 86400000) / 3600000);
+      const m = Math.floor((distance % 3600000) / 60000);
+      const s = Math.floor((distance % 60000) / 1000);
+
+      document.getElementById('days').textContent = String(d).padStart(2, '0');
+      document.getElementById('hours').textContent = String(h).padStart(2, '0');
+      document.getElementById('minutes').textContent = String(m).padStart(2, '0');
+      document.getElementById('seconds').textContent = String(s).padStart(2, '0');
+    }
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+
+    // ===== SMOOTH SCROLL =====
+    function scrollToSection(id) {
+      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    document.querySelectorAll('nav a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        e.preventDefault();
+        scrollToSection(a.getAttribute('href').slice(1));
+      });
+    });
+
+    // ===== MUSIC =====
+    let isPlaying = false;
+    function toggleMusic() {
+      const audio = document.getElementById('bg-music');
+      const icon = document.getElementById('music-icon');
+      const btn = document.getElementById('music-toggle');
+
+      if (isPlaying) {
+        audio.pause();
+        icon.classList.remove('spinning');
+        btn.style.animation = 'pulseGlow 2s ease-in-out infinite';
+      } else {
+        audio.play().catch(() => {});
+        icon.classList.add('spinning');
+        btn.style.animation = 'none';
+      }
+      isPlaying = !isPlaying;
+    }
+
+    // ===== LIGHTBOX =====
+    const galleryImages = [
+      'https://images.unsplash.com/photo-1519741497674-611481863552?w=1400&q=80',
+      'https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=1400&q=80',
+      'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=1400&q=80',
+      'https://images.unsplash.com/photo-1591604466107-ec97de577aff?w=1400&q=80',
+      'https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=1400&q=80',
+      'https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=1400&q=80'
+    ];
+    let currentIdx = 0;
+
+    function openLightbox(idx) {
+      currentIdx = idx;
+      const lb = document.getElementById('lightbox');
+      const img = document.getElementById('lightbox-img');
+      const counter = document.getElementById('lightbox-counter');
+      img.src = galleryImages[idx];
+      counter.textContent = \`\${idx + 1} / \${galleryImages.length}\`;
+      lb.classList.remove('hidden');
+      lb.classList.add('flex');
+      document.body.classList.add('lb-active');
+    }
+
+    function closeLightbox() {
+      const lb = document.getElementById('lightbox');
+      lb.classList.add('hidden');
+      lb.classList.remove('flex');
+      document.body.classList.remove('lb-active');
+    }
+
+    function nextImage(e) {
+      e.stopPropagation();
+      currentIdx = (currentIdx + 1) % galleryImages.length;
+      updateLightbox();
+    }
+
+    function prevImage(e) {
+      e.stopPropagation();
+      currentIdx = (currentIdx - 1 + galleryImages.length) % galleryImages.length;
+      updateLightbox();
+    }
+
+    function updateLightbox() {
+      const img = document.getElementById('lightbox-img');
+      const counter = document.getElementById('lightbox-counter');
+      img.style.opacity = '0';
+      setTimeout(() => {
+        img.src = galleryImages[currentIdx];
+        counter.textContent = \`\${currentIdx + 1} / \${galleryImages.length}\`;
+        img.style.opacity = '1';
+      }, 200);
+    }
+
+    document.addEventListener('keydown', e => {
+      const lb = document.getElementById('lightbox');
+      if (lb.classList.contains('hidden')) return;
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowRight') nextImage(e);
+      if (e.key === 'ArrowLeft') prevImage(e);
+    });
+
+    // ===== CLIPBOARD =====
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text).then(() => showToast('Berhasil disalin!'))
+        .catch(() => {
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+          showToast('Berhasil disalin!');
+        });
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toast-msg');
+      toastMsg.textContent = msg;
+      toast.style.opacity = '1';
+      toast.style.transform = 'translateX(-50%) translateY(0)';
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(-50%) translateY(16px)';
+      }, 2500);
+    }
+
+    // ===== RSVP =====
+    function handleRSVP(e) {
+      e.preventDefault();
+      showToast('Konfirmasi berhasil dikirim! Terima kasih.');
+      e.target.reset();
+    }
+
+    // ===== WISH =====
+    function handleWish(e) {
+      e.preventDefault();
+      const name = document.getElementById('wish-name').value;
+      const relation = document.getElementById('wish-relation').value || 'Tamu';
+      const message = document.getElementById('wish-message').value;
+      const initial = name.charAt(0).toUpperCase();
+
+      const html = \`
+        <div class="wish-card rounded-xl p-6" style="animation: fadeInUp 0.6s ease-out;">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-4">
+              <div class="w-10 h-10 rounded-full bg-gradient-to-br from-[var(--gold)]/30 to-[var(--gold)]/5 flex items-center justify-center text-sm font-medium text-[var(--gold)]">\${initial}</div>
+              <div>
+                <p class="text-sm font-medium">\${name}</p>
+                <p class="text-[10px] text-white/20">\${relation}</p>
+              </div>
+            </div>
+            <p class="text-[10px] text-white/15">Baru saja</p>
+          </div>
+          <p class="text-sm text-white/40 leading-relaxed">\${message}</p>
+        </div>
+      \`;
+      document.getElementById('wishes-list').insertAdjacentHTML('afterbegin', html);
+      e.target.reset();
+      showToast('Ucapan berhasil dikirim!');
+    }
+
+    // ===== SCROLL REVEAL =====
+    const revealObs = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('active');
+          revealObs.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.08, rootMargin: '0px 0px -60px 0px' });
+
+    document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+
+    // ===== NAV ACTIVE =====
+    const navObs = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.id;
+          document.querySelectorAll('.nav-dot').forEach(dot => {
+            dot.classList.toggle('active', dot.dataset.section === id);
+          });
+        }
+      });
+    }, { threshold: 0.3 });
+
+    document.querySelectorAll('section[id]').forEach(s => navObs.observe(s));
+
+    // ===== INIT =====
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.reveal').forEach(el => {
+        if (el.getBoundingClientRect().top < window.innerHeight) {
+          el.classList.add('active');
+        }
+      });
+    });
+  </script>
+</body>
+</html>`;
+
+export const DEMO_DATA_PARALLAX_VIDEO_COVER: Record<string, string> = {
+  'bride-nick': 'Amanda',
+  'groom-nick': 'Rizky',
+  'date-text': '12 . 12 . 2026',
+  'countdown-master': '2026-12-12T08:00:00+07:00',
+  'bride-full': 'Amanda Putri Lestari',
+  'groom-full': 'Rizky Aditya Pratama',
+  'bride-parents': 'Putri dari Bapak Hartono Santoso<br>& Ibu Rina Setyawati',
+  'groom-parents': 'Putra dari Bapak Surya Wijaya<br>& Ibu Dewi Kusumaningrum',
+  'bride-photo': 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&q=80',
+  'groom-photo': 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=600&q=80',
+  'akad-date': 'Sabtu, 12 Desember 2026',
+  'akad-time': '08.00 - 10.00 WIB',
+  'akad-place': 'Masjid Al-Ikhlas, Jakarta',
+  'resepsi-date': 'Sabtu, 12 Desember 2026',
+  'resepsi-time': '11.00 - 15.00 WIB',
+  'resepsi-place': 'The Grand Ballroom, Jakarta',
+  'gal-1': 'https://images.unsplash.com/photo-1519741497674-611481863552?w=800&q=80',
+  'gal-2': 'https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=800&q=80',
+  'gal-3': 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=800&q=80',
+  'gal-4': 'https://images.unsplash.com/photo-1591604466107-ec97de577aff?w=800&q=80',
+  'gal-5': 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=800&q=80',
+  'gal-6': 'https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=800&q=80',
+};
 export const TEMPLATE_CONFIGS: Record<string, TemplateConfig> = {
   'Elite Wedding': { html: ELITE_WEDDING_TEMPLATE, demoData: DEMO_DATA_ELITE },
   'Honey Wedding': {
@@ -3969,6 +5277,10 @@ export const TEMPLATE_CONFIGS: Record<string, TemplateConfig> = {
   'West Sumatra': {
     html: WEST_SUMATRA_TEMPLATE,
     demoData: DEMO_DATA_WEST_SUMATRA,
+  },
+  'Parallax Video Cover': {
+    html: PARALLAX_VIDEO_COVER_TEMPLATE,
+    demoData: DEMO_DATA_PARALLAX_VIDEO_COVER,
   },
 };
 

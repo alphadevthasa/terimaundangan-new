@@ -1,11 +1,25 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+
+interface Category {
+  id: string;
+  name: string;
+  slug: string;
+}
 
 export default function CreateTemplate() {
   const router = useRouter();
-  const [form, setForm] = useState({ name: '', description: '', type: 'wedding', theme: '', thumbnail: '', price: 'Free', isPopular: false, html: '' });
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [form, setForm] = useState({ name: '', description: '', type: 'wedding', theme: '', category: 'wedding', thumbnail: '', price: 'Free', isPopular: false, html: '' });
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    fetch('/api/admin/categories')
+      .then(r => r.json())
+      .then(d => { setCategories(d.categories ?? []); })
+      .catch(() => {});
+  }, []);
 
   const update = (k: string, v: any) => setForm(f => ({ ...f, [k]: v }));
   const handleSubmit = async (e: React.FormEvent) => {
@@ -48,20 +62,34 @@ export default function CreateTemplate() {
             </select>
           </div>
           <div style={{ flex: 1 }}>
+            <label style={s.label}>Category</label>
+            <select style={s.input} value={form.category} onChange={e => update('category', e.target.value)}>
+              {categories.length === 0 ? (
+                <option value="wedding">Wedding</option>
+              ) : (
+                categories.map(cat => (
+                  <option key={cat.id} value={cat.slug}>{cat.name}</option>
+                ))
+              )}
+            </select>
+          </div>
+        </div>
+        <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
+          <div style={{ flex: 1 }}>
             <label style={s.label}>Price</label>
             <input style={s.input} value={form.price} onChange={e => update('price', e.target.value)} />
           </div>
-        </div>
-        <div style={{ ...s.field, maxWidth: '300px' }}>
-          <label style={s.label}>Theme</label>
-          <select style={s.input} value={form.theme} onChange={e => update('theme', e.target.value)}>
-            <option value="">Select theme</option>
-            <option value="Elegant">Elegant</option>
-            <option value="Modern">Modern</option>
-            <option value="Romantic">Romantic</option>
-            <option value="Traditional">Traditional</option>
-            <option value="Nature">Nature</option>
-          </select>
+          <div style={{ flex: 1 }}>
+            <label style={s.label}>Theme</label>
+            <select style={s.input} value={form.theme} onChange={e => update('theme', e.target.value)}>
+              <option value="">Select theme</option>
+              <option value="Elegant">Elegant</option>
+              <option value="Modern">Modern</option>
+              <option value="Romantic">Romantic</option>
+              <option value="Traditional">Traditional</option>
+              <option value="Nature">Nature</option>
+            </select>
+          </div>
         </div>
         <div style={s.field}>
           <label style={s.label}>Thumbnail URL</label>

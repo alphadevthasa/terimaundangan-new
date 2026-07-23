@@ -384,14 +384,14 @@
       <p class="text-[10px] md:text-xs tracking-[0.6em] uppercase text-white/40 mb-8 anim-fade-down">The Wedding Of</p>
 
       <h1 class="text-6xl md:text-8xl lg:text-9xl font-light tracking-wide mb-4 anim-scale d2" style="font-family: 'Playfair Display', serif;">
-        <span class="block">Rizky</span>
+        <span class="block" id="e-groom-nick">Rizky</span>
         <span class="text-2xl md:text-4xl text-[var(--gold)] mx-4">&</span>
-        <span class="block">Amanda</span>
+        <span class="block" id="e-bride-nick">Amanda</span>
       </h1>
 
       <div class="w-20 h-px bg-gradient-to-r from-transparent via-[var(--gold)] to-transparent my-8 anim-fade d5"></div>
 
-      <p class="text-xs md:text-sm tracking-[0.5em] text-white/30 anim-fade d6">12 . 12 . 2026</p>
+      <p class="text-xs md:text-sm tracking-[0.5em] text-white/30 anim-fade d6" id="e-date-text">12 . 12 . 2026</p>
 
       <button onclick="scrollToSection('countdown')" class="mt-20 px-12 py-4 border border-[var(--gold)]/40 rounded-full text-xs tracking-[0.4em] uppercase text-[var(--gold-light)] hover:bg-[var(--gold)] hover:text-[#1a1209] transition-all duration-700 anim-bounce d10">
         Open Invitation
@@ -429,8 +429,8 @@
       </div>
 
       <div class="mt-14 reveal">
-        <p class="text-base text-white/30">Sabtu, 12 Desember 2026</p>
-        <p class="text-sm text-white/15 mt-2">08:00 WIB</p>
+        <p class="text-base text-white/30" id="e-countdown-date">Sabtu, 12 Desember 2026</p>
+        <p class="text-sm text-white/15 mt-2" id="e-countdown-time">08:00 WIB</p>
       </div>
     </div>
   </section>
@@ -451,16 +451,16 @@
           <div class="pframe relative w-72 h-[420px] mx-auto mb-10 overflow-hidden rounded-2xl group">
             <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=600&q=80" 
                  alt="Groom" 
-                 class="w-full h-full object-cover transition-all duration-1000 group-hover:scale-110">
+                 id="e-groom-photo" class="w-full h-full object-cover transition-all duration-1000 group-hover:scale-110">
             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
             <div class="absolute bottom-8 left-0 right-0 text-center">
               <p class="text-[10px] tracking-[0.4em] uppercase text-[var(--gold)]">The Groom</p>
             </div>
           </div>
-          <h3 class="text-3xl md:text-4xl font-light mb-2" style="font-family: 'Playfair Display', serif;">Rizky Aditya Pratama</h3>
+          <h3 class="text-3xl md:text-4xl font-light mb-2" style="font-family: 'Playfair Display', serif;" id="e-groom-full">Rizky Aditya Pratama</h3>
           <div class="w-10 h-px bg-[var(--gold)]/30 mx-auto my-5"></div>
-          <p class="text-[10px] tracking-[0.3em] text-white/25 uppercase mb-4">Putra Pertama</p>
-          <p class="text-sm text-white/35 max-w-xs mx-auto leading-relaxed">Putra dari Bapak Surya Wijaya<br>& Ibu Dewi Kusumaningrum</p>
+          <p class="text-[10px] tracking-[0.3em] text-white/25 uppercase mb-4" id="e-groom-role">Putra Pertama</p>
+          <p class="text-sm text-white/35 max-w-xs mx-auto leading-relaxed" id="e-groom-parents">Putra dari Bapak Surya Wijaya<br>& Ibu Dewi Kusumaningrum</p>
         </div>
 
         <!-- Heart divider mobile -->
@@ -473,16 +473,16 @@
           <div class="pframe relative w-72 h-[420px] mx-auto mb-10 overflow-hidden rounded-2xl group">
             <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&q=80" 
                  alt="Bride" 
-                 class="w-full h-full object-cover transition-all duration-1000 group-hover:scale-110">
+                 id="e-bride-photo" class="w-full h-full object-cover transition-all duration-1000 group-hover:scale-110">
             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
             <div class="absolute bottom-8 left-0 right-0 text-center">
               <p class="text-[10px] tracking-[0.4em] uppercase text-[var(--gold)]">The Bride</p>
             </div>
           </div>
-          <h3 class="text-3xl md:text-4xl font-light mb-2" style="font-family: 'Playfair Display', serif;">Amanda Putri Lestari</h3>
+          <h3 class="text-3xl md:text-4xl font-light mb-2" style="font-family: 'Playfair Display', serif;" id="e-bride-full">Amanda Putri Lestari</h3>
           <div class="w-10 h-px bg-[var(--gold)]/30 mx-auto my-5"></div>
-          <p class="text-[10px] tracking-[0.3em] text-white/25 uppercase mb-4">Putri Kedua</p>
-          <p class="text-sm text-white/35 max-w-xs mx-auto leading-relaxed">Putri dari Bapak Hartono Santoso<br>& Ibu Rina Setyawati</p>
+          <p class="text-[10px] tracking-[0.3em] text-white/25 uppercase mb-4" id="e-bride-role">Putri Kedua</p>
+          <p class="text-sm text-white/35 max-w-xs mx-auto leading-relaxed" id="e-bride-parents">Putri dari Bapak Hartono Santoso<br>& Ibu Rina Setyawati</p>
         </div>
       </div>
     </div>
@@ -591,19 +591,19 @@
           <div class="space-y-4 text-sm">
             <div class="flex items-center justify-center gap-3 text-white/40">
               <svg class="w-4 h-4 text-[var(--gold)]/50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-              <span>Sabtu, 12 Desember 2026</span>
+              <span id="e-akad-date">Sabtu, 12 Desember 2026</span>
             </div>
             <div class="flex items-center justify-center gap-3 text-white/40">
               <svg class="w-4 h-4 text-[var(--gold)]/50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-              <span>08:00 - 10:00 WIB</span>
+              <span id="e-akad-time">08:00 - 10:00 WIB</span>
             </div>
             <div class="flex items-center justify-center gap-3 text-white/40">
               <svg class="w-4 h-4 text-[var(--gold)]/50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-              <span>Masjid Al-Ikhlas, Jakarta</span>
+              <span id="e-akad-place">Masjid Al-Ikhlas, Jakarta</span>
             </div>
           </div>
 
-          <a href="https://maps.google.com/?q=Masjid+Al-Ikhlas+Jakarta" target="_blank" 
+          <a id="e-akad-maps" href="https://maps.google.com/?q=Masjid+Al-Ikhlas+Jakarta" target="_blank" 
              class="inline-block mt-10 px-10 py-3 border border-[var(--gold)]/25 rounded-full text-xs tracking-[0.2em] uppercase text-[var(--gold-light)] hover:bg-[var(--gold)] hover:text-[#1a1209] transition-all duration-300">
             Lihat Lokasi
           </a>
@@ -623,19 +623,19 @@
           <div class="space-y-4 text-sm">
             <div class="flex items-center justify-center gap-3 text-white/40">
               <svg class="w-4 h-4 text-[var(--gold)]/50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-              <span>Sabtu, 12 Desember 2026</span>
+              <span id="e-resepsi-date">Sabtu, 12 Desember 2026</span>
             </div>
             <div class="flex items-center justify-center gap-3 text-white/40">
               <svg class="w-4 h-4 text-[var(--gold)]/50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-              <span>11:00 - 15:00 WIB</span>
+              <span id="e-resepsi-time">11:00 - 15:00 WIB</span>
             </div>
             <div class="flex items-center justify-center gap-3 text-white/40">
               <svg class="w-4 h-4 text-[var(--gold)]/50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-              <span>The Grand Ballroom, Jakarta</span>
+              <span id="e-resepsi-place">The Grand Ballroom, Jakarta</span>
             </div>
           </div>
 
-          <a href="https://maps.google.com/?q=Grand+Ballroom+Jakarta" target="_blank" 
+          <a id="e-resepsi-maps" href="https://maps.google.com/?q=Grand+Ballroom+Jakarta" target="_blank" 
              class="inline-block mt-10 px-10 py-3 border border-[var(--gold)]/25 rounded-full text-xs tracking-[0.2em] uppercase text-[var(--gold-light)] hover:bg-[var(--gold)] hover:text-[#1a1209] transition-all duration-300">
             Lihat Lokasi
           </a>
@@ -656,22 +656,22 @@
 
       <div class="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
         <div class="gitem relative aspect-[3/4] rounded-xl overflow-hidden cursor-pointer reveal" onclick="openLightbox(0)">
-          <img src="https://images.unsplash.com/photo-1519741497674-611481863552?w=800&q=80" class="w-full h-full object-cover" alt="Gallery 1">
+          <img src="https://images.unsplash.com/photo-1519741497674-611481863552?w=800&q=80" class="w-full h-full object-cover" id="e-gal-1" alt="Gallery 1">
         </div>
         <div class="gitem relative aspect-[3/4] rounded-xl overflow-hidden cursor-pointer reveal" onclick="openLightbox(1)">
-          <img src="https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=800&q=80" class="w-full h-full object-cover" alt="Gallery 2">
+          <img src="https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=800&q=80" class="w-full h-full object-cover" id="e-gal-2" alt="Gallery 2">
         </div>
         <div class="gitem relative aspect-[3/4] rounded-xl overflow-hidden cursor-pointer reveal" onclick="openLightbox(2)">
-          <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=800&q=80" class="w-full h-full object-cover" alt="Gallery 3">
+          <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=800&q=80" class="w-full h-full object-cover" id="e-gal-3" alt="Gallery 3">
         </div>
         <div class="gitem relative aspect-[3/4] rounded-xl overflow-hidden cursor-pointer reveal" onclick="openLightbox(3)">
-          <img src="https://images.unsplash.com/photo-1591604466107-ec97de577aff?w=800&q=80" class="w-full h-full object-cover" alt="Gallery 4">
+          <img src="https://images.unsplash.com/photo-1591604466107-ec97de577aff?w=800&q=80" class="w-full h-full object-cover" id="e-gal-4" alt="Gallery 4">
         </div>
         <div class="gitem relative aspect-[3/4] rounded-xl overflow-hidden cursor-pointer reveal" onclick="openLightbox(4)">
-          <img src="https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=800&q=80" class="w-full h-full object-cover" alt="Gallery 5">
+          <img src="https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=800&q=80" class="w-full h-full object-cover" id="e-gal-5" alt="Gallery 5">
         </div>
         <div class="gitem relative aspect-[3/4] rounded-xl overflow-hidden cursor-pointer reveal" onclick="openLightbox(5)">
-          <img src="https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=800&q=80" class="w-full h-full object-cover" alt="Gallery 6">
+          <img src="https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=800&q=80" class="w-full h-full object-cover" id="e-gal-6" alt="Gallery 6">
         </div>
       </div>
     </div>
@@ -938,8 +938,73 @@
 
   <!-- ==================== JAVASCRIPT ==================== -->
   <script>
+    // ===== EDITOR INTEGRATION =====
+    window.updateInvitation = function(data) {
+      if (data['bride-nick']) {
+        document.getElementById('e-bride-nick').textContent = data['bride-nick'];
+      }
+      if (data['groom-nick']) {
+        document.getElementById('e-groom-nick').textContent = data['groom-nick'];
+      }
+      if (data['date-text']) {
+        document.getElementById('e-date-text').textContent = data['date-text'];
+      }
+      if (data['countdown-master']) {
+        WEDDING_DATE = new Date(data['countdown-master']).getTime();
+        updateCountdown();
+      }
+      if (data['bride-full']) {
+        document.getElementById('e-bride-full').textContent = data['bride-full'];
+      }
+      if (data['groom-full']) {
+        document.getElementById('e-groom-full').textContent = data['groom-full'];
+      }
+      if (data['bride-photo']) {
+        document.getElementById('e-bride-photo').src = data['bride-photo'];
+      }
+      if (data['groom-photo']) {
+        document.getElementById('e-groom-photo').src = data['groom-photo'];
+      }
+      if (data['bride-parents']) {
+        document.getElementById('e-bride-parents').innerHTML = data['bride-parents'];
+      }
+      if (data['groom-parents']) {
+        document.getElementById('e-groom-parents').innerHTML = data['groom-parents'];
+      }
+      if (data['akad-date']) {
+        document.getElementById('e-akad-date').textContent = data['akad-date'];
+      }
+      if (data['akad-time']) {
+        document.getElementById('e-akad-time').textContent = data['akad-time'];
+      }
+      if (data['akad-place']) {
+        document.getElementById('e-akad-place').innerHTML = data['akad-place'];
+      }
+      if (data['resepsi-date']) {
+        document.getElementById('e-resepsi-date').textContent = data['resepsi-date'];
+      }
+      if (data['resepsi-time']) {
+        document.getElementById('e-resepsi-time').textContent = data['resepsi-time'];
+      }
+      if (data['resepsi-place']) {
+        document.getElementById('e-resepsi-place').innerHTML = data['resepsi-place'];
+      }
+      if (data['gal-1']) document.getElementById('e-gal-1').src = data['gal-1'];
+      if (data['gal-2']) document.getElementById('e-gal-2').src = data['gal-2'];
+      if (data['gal-3']) document.getElementById('e-gal-3').src = data['gal-3'];
+      if (data['gal-4']) document.getElementById('e-gal-4').src = data['gal-4'];
+      if (data['gal-5']) document.getElementById('e-gal-5').src = data['gal-5'];
+      if (data['gal-6']) document.getElementById('e-gal-6').src = data['gal-6'];
+    };
+
+    window.addEventListener('message', function(e) {
+      if (e.data.type === 'UPDATE') {
+        if (window.updateInvitation) window.updateInvitation(e.data.payload);
+      }
+    });
+
     // ===== CONFIG =====
-    const WEDDING_DATE = new Date('2026-12-12T08:00:00').getTime();
+    let WEDDING_DATE = new Date('2026-12-12T08:00:00').getTime();
 
     // ===== PARALLAX ENGINE =====
     const parallaxElements = [];

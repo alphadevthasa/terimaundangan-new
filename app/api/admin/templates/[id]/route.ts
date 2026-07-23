@@ -28,21 +28,27 @@ export async function PUT(
   if (response) return response;
   try {
     const body = await request.json();
+    const data: any = {
+      ...(body.name !== undefined && { name: body.name }),
+      ...(body.description !== undefined && { description: body.description }),
+      ...(body.type !== undefined && { type: body.type }),
+      ...(body.theme !== undefined && { theme: body.theme }),
+      ...(body.thumbnail !== undefined && { thumbnail: body.thumbnail }),
+      ...(body.price !== undefined && { price: body.price }),
+      ...(body.isPopular !== undefined && { isPopular: body.isPopular }),
+      ...(body.isPublished !== undefined && { isPublished: body.isPublished }),
+      ...(body.html !== undefined && { html: body.html }),
+      ...(body.defaultData !== undefined && { defaultData: typeof body.defaultData === 'string' ? body.defaultData : JSON.stringify(body.defaultData) }),
+    };
+    if (body.category !== undefined) {
+      data.category = body.category;
+      // Also update categoryId to match the Category record
+      const categoryRecord = await prisma.category.findUnique({ where: { slug: body.category } });
+      data.categoryId = categoryRecord?.id ?? null;
+    }
     const template = await prisma.template.update({
       where: { id: params.id },
-      data: {
-        ...(body.name !== undefined && { name: body.name }),
-        ...(body.description !== undefined && { description: body.description }),
-        ...(body.type !== undefined && { type: body.type }),
-        ...(body.category !== undefined && { category: body.category }),
-        ...(body.theme !== undefined && { theme: body.theme }),
-        ...(body.thumbnail !== undefined && { thumbnail: body.thumbnail }),
-        ...(body.price !== undefined && { price: body.price }),
-        ...(body.isPopular !== undefined && { isPopular: body.isPopular }),
-        ...(body.isPublished !== undefined && { isPublished: body.isPublished }),
-        ...(body.html !== undefined && { html: body.html }),
-        ...(body.defaultData !== undefined && { defaultData: typeof body.defaultData === 'string' ? body.defaultData : JSON.stringify(body.defaultData) }),
-      },
+      data,
     });
     return NextResponse.json({ template });
   } catch (error) {

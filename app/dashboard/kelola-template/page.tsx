@@ -189,6 +189,9 @@ const BACKGROUND_DEFAULTS: Record<string, Record<string, string>> = {
     'story-bg': 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?q=80&w=1920&auto=format&fit=crop',
     'gallery-bg': 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=1920&auto=format&fit=crop',
   },
+  'Parallax Video Cover': {
+    'gallery-bg': 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=1920&auto=format&fit=crop',
+  },
 };
 
 function KelolaTemplateContent() {

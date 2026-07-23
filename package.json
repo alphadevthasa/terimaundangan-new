@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "seed:admin": "npx tsx scripts/seed-admin.ts",
-    "seed": "npx tsx prisma/seed.ts"
+    "seed": "npx tsx prisma/seed.ts",
+    "seed:categories": "npx tsx scripts/seed-categories.ts"
   },
   "prisma": {
     "seed": "npx tsx prisma/seed.ts"

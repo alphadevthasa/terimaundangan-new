@@ -5,6 +5,7 @@ import { useRouter, usePathname } from 'next/navigation';
 const NAV = [
   { href: '/admin', label: 'Dashboard', icon: 'fa-gauge-high' },
   { href: '/admin/templates', label: 'Templates', icon: 'fa-layer-group' },
+  { href: '/admin/categories', label: 'Categories', icon: 'fa-tags' },
   { href: '/admin/users', label: 'Users', icon: 'fa-users' },
   { href: '/admin/orders', label: 'Orders', icon: 'fa-cart-shopping' },
   { href: '/admin/revenue', label: 'Revenue', icon: 'fa-chart-line' },

@@ -9,6 +9,20 @@ datasource db {
   relationMode = "prisma"
 }
 
+/// Template category (e.g. Wedding, Birthday, Corporate)
+model Category {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  slug        String   @unique
+  description String   @default("")
+  icon        String   @default("")
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  templates   Template[]
+}
+
 /// Static pre-made templates (designs users can purchase)
 model Template {
   id          String   @id @default(uuid())
@@ -20,6 +34,7 @@ model Template {
   isPopular   Boolean  @default(false)
   isPublished Boolean  @default(true)
   category    String   @default("wedding")
+  categoryId  String?
   theme       String   @default("")
   html        String   @default("") /// Full HTML content (for admin-managed templates)
   defaultData String   @default("{}") /// JSON: default values for bride/groom names, dates, venue etc.
@@ -27,6 +42,10 @@ model Template {
   updatedAt   DateTime @updatedAt
   orders      Order[]
   templateData TemplateData[]
+
+  categoryRef Category? @relation(fields: [categoryId], references: [id])
+
+  @@index([categoryId])
 }
 
 /// Purchase / order record

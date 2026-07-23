@@ -26,6 +26,7 @@ function EditTemplateContent() {
   const id = params.id as string;
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
+  const [categories, setCategories] = useState<{id:string;name:string;slug:string}[]>([]);
   const [meta, setMeta] = useState({ name: '', description: '', type: 'wedding', theme: '', category: 'wedding', price: '', thumbnail: '', isPopular: false });
   const [formData, setFormData] = useState<Record<string, string>>({});
   const [previewMode, setPreviewMode] = useState<'editor' | 'preview'>('editor');
@@ -55,6 +56,10 @@ function EditTemplateContent() {
   useEffect(() => {
     setMounted(true);
     fetchTemplate();
+    fetch('/api/admin/categories')
+      .then(r => r.json())
+      .then(d => { setCategories(d.categories ?? []); })
+      .catch(() => {});
   }, [id]);
 
   const fetchTemplate = async () => {
@@ -259,7 +264,13 @@ function EditTemplateContent() {
             <div style={{ marginBottom: '0.5rem' }}>
               <label style={{ fontSize: '0.75rem', color: 'rgba(253,246,227,.6)', marginBottom: '0.25rem', display: 'block' }}>Category</label>
               <select value={meta.category} onChange={e => setMeta(m => ({ ...m, category: e.target.value }))} style={{ width: '100%', padding: '0.5rem 0.65rem', background: '#060b14', border: '1px solid rgba(212,175,55,.15)', borderRadius: '4px', color: '#fdf6e3', fontSize: '0.85rem', outline: 'none', boxSizing: 'border-box' }}>
-                <option value="wedding">Wedding</option>
+                {categories.length === 0 ? (
+                  <option value="wedding">Wedding</option>
+                ) : (
+                  categories.map(cat => (
+                    <option key={cat.id} value={cat.slug}>{cat.name}</option>
+                  ))
+                )}
               </select>
             </div>
             <div style={{ marginBottom: '0.5rem' }}>

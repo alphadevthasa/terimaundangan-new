@@ -1,4 +1,5 @@
 import { weddingEliteSchema } from '@/app/lib/template-schemas/wedding-elite';
+import { birthdayKidsSchema } from '@/app/lib/template-schemas/birthday-kids';
 
 export interface EditorField {
   id: string;
@@ -158,6 +159,7 @@ export const editorSections: EditorSection[] = [
 
 export const TEMPLATE_SCHEMAS: Record<string, EditorSection[]> = {
   'Elite Wedding': weddingEliteSchema,
+  'Kids Birthday White': birthdayKidsSchema,
 };
 
 type SectionFilter = Record<string, string[] | null>;
@@ -193,6 +195,15 @@ const TEMPLATE_SECTION_FILTER: Record<string, SectionFilter | null> = {
     closing: null,
   },
   'West Sumatra': null,
+  'Parallax Video Cover': {
+    cover: ['bride-nick', 'groom-nick', 'date-text'],
+    countdown: ['countdown-master'],
+    groom: ['groom-full', 'groom-photo', 'groom-role'],
+    bride: ['bride-full', 'bride-photo', 'bride-role'],
+    events: null,
+    gallery: null,
+  },
+  'Kids Birthday White': null,
 };
 
 export const BACKGROUND_DEFAULTS: Record<string, Record<string, string>> = {
@@ -200,7 +211,7 @@ export const BACKGROUND_DEFAULTS: Record<string, Record<string, string>> = {
     'hero-bg': 'https://images.unsplash.com/photo-1564419320508-2e3d3a7d7bf5?q=80&w=1200&auto=format&fit=crop',
     'couple-bg': 'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?q=80&auto=format&fit=crop',
     'story-bg': 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&auto=format&fit=crop',
-    'gallery-bg': 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?q=80&auto=format&fit=crop',
+    'gallery-bg': 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?q=80&w=1200&auto=format&fit=crop',
     'gifts-bg': 'https://images.unsplash.com/photo-1510076857177-7470076d4098?q=80&auto=format&fit=crop',
     'wishes-bg': 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&auto=format&fit=crop',
   },
@@ -216,6 +227,9 @@ export const BACKGROUND_DEFAULTS: Record<string, Record<string, string>> = {
     'hero-bg': 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?q=80&w=1920&auto=format&fit=crop',
     'couple-bg': 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=1920&auto=format&fit=crop',
     'story-bg': 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?q=80&w=1920&auto=format&fit=crop',
+    'gallery-bg': 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=1920&auto=format&fit=crop',
+  },
+  'Parallax Video Cover': {
     'gallery-bg': 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=1920&auto=format&fit=crop',
   },
 };
