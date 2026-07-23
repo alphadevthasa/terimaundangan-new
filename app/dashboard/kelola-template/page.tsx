@@ -203,6 +203,16 @@ function KelolaTemplateContent() {
       if (templateData) {
         setTemplateDataId(templateData.id);
 
+        // Pre-populate publish state if already published
+        if (templateData.published && templateData.slug) {
+          const baseUrl = window.location.origin;
+          setPublishState(prev => ({
+            ...prev,
+            url: `${baseUrl}/${templateData.slug}`,
+            slug: templateData.slug,
+          }));
+        }
+
         // Get template name for background defaults (use local var, not state)
         const tmplName = fetchedTmplName;
         const bgDefaults = BACKGROUND_DEFAULTS[tmplName] || {};
