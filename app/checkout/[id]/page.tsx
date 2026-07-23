@@ -125,6 +125,7 @@ function CheckoutContent() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to create invoice');
+      if (data.isFree) { router.push(data.invoiceUrl); return; }
       if (data.invoiceUrl) setInvoiceUrl(data.invoiceUrl);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Payment initiation failed');

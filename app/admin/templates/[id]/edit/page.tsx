@@ -149,6 +149,8 @@ function EditTemplateContent() {
   };
 
   const saveTemplate = async () => {
+    const priceNum = parseInt(meta.price, 10);
+    if (isNaN(priceNum) || priceNum <= 0) { setSaveStatus('error'); return; }
     try {
       setSaveStatus('saving');
 

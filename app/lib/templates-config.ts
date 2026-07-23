@@ -145,7 +145,23 @@ export const ELITE_WEDDING_TEMPLATE = `<!DOCTYPE html>
     <section id="s-rsvp">
         <h2 class="italiana gold-text" style="font-size:2.5rem;" id="e-rsvp-title">RSVP</h2>
         <p style="margin-bottom:2rem;" id="e-rsvp-desc">Desc</p>
-        <div class="event-card" style="text-align:left;"><input type="text" placeholder="Your Name"><input type="number" placeholder="Number of Guests"><textarea placeholder="Message"></textarea><button class="btn" style="width:100%;">Confirm Attendance</button></div>
+        <form onsubmit="return submitRsvp(event)" class="event-card" style="text-align:left;">
+          <select name="rsvp-status" required style="width:100%;background:transparent;border:none;border-bottom:1px solid var(--line);color:var(--cream);padding:0.5rem 0;margin-bottom:1rem;font-family:'Jost';">
+            <option value="">Pilih Kehadiran</option>
+            <option value="hadir">Insya Allah Hadir</option>
+            <option value="tidak">Mohon Maaf Berhalangan</option>
+          </select>
+          <input type="text" name="rsvp-name" placeholder="Nama Lengkap" required>
+          <select name="rsvp-guests" style="width:100%;background:transparent;border:none;border-bottom:1px solid var(--line);color:var(--cream);padding:0.5rem 0;margin-bottom:1rem;font-family:'Jost';">
+            <option value="1">1 Orang</option>
+            <option value="2">2 Orang</option>
+            <option value="3">3 Orang</option>
+            <option value="4">4 Orang</option>
+            <option value="5">5 Orang</option>
+          </select>
+          <textarea name="rsvp-message" placeholder="Pesan (opsional)"></textarea>
+          <button type="submit" class="btn" style="width:100%;">Kirim Konfirmasi</button>
+        </form>
     </section>
     <section id="s-gifts">
         <h2 class="serif gold-text" style="font-size:2.5rem;">Wedding Gift</h2>
@@ -295,6 +311,9 @@ export const ELITE_WEDDING_TEMPLATE = `<!DOCTYPE html>
         <button class="lb-nav lb-next" onclick="lightboxNav(1)">&#10095;</button>
         <div class="lb-counter" id="lb-counter"></div>
     </div>
+<script>
+function submitRsvp(e){e.preventDefault();var f=e.target;var n=f.querySelector('[name="rsvp-name"]')?.value||'';var s=f.querySelector('[name="rsvp-status"]')?.value||'hadir';var g=parseInt(f.querySelector('[name="rsvp-guests"]')?.value)||1;var m=f.querySelector('[name="rsvp-message"]')?.value||'';fetch('/api/rsvp/submit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({slug:window.__TU_SLUG__,name:n,status:s,guestCount:g,message:m})}).then(function(r){return r.json()}).then(function(d){if(d.success){f.innerHTML='<div style=\"text-align:center;padding:2rem;color:var(--gold);font-size:1.1rem;\">✅ Konfirmasi terkirim! Terima kasih.</div>'}else{alert(d.error||'Gagal mengirim')}}).catch(function(){alert('Gagal mengirim konfirmasi')});return false}
+</script>
 </body>
 </html>
 `;
@@ -656,6 +675,28 @@ export const HONEY_WEDDING_TEMPLATE = `<!DOCTYPE html>
   </div>
 </section>
 
+<section id="rsvp" style="position:relative;padding:8rem 2rem;z-index:5;">
+  <div class="reveal"><div class="section-eyebrow">RSVP</div><h2 class="section-title" id="e-rsvp-title">Konfirmasi Kehadiran</h2></div>
+  <p class="reveal reveal-delay-1" style="text-align:center;max-width:500px;margin:0 auto 3rem;color:var(--muted);font-size:.9rem;line-height:1.7;" id="e-rsvp-desc">Mohon konfirmasi kehadiran</p>
+  <form onsubmit="return submitRsvp(event)" class="reveal reveal-delay-2" style="max-width:500px;margin:0 auto;">
+    <select name="rsvp-status" required style="width:100%;padding:.9rem 1rem;background:var(--bg-2);border:1px solid var(--line);color:var(--cream);border-radius:4px;font-family:'Jost';margin-bottom:1rem;">
+      <option value="">Pilih Kehadiran</option>
+      <option value="hadir">Insya Allah Hadir</option>
+      <option value="tidak">Mohon Maaf Berhalangan</option>
+    </select>
+    <input type="text" name="rsvp-name" placeholder="Nama Lengkap" required style="width:100%;padding:.9rem 1rem;background:var(--bg-2);border:1px solid var(--line);color:var(--cream);border-radius:4px;font-family:'Jost';margin-bottom:1rem;box-sizing:border-box;">
+    <select name="rsvp-guests" style="width:100%;padding:.9rem 1rem;background:var(--bg-2);border:1px solid var(--line);color:var(--cream);border-radius:4px;font-family:'Jost';margin-bottom:1rem;">
+      <option value="1">1 Orang</option>
+      <option value="2">2 Orang</option>
+      <option value="3">3 Orang</option>
+      <option value="4">4 Orang</option>
+      <option value="5">5 Orang</option>
+    </select>
+    <textarea name="rsvp-message" placeholder="Pesan (opsional)" style="width:100%;padding:.9rem 1rem;background:var(--bg-2);border:1px solid var(--line);color:var(--cream);border-radius:4px;font-family:'Jost';margin-bottom:1rem;min-height:80px;box-sizing:border-box;"></textarea>
+    <button type="submit" style="width:100%;padding:.9rem;background:var(--gold);border:none;color:var(--bg);border-radius:4px;font-family:'Jost';font-weight:500;cursor:pointer;font-size:.9rem;">Kirim Konfirmasi</button>
+  </form>
+</section>
+
 <footer class="footer">
   <div class="reveal">
     <p class="thanks">Terima Kasih</p>
@@ -876,6 +917,9 @@ export const HONEY_WEDDING_TEMPLATE = `<!DOCTYPE html>
         <button class="lb-nav lb-next" onclick="lightboxNav(1)">&#10095;</button>
         <div class="lb-counter" id="lb-counter"></div>
     </div>
+<script>
+function submitRsvp(e){e.preventDefault();var f=e.target;var n=f.querySelector('[name="rsvp-name"]')?.value||'';var s=f.querySelector('[name="rsvp-status"]')?.value||'hadir';var g=parseInt(f.querySelector('[name="rsvp-guests"]')?.value)||1;var m=f.querySelector('[name="rsvp-message"]')?.value||'';fetch('/api/rsvp/submit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({slug:window.__TU_SLUG__,name:n,status:s,guestCount:g,message:m})}).then(function(r){return r.json()}).then(function(d){if(d.success){f.innerHTML='<div style=\"text-align:center;padding:2rem;color:var(--gold);font-size:1.1rem;\">✅ Konfirmasi terkirim! Terima kasih.</div>'}else{alert(d.error||'Gagal mengirim')}}).catch(function(){alert('Gagal mengirim konfirmasi')});return false}
+</script>
 </body>
 </html>
 `;
@@ -1452,10 +1496,11 @@ export const JAVA_BATIK_TEMPLATE = `<!DOCTYPE html>
     <h2 class="section-heading">RSVP</h2>
     <div class="ornament-divider"><div class="line"></div><i class="fas fa-leaf"></i><div class="line right"></div></div>
     <div class="form-card">
-      <form id="rsvpForm">
-        <div class="form-group"><label>Nama Lengkap</label><input type="text" class="form-control" id="rsvpName" required></div>
-        <div class="form-group"><label>Kehadiran</label><select class="form-control" id="rsvpAttendance" required><option value="">Pilih Kehadiran</option><option value="hadir">Insya Allah Hadir</option><option value="tidak">Mohon Maaf Berhalangan</option></select></div>
-        <div class="form-group"><label>Jumlah Tamu</label><select class="form-control" id="rsvpGuests" required><option value="1">1 Orang</option><option value="2">2 Orang</option><option value="3">3 Orang</option></select></div>
+      <form onsubmit="return submitRsvp(event)">
+        <div class="form-group"><label>Nama Lengkap</label><input type="text" name="rsvp-name" class="form-control" required></div>
+        <div class="form-group"><label>Kehadiran</label><select name="rsvp-status" class="form-control" required><option value="">Pilih Kehadiran</option><option value="hadir">Insya Allah Hadir</option><option value="tidak">Mohon Maaf Berhalangan</option></select></div>
+        <div class="form-group"><label>Jumlah Tamu</label><select name="rsvp-guests" class="form-control" required><option value="1">1 Orang</option><option value="2">2 Orang</option><option value="3">3 Orang</option><option value="4">4 Orang</option><option value="5">5 Orang</option></select></div>
+        <div class="form-group"><textarea name="rsvp-message" class="form-control" placeholder="Pesan (opsional)" style="min-height:60px;"></textarea></div>
         <button type="submit" class="btn-gold">Kirim Konfirmasi</button>
       </form>
     </div>
@@ -1852,6 +1897,9 @@ export const JAVA_BATIK_TEMPLATE = `<!DOCTYPE html>
         <button class="lb-nav lb-next" onclick="lightboxNav(1)">&#10095;</button>
         <div class="lb-counter" id="lb-counter"></div>
     </div>
+<script>
+function submitRsvp(e){e.preventDefault();var f=e.target;var n=f.querySelector('[name="rsvp-name"]')?.value||'';var s=f.querySelector('[name="rsvp-status"]')?.value||'hadir';var g=parseInt(f.querySelector('[name="rsvp-guests"]')?.value)||1;var m=f.querySelector('[name="rsvp-message"]')?.value||'';fetch('/api/rsvp/submit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({slug:window.__TU_SLUG__,name:n,status:s,guestCount:g,message:m})}).then(function(r){return r.json()}).then(function(d){if(d.success){f.innerHTML='<div style="text-align:center;padding:2rem;color:var(--gold);font-size:1.1rem;">✅ Konfirmasi terkirim! Terima kasih.</div>'}else{alert(d.error||'Gagal mengirim')}}).catch(function(){alert('Gagal mengirim konfirmasi')});return false}
+</script>
 </body>
 </html>
 `;
@@ -2465,29 +2513,32 @@ export const FOREST_NATURE_TEMPLATE = `<!DOCTYPE html>
         <h2 class="section-title fade-in">RSVP & Wishes</h2>
         
         <div class="form-container fade-in">
-            <form onsubmit="event.preventDefault(); alert('Terima kasih, konfirmasi Anda telah terkirim!');">
+            <form onsubmit="return submitRsvp(event)">
                 <div class="input-group">
                     <label>Nama Lengkap</label>
-                    <input type="text" required placeholder="Masukkan nama Anda">
+                    <input type="text" name="rsvp-name" required placeholder="Masukkan nama Anda">
                 </div>
                 <div class="input-group">
                     <label>Konfirmasi Kehadiran</label>
-                    <select required>
+                    <select name="rsvp-status" required>
                         <option value="">Pilih status kehadiran</option>
-                        <option value="Hadir">Ya, Saya akan hadir</option>
-                        <option value="Tidak">Maaf, Saya tidak bisa hadir</option>
+                        <option value="hadir">Ya, Saya akan hadir</option>
+                        <option value="tidak">Maaf, Saya tidak bisa hadir</option>
                     </select>
                 </div>
                 <div class="input-group">
                     <label>Jumlah Tamu</label>
-                    <select required>
+                    <select name="rsvp-guests" required>
                         <option value="1">1 Orang</option>
                         <option value="2">2 Orang</option>
+                        <option value="3">3 Orang</option>
+                        <option value="4">4 Orang</option>
+                        <option value="5">5 Orang</option>
                     </select>
                 </div>
                 <div class="input-group">
                     <label>Pesan & Doa</label>
-                    <textarea rows="4" required placeholder="Tulis doa untuk kedua mempelai"></textarea>
+                    <textarea name="rsvp-message" rows="4" placeholder="Tulis doa untuk kedua mempelai"></textarea>
                 </div>
                 <button type="submit" class="btn" style="width: 100%;">Kirim RSVP & Doa</button>
             </form>
@@ -2719,8 +2770,11 @@ export const FOREST_NATURE_TEMPLATE = `<!DOCTYPE html>
         <button class="lb-nav lb-prev" onclick="lightboxNav(-1)">&#10094;</button>
         <img id="lb-image" src="" alt="Gallery preview" />
         <button class="lb-nav lb-next" onclick="lightboxNav(1)">&#10095;</button>
-        <div class="lb-counter" id="lb-counter"></div>
+        <div class="lb-counter" id="lb-counter">        </div>
     </div>
+<script>
+function submitRsvp(e){e.preventDefault();var f=e.target;var n=f.querySelector('[name="rsvp-name"]')?.value||'';var s=f.querySelector('[name="rsvp-status"]')?.value||'hadir';var g=parseInt(f.querySelector('[name="rsvp-guests"]')?.value)||1;var m=f.querySelector('[name="rsvp-message"]')?.value||'';fetch('/api/rsvp/submit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({slug:window.__TU_SLUG__,name:n,status:s,guestCount:g,message:m})}).then(function(r){return r.json()}).then(function(d){if(d.success){f.innerHTML='<div style="text-align:center;padding:2rem;color:var(--gold);font-size:1.1rem;">✅ Konfirmasi terkirim! Terima kasih.</div>'}else{alert(d.error||'Gagal mengirim')}}).catch(function(){alert('Gagal mengirim konfirmasi')});return false}
+</script>
 </body>
 </html>
 `;
@@ -3297,20 +3351,21 @@ export const WEST_SUMATRA_TEMPLATE = `<!DOCTYPE html>
 <section class="base-section solid-section reveal" id="rsvp">
   <div class="solid-pattern pattern-songket-1"></div>
   <div class="ornate-frame-solid"></div>
-  <svg class="corner-ornament tl" viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M0 0 L50 0 L50 3 L3 3 L3 50 L0 50 Z" fill="none"/><path d="M10 0 C 15 15, 5 20, 15 35" /><path d="M25 0 C 30 10, 22 15, 30 25" /><circle cx="15" cy="35" r="2" fill="currentColor"/></svg>
-  <svg class="corner-ornament tr" viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M0 0 L50 0 L50 3 L3 3 L3 50 L0 50 Z" fill="none"/><path d="M10 0 C 15 15, 5 20, 15 35" /><path d="M25 0 C 30 10, 22 15, 30 25" /><circle cx="15" cy="35" r="2" fill="currentColor"/></svg>
-  <svg class="corner-ornament bl" viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M0 0 L50 0 L50 3 L3 3 L3 50 L0 50 Z" fill="none"/><path d="M10 0 C 15 15, 5 20, 15 35" /><path d="M25 0 C 30 10, 22 15, 30 25" /><circle cx="15" cy="35" r="2" fill="currentColor"/></svg>
-  <svg class="corner-ornament br" viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M0 0 L50 0 L50 3 L3 3 L3 50 L0 50 Z" fill="none"/><path d="M10 0 C 15 15, 5 20, 15 35" /><path d="M25 0 C 30 10, 22 15, 30 25" /><circle cx="15" cy="35" r="2" fill="currentColor"/></svg>
+  <svg class="corner-ornament tl" viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M0 0 L40 0 L40 2 L2 2 L2 40 L0 40 Z" /><path d="M8 8 L32 8 M8 8 L8 32" stroke-width="0.8" /><circle cx="8" cy="8" r="3" /><path d="M15 15 Q25 15 25 25 Q25 15 35 15" stroke-width="0.6" opacity="0.5" /></svg>
+  <svg class="corner-ornament tr" viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M0 0 L40 0 L40 2 L2 2 L2 40 L0 40 Z" /><path d="M8 8 L32 8 M8 8 L8 32" stroke-width="0.8" /><circle cx="8" cy="8" r="3" /><path d="M15 15 Q25 15 25 25 Q25 15 35 15" stroke-width="0.6" opacity="0.5" /></svg>
+  <svg class="corner-ornament bl" viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M0 0 L40 0 L40 2 L2 2 L2 40 L0 40 Z" /><path d="M8 8 L32 8 M8 8 L8 32" stroke-width="0.8" /><circle cx="8" cy="8" r="3" /><path d="M15 15 Q25 15 25 25 Q25 15 35 15" stroke-width="0.6" opacity="0.5" /></svg>
+  <svg class="corner-ornament br" viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M0 0 L40 0 L40 2 L2 2 L2 40 L0 40 Z" /><path d="M8 8 L32 8 M8 8 L8 32" stroke-width="0.8" /><circle cx="8" cy="8" r="3" /><path d="M15 15 Q25 15 25 25 Q25 15 35 15" stroke-width="0.6" opacity="0.5" /></svg>
 
   <div class="solid-content">
     <div class="section-title">Konfirmasi Kehadiran</div>
     <h2 class="section-heading">RSVP</h2>
     <div class="ornament-divider"><div class="line"></div><i class="fas fa-leaf"></i><div class="line right"></div></div>
     <div class="form-card">
-      <form id="rsvpForm">
-        <div class="form-group"><label>Nama Lengkap</label><input type="text" class="form-control" id="rsvpName" required></div>
-        <div class="form-group"><label>Kehadiran</label><select class="form-control" id="rsvpAttendance" required><option value="">Pilih Kehadiran</option><option value="hadir">Insya Allah Hadir</option><option value="tidak">Mohon Maaf Berhalangan</option></select></div>
-        <div class="form-group"><label>Jumlah Tamu</label><select class="form-control" id="rsvpGuests" required><option value="1">1 Orang</option><option value="2">2 Orang</option><option value="3">3 Orang</option></select></div>
+      <form onsubmit="return submitRsvp(event)">
+        <div class="form-group"><label>Nama Lengkap</label><input type="text" name="rsvp-name" class="form-control" required></div>
+        <div class="form-group"><label>Kehadiran</label><select name="rsvp-status" class="form-control" required><option value="">Pilih Kehadiran</option><option value="hadir">Insya Allah Hadir</option><option value="tidak">Mohon Maaf Berhalangan</option></select></div>
+        <div class="form-group"><label>Jumlah Tamu</label><select name="rsvp-guests" class="form-control" required><option value="1">1 Orang</option><option value="2">2 Orang</option><option value="3">3 Orang</option><option value="4">4 Orang</option><option value="5">5 Orang</option></select></div>
+        <div class="form-group"><textarea name="rsvp-message" class="form-control" placeholder="Pesan (opsional)" style="min-height:60px;"></textarea></div>
         <button type="submit" class="btn-gold">Kirim Konfirmasi</button>
       </form>
     </div>
@@ -3689,6 +3744,9 @@ export const WEST_SUMATRA_TEMPLATE = `<!DOCTYPE html>
         <button class="lb-nav lb-next" onclick="lightboxNav(1)">&#10095;</button>
         <div class="lb-counter" id="lb-counter"></div>
     </div>
+<script>
+function submitRsvp(e){e.preventDefault();var f=e.target;var n=f.querySelector('[name="rsvp-name"]')?.value||'';var s=f.querySelector('[name="rsvp-status"]')?.value||'hadir';var g=parseInt(f.querySelector('[name="rsvp-guests"]')?.value)||1;var m=f.querySelector('[name="rsvp-message"]')?.value||'';fetch('/api/rsvp/submit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({slug:window.__TU_SLUG__,name:n,status:s,guestCount:g,message:m})}).then(function(r){return r.json()}).then(function(d){if(d.success){f.innerHTML='<div style="text-align:center;padding:2rem;color:var(--gold);font-size:1.1rem;">✅ Konfirmasi terkirim! Terima kasih.</div>'}else{alert(d.error||'Gagal mengirim')}}).catch(function(){alert('Gagal mengirim konfirmasi')});return false}
+</script>
 </body>
 </html>
 `;

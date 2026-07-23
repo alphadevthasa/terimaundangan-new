@@ -69,6 +69,8 @@ export default function CreateTemplate() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    const priceNum = parseInt(form.price, 10);
+    if (isNaN(priceNum) || priceNum <= 0) { setError('Price must be greater than 0'); return; }
     try {
       const res = await fetch('/api/admin/templates', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },

@@ -34,7 +34,7 @@ export async function PUT(
       ...(body.type !== undefined && { type: body.type }),
       ...(body.theme !== undefined && { theme: body.theme }),
       ...(body.thumbnail !== undefined && { thumbnail: body.thumbnail }),
-      ...(body.price !== undefined && { price: parseInt(body.price) || 0 }),
+      ...(body.price !== undefined && (() => { const p = parseInt(body.price, 10); if (isNaN(p) || p <= 0) throw new Error('Price must be greater than 0'); return { price: p }; })()),
       ...(body.isPopular !== undefined && { isPopular: body.isPopular }),
       ...(body.isPublished !== undefined && { isPublished: body.isPublished }),
       ...(body.html !== undefined && { html: body.html }),

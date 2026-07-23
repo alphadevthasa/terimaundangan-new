@@ -152,15 +152,19 @@ export function bakeDataIntoHtml(
  */
 export function generatePublishedHtml(
   templateHtml: string,
-  fieldMap: Record<string, string>
+  fieldMap: Record<string, string>,
+  slug?: string
 ): string {
   // Bake data into the template HTML
   let html = bakeDataIntoHtml(templateHtml, fieldMap);
 
-  // Note: postMessage listeners are kept as-is.
-  // They're harmless on a static page (no editor sends postMessage to published page)
-  // and removing them via regex is dangerous because they share <script> blocks
-  // with critical functionality (countdown, lightbox, audio).
+  // Inject slug for RSVP form submissions
+  if (slug) {
+    html = html.replace(
+      '</head>',
+      `<script>window.__TU_SLUG__="${slug}"</script>\n</head>`
+    );
+  }
 
   // Ensure DOCTYPE is present
   if (!html.trim().startsWith('<!DOCTYPE')) {

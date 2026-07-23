@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
         category: catSlug,
         categoryId: categoryRecord?.id ?? null,
         thumbnail: body.thumbnail ?? '',
-        price: body.price || 'Free',
+        price: (() => { const p = parseInt(body.price, 10); if (isNaN(p) || p <= 0) throw new Error('Price must be greater than 0'); return p; })(),
         isPopular: body.isPopular ?? false,
         isPublished: body.isPublished ?? true,
         html: body.html ?? '',

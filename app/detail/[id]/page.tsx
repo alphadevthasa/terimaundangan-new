@@ -36,6 +36,7 @@ function CheckoutContent() {
   const [previewMode, setPreviewMode] = useState<'mobile' | 'desktop'>('desktop');
   const [scrolled, setScrolled] = useState(false);
   const [featuresOpen, setFeaturesOpen] = useState(false);
+  const [owned, setOwned] = useState(false);
   const [previewActive, setPreviewActive] = useState(false);
 
   useEffect(() => {
@@ -68,6 +69,25 @@ function CheckoutContent() {
     }
   };
 
+  // Check if user already owns this template
+  useEffect(() => {
+    if (!template) return;
+    let cancelled = false;
+    (async () => {
+      const sessionRes = await fetch('/api/auth/session', { credentials: 'include' });
+      if (cancelled || !sessionRes.ok) return;
+      const sessionData = await sessionRes.json();
+      const email = sessionData.session?.email;
+      if (!email) return;
+      const custRes = await fetch(`/api/customer?email=${encodeURIComponent(email)}`);
+      if (cancelled || !custRes.ok) return;
+      const custData = await custRes.json();
+      const hasIt = custData.customer?.templateData?.some((td: any) => td.templateId === template.id);
+      if (!cancelled && hasIt) setOwned(true);
+    })();
+    return () => { cancelled = true; };
+  }, [template]);
+
   // Broadcast demo data to both iframes - use template-specific demo data
   const broadcastToIframes = useCallback(() => {
     const config = template ? (TEMPLATE_CONFIGS[template.name] || DEFAULT_TEMPLATE_CONFIG) : DEFAULT_TEMPLATE_CONFIG;
@@ -86,6 +106,7 @@ function CheckoutContent() {
 
   const handleProceedToCheckout = () => {
     if (!template) return;
+    if (owned) { router.push(`/dashboard/kelola-template?id=${template.id}`); return; }
     router.push(`/checkout/${template.id}`);
   };
 
@@ -279,16 +300,18 @@ function CheckoutContent() {
                   </div>
                 )}
                 <button onClick={handleProceedToCheckout} style={{
-                  width: '100%', padding: '.85rem 2rem', background: 'linear-gradient(135deg,#c9a961,#b8942e)',
-                  border: 'none', color: '#0a0807', borderRadius: '6px',
+                  width: '100%', padding: '.85rem 2rem', background: owned ? 'transparent' : 'linear-gradient(135deg,#c9a961,#b8942e)',
+                  border: owned ? '1px solid #c9a961' : 'none', color: owned ? '#c9a961' : '#0a0807', borderRadius: '6px',
                   fontSize: '.9rem', fontWeight: 500, cursor: 'pointer',
                   transition: 'all .2s', whiteSpace: 'nowrap',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '.5rem',
                 }}
-                  onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(201,169,97,.3)'; }}
+                  onMouseEnter={(e) => { if (!owned) { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(201,169,97,.3)'; } }}
                   onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}
                 >
-                  Proceed to Checkout
+                  {owned ? (
+                    <><i className="fas fa-arrow-right"></i> Buka Template di Dashboard</>
+                  ) : 'Proceed to Checkout'}
                 </button>
               </div>
             </section>
@@ -403,16 +426,18 @@ function CheckoutContent() {
               </div>
             )}
               <button onClick={handleProceedToCheckout} style={{
-              width: '100%', padding: isMobile ? '.85rem 2rem' : '.95rem 2rem', background: 'linear-gradient(135deg,#c9a961,#b8942e)',
-              border: 'none', color: '#0a0807', borderRadius: '6px',
+              width: '100%', padding: isMobile ? '.85rem 2rem' : '.95rem 2rem', background: owned ? 'transparent' : 'linear-gradient(135deg,#c9a961,#b8942e)',
+              border: owned ? '1px solid #c9a961' : 'none', color: owned ? '#c9a961' : '#0a0807', borderRadius: '6px',
               fontSize: isMobile ? '.9rem' : '1rem', fontWeight: 500, cursor: 'pointer',
               transition: 'all .2s', whiteSpace: 'nowrap',
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '.5rem',
             }}
-              onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(201,169,97,.3)'; }}
+              onMouseEnter={(e) => { if (!owned) { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(201,169,97,.3)'; } }}
               onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}
             >
-              Proceed to Checkout
+              {owned ? (
+                <><i className="fas fa-arrow-right"></i> Buka Template di Dashboard</>
+              ) : 'Proceed to Checkout'}
             </button>
           </div>
             </div>

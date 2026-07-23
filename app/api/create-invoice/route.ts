@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         success: true,
         isFree: true,
-        invoiceUrl: '/dashboard',
+        invoiceUrl: `/dashboard/kelola-template?id=${templateId}`,
         message: 'Template is free! Redirecting to dashboard...',
       });
     }

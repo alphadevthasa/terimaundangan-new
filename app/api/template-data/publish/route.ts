@@ -88,7 +88,7 @@ export async function PATCH(request: NextRequest) {
 
         if (templateHtml) {
           const fieldMap = buildFieldMap(td, templateConfig);
-          const bakedHtml = generatePublishedHtml(templateHtml, fieldMap);
+          const bakedHtml = generatePublishedHtml(templateHtml, fieldMap, slug);
           savePublishedHtml(slug, bakedHtml);
         }
       } catch (genError) {
