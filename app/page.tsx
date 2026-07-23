@@ -53,6 +53,8 @@ export default function HomePage() {
   const [templates, setTemplates] = useState<StaticTemplate[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [scrolled, setScrolled] = useState(false);
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [activeTheme, setActiveTheme] = useState<string>('all');
   const isMobile = useMediaQuery('(max-width: 767px)');
 
   useEffect(() => {
@@ -89,6 +91,22 @@ export default function HomePage() {
     const labelB = CATEGORY_LABEL[b] || b;
     return labelA.localeCompare(labelB);
   });
+
+  useEffect(() => {
+    if (!activeCategory && sortedCategories.length > 0) {
+      setActiveCategory(sortedCategories[0]);
+    }
+  }, [sortedCategories]);
+
+  const activeThemes = activeCategory ? Object.keys(grouped[activeCategory] || {}) : [];
+  const activeTemplates = activeCategory && grouped[activeCategory] && activeTheme !== 'all'
+    ? grouped[activeCategory][activeTheme] || []
+    : activeCategory
+      ? (grouped[activeCategory]['all'] || Object.values(grouped[activeCategory] || {}).flat())
+      : [];
+
+  const showCategoryTabs = sortedCategories.length > 1;
+  const showThemeTabs = activeThemes.length > 1;
 
   return (
     <div style={{
@@ -193,147 +211,185 @@ export default function HomePage() {
               </p>
             </div>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
-              {sortedCategories.map((category) => {
-                const categoryLabel = CATEGORY_LABEL[category] || category;
-                const themes = grouped[category];
-                const sortedThemeKeys = Object.keys(themes).sort((a, b) => {
-                  const labelA = THEME_LABEL[a] || a;
-                  const labelB = THEME_LABEL[b] || b;
-                  return labelA.localeCompare(labelB);
-                });
+            <div>
+              {/* Category tabs */}
+              {showCategoryTabs && (
+                <div style={{ display: 'flex', gap: '.5rem', marginBottom: '1.25rem', flexWrap: 'wrap' }}>
+                  {sortedCategories.map((category) => {
+                    const label = CATEGORY_LABEL[category] || category;
+                    const isActive = activeCategory === category;
+                    return (
+                      <button key={category} onClick={() => { setActiveCategory(category); setActiveTheme('all'); }}
+                        style={{
+                          padding: '.45rem 1rem', borderRadius: '100px', border: '1px solid ' + (isActive ? 'rgba(201,169,97,.4)' : 'rgba(201,169,97,.15)'),
+                          background: isActive ? 'rgba(201,169,97,.12)' : 'transparent',
+                          color: isActive ? '#c9a961' : 'rgba(245,236,217,.6)',
+                          fontSize: '.8rem', cursor: 'pointer', transition: 'all .2s',
+                          fontFamily: "'Jost', sans-serif", letterSpacing: '.04em',
+                        }}
+                      >
+                        {label}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
 
-                return (
-                  <div key={category}>
-                    <div style={{ marginBottom: '1.25rem' }}>
-                      <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 'clamp(1.25rem,2.5vw,1.6rem)', color: '#f5ecd9', fontStyle: 'italic', margin: '0 0 .25rem' }}>
-                        {categoryLabel}
-                      </h3>
-                      <div style={{ width: '40px', height: '2px', background: 'linear-gradient(90deg, rgba(201,169,97,.35), transparent)' }} />
-                    </div>
+              {/* Active category title */}
+              {activeCategory && (
+                <div style={{ marginBottom: '1rem' }}>
+                  <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 'clamp(1.25rem,2.5vw,1.6rem)', color: '#f5ecd9', fontStyle: 'italic', margin: '0 0 .25rem' }}>
+                    {CATEGORY_LABEL[activeCategory] || activeCategory}
+                  </h3>
+                  <div style={{ width: '40px', height: '2px', background: 'linear-gradient(90deg, rgba(201,169,97,.35), transparent)' }} />
+                </div>
+              )}
 
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                      {sortedThemeKeys.map((theme) => {
-                        const themeLabel = THEME_LABEL[theme] || theme;
-                        const items = themes[theme];
+              {/* Theme tabs */}
+              {showThemeTabs && activeCategory && (
+                <div style={{
+                  display: 'flex', gap: '.5rem', marginBottom: '1.25rem', overflowX: 'auto',
+                  paddingBottom: '.25rem',
+                }}
+                className="hide-scrollbar"
+                >
+                  <button onClick={() => setActiveTheme('all')}
+                    style={{
+                      padding: '.4rem .9rem', borderRadius: '100px', border: '1px solid ' + (activeTheme === 'all' ? 'rgba(201,169,97,.4)' : 'rgba(201,169,97,.15)'),
+                      background: activeTheme === 'all' ? 'rgba(201,169,97,.12)' : 'transparent',
+                      color: activeTheme === 'all' ? '#c9a961' : 'rgba(245,236,217,.6)',
+                      fontSize: '.78rem', cursor: 'pointer', transition: 'all .2s', whiteSpace: 'nowrap',
+                      fontFamily: "'Jost', sans-serif", letterSpacing: '.04em',
+                    }}
+                  >
+                    All
+                  </button>
+                  {activeThemes.map((theme) => {
+                    const label = THEME_LABEL[theme] || theme;
+                    const isActive = activeTheme === theme;
+                    return (
+                      <button key={theme} onClick={() => setActiveTheme(theme)}
+                        style={{
+                          padding: '.4rem .9rem', borderRadius: '100px', border: '1px solid ' + (isActive ? 'rgba(201,169,97,.4)' : 'rgba(201,169,97,.15)'),
+                          background: isActive ? 'rgba(201,169,97,.12)' : 'transparent',
+                          color: isActive ? '#c9a961' : 'rgba(245,236,217,.6)',
+                          fontSize: '.78rem', cursor: 'pointer', transition: 'all .2s', whiteSpace: 'nowrap',
+                          fontFamily: "'Jost', sans-serif", letterSpacing: '.04em',
+                        }}
+                      >
+                        {label}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
 
-                        return (
-                          <div key={theme}>
-                            <div style={{ marginBottom: '.75rem', paddingLeft: '.25rem' }}>
-                              <span style={{ fontSize: '.75rem', textTransform: 'uppercase', letterSpacing: '.12em', color: 'rgba(245,236,217,.45)', fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic' }}>
-                                {themeLabel}
-                              </span>
-                              <span style={{ marginLeft: '.5rem', fontSize: '.7rem', color: 'rgba(245,236,217,.25)' }}>
-                                {items.length}
-                              </span>
-                            </div>
-
-                            <div className="template-grid">
-                              {items.map((template, index) => (
-                                <div key={template.id}
-                                  style={{
-                                    background: '#14110d', border: '1px solid rgba(201,169,97,.1)',
-                                    borderRadius: '12px', overflow: 'hidden',
-                                    transition: 'all .4s cubic-bezier(.23,1,.32,1)', cursor: 'pointer',
-                                    animation: 'fadeUp .5s ease-out backwards',
-                                    animationDelay: `${index * 0.08}s`,
-                                    display: 'flex', flexDirection: 'column',
-                                  }}
-                                  onClick={() => router.push(`/detail/${template.id}`)}
-                                  onMouseEnter={(e) => {
-                                    e.currentTarget.style.borderColor = 'rgba(201,169,97,.35)';
-                                    e.currentTarget.style.transform = 'translateY(-4px)';
-                                    e.currentTarget.style.boxShadow = '0 16px 48px rgba(0,0,0,.4), 0 0 0 1px rgba(201,169,97,.08)';
-                                  }}
-                                  onMouseLeave={(e) => {
-                                    e.currentTarget.style.borderColor = 'rgba(201,169,97,.1)';
-                                    e.currentTarget.style.transform = 'translateY(0)';
-                                    e.currentTarget.style.boxShadow = 'none';
-                                  }}
-                                >
-                                  {/* Cover / Thumbnail */}
-                                  <div style={{
-                                    height: '200px', position: 'relative', overflow: 'hidden',
-                                    background: template.thumbnail ? 'none' : 'linear-gradient(135deg, #0a0807 0%, #1a1611 50%, #0a0807 100%)',
-                                  }}>
-                                    {template.thumbnail ? (
-                                      <img src={template.thumbnail} alt={template.name}
-                                        style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform .4s' }}
-                                        onMouseEnter={(e) => { if (e.currentTarget.tagName === 'IMG') e.currentTarget.style.transform = 'scale(1.05)'; }}
-                                        onMouseLeave={(e) => { if (e.currentTarget.tagName === 'IMG') e.currentTarget.style.transform = 'scale(1)'; }}
-                                        onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
-                                      />
-                                    ) : (
-                                       <div style={{ fontSize: '3.5rem', opacity: .6, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', fontFamily: "'Italiana', serif", color: '#c9a961' }}>
-                                        {template.name.charAt(0).toUpperCase()}
-                                      </div>
-                                    )}
-                                    {/* Price badge */}
-                                    <div style={{
-                                      position: 'absolute', top: '.75rem', right: '.75rem',
-                                      padding: '.25rem .7rem', borderRadius: '100px',
-                                      background: 'rgba(10,8,7,.7)', backdropFilter: 'blur(8px)',
-                                      border: '1px solid rgba(201,169,97,.2)', color: '#c9a961',
-                                      fontSize: isMobile ? '.7rem' : '.75rem', fontWeight: 500, letterSpacing: '.05em',
-                                    }}>
-                                      Rp 150.000
-                                    </div>
-                                    {template.isPopular && (
-                                      <div style={{
-                                        position: 'absolute', top: '.75rem', left: '.75rem',
-                                        padding: '.25rem .6rem', borderRadius: '100px',
-                                        background: 'rgba(201,169,97,.15)', backdropFilter: 'blur(8px)',
-                                        border: '1px solid rgba(201,169,97,.3)', color: '#c9a961',
-                                        fontSize: '.65rem', textTransform: 'uppercase', letterSpacing: '.08em',
-                                      }}>
-                                         Popular
-                                      </div>
-                                    )}
-                                  </div>
-
-                                  {/* Info */}
-                                  <div style={{ padding: '1.25rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '.5rem', marginBottom: '.35rem' }}>
-                                      <span style={{ fontSize: isMobile ? '.7rem' : '.75rem', textTransform: 'uppercase', letterSpacing: '.08em', color: 'rgba(245,236,217,.35)', fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic' }}>
-                                        {template.type}
-                                      </span>
-                                    </div>
-                                    <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: isMobile ? '1.25rem' : '1.35rem', color: '#c9a961', margin: '0 0 .35rem', fontStyle: 'italic', lineHeight: 1.2 }}>
-                                      {template.name}
-                                    </h3>
-                                    <p style={{
-                                      fontSize: isMobile ? '.8rem' : '.85rem', color: isMobile ? 'rgba(245,236,217,.55)' : 'rgba(245,236,217,.65)',
-                                      lineHeight: 1.5, margin: '0 0 1rem', flex: 1,
-                                      display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
-                                    }}>
-                                      {template.description || 'No description'}
-                                    </p>
-
-                                    <button
-                                      style={{
-                                        width: '100%', padding: isMobile ? '.6rem' : '.7rem', marginTop: 'auto',
-                                        background: 'linear-gradient(135deg,#c9a961,#b8942e)',
-                                        border: 'none', color: '#0a0807', borderRadius: '6px',
-                                        fontSize: isMobile ? '.78rem' : '.85rem', fontWeight: 500, cursor: 'pointer',
-                                        transition: 'all .2s', letterSpacing: '.03em',
-                                      }}
-                                      onClick={(e) => { e.stopPropagation(); router.push(`/detail/${template.id}`); }}
-                                      onMouseEnter={(e) => { e.currentTarget.style.opacity = '.9'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
-                                      onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'translateY(0)'; }}
-                                    >
-                                       Pilih Template Ini
-                                    </button>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
+              {/* Template grid */}
+              {activeTemplates.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '3rem 2rem', background: '#14110d', border: '1px solid rgba(201,169,97,.1)', borderRadius: '12px' }}>
+                  <p style={{ color: 'rgba(245,236,217,.4)', fontSize: '.9rem' }}>No templates found for this theme.</p>
+                </div>
+              ) : (
+                <div className="template-grid">
+                  {activeTemplates.map((template, index) => (
+                    <div key={template.id}
+                      style={{
+                        background: '#14110d', border: '1px solid rgba(201,169,97,.1)',
+                        borderRadius: '12px', overflow: 'hidden',
+                        transition: 'all .4s cubic-bezier(.23,1,.32,1)', cursor: 'pointer',
+                        animation: 'fadeUp .5s ease-out backwards',
+                        animationDelay: `${index * 0.08}s`,
+                        display: 'flex', flexDirection: 'column',
+                      }}
+                      onClick={() => router.push(`/detail/${template.id}`)}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.borderColor = 'rgba(201,169,97,.35)';
+                        e.currentTarget.style.transform = 'translateY(-4px)';
+                        e.currentTarget.style.boxShadow = '0 16px 48px rgba(0,0,0,.4), 0 0 0 1px rgba(201,169,97,.08)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.borderColor = 'rgba(201,169,97,.1)';
+                        e.currentTarget.style.transform = 'translateY(0)';
+                        e.currentTarget.style.boxShadow = 'none';
+                      }}
+                    >
+                      {/* Cover / Thumbnail */}
+                      <div style={{
+                        height: '200px', position: 'relative', overflow: 'hidden',
+                        background: template.thumbnail ? 'none' : 'linear-gradient(135deg, #0a0807 0%, #1a1611 50%, #0a0807 100%)',
+                      }}>
+                        {template.thumbnail ? (
+                          <img src={template.thumbnail} alt={template.name}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform .4s' }}
+                            onMouseEnter={(e) => { if (e.currentTarget.tagName === 'IMG') e.currentTarget.style.transform = 'scale(1.05)'; }}
+                            onMouseLeave={(e) => { if (e.currentTarget.tagName === 'IMG') e.currentTarget.style.transform = 'scale(1)'; }}
+                            onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                          />
+                        ) : (
+                           <div style={{ fontSize: '3.5rem', opacity: .6, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', fontFamily: "'Italiana', serif", color: '#c9a961' }}>
+                            {template.name.charAt(0).toUpperCase()}
                           </div>
-                        );
-                      })}
+                        )}
+                        {/* Price badge */}
+                        <div style={{
+                          position: 'absolute', top: '.75rem', right: '.75rem',
+                          padding: '.25rem .7rem', borderRadius: '100px',
+                          background: 'rgba(10,8,7,.7)', backdropFilter: 'blur(8px)',
+                          border: '1px solid rgba(201,169,97,.2)', color: '#c9a961',
+                          fontSize: isMobile ? '.7rem' : '.75rem', fontWeight: 500, letterSpacing: '.05em',
+                        }}>
+                          Rp 150.000
+                        </div>
+                        {template.isPopular && (
+                          <div style={{
+                            position: 'absolute', top: '.75rem', left: '.75rem',
+                            padding: '.25rem .6rem', borderRadius: '100px',
+                            background: 'rgba(201,169,97,.15)', backdropFilter: 'blur(8px)',
+                            border: '1px solid rgba(201,169,97,.3)', color: '#c9a961',
+                            fontSize: '.65rem', textTransform: 'uppercase', letterSpacing: '.08em',
+                          }}>
+                             Popular
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Info */}
+                      <div style={{ padding: '1.25rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '.5rem', marginBottom: '.35rem' }}>
+                          <span style={{ fontSize: isMobile ? '.7rem' : '.75rem', textTransform: 'uppercase', letterSpacing: '.08em', color: 'rgba(245,236,217,.35)', fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic' }}>
+                            {template.type}
+                          </span>
+                        </div>
+                        <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: isMobile ? '1.25rem' : '1.35rem', color: '#c9a961', margin: '0 0 .35rem', fontStyle: 'italic', lineHeight: 1.2 }}>
+                          {template.name}
+                        </h3>
+                        <p style={{
+                          fontSize: isMobile ? '.8rem' : '.85rem', color: isMobile ? 'rgba(245,236,217,.55)' : 'rgba(245,236,217,.65)',
+                          lineHeight: 1.5, margin: '0 0 1rem', flex: 1,
+                          display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
+                        }}>
+                          {template.description || 'No description'}
+                        </p>
+
+                        <button
+                          style={{
+                            width: '100%', padding: isMobile ? '.6rem' : '.7rem', marginTop: 'auto',
+                            background: 'linear-gradient(135deg,#c9a961,#b8942e)',
+                            border: 'none', color: '#0a0807', borderRadius: '6px',
+                            fontSize: isMobile ? '.78rem' : '.85rem', fontWeight: 500, cursor: 'pointer',
+                            transition: 'all .2s', letterSpacing: '.03em',
+                          }}
+                          onClick={(e) => { e.stopPropagation(); router.push(`/detail/${template.id}`); }}
+                          onMouseEnter={(e) => { e.currentTarget.style.opacity = '.9'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'translateY(0)'; }}
+                        >
+                           Pilih Template Ini
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </div>
