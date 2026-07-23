@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { TEMPLATE_CONFIGS, DEFAULT_TEMPLATE_CONFIG } from '@/app/lib/templates-config';
 
+const v = (d: Record<string, string>, camel: string, kebab: string) => d[camel] || d[kebab];
+
 export async function GET(
   _request: Request,
   { params }: { params: { id: string } }
@@ -15,22 +17,44 @@ export async function GET(
     let d = config.demoData;
     try { const parsed = JSON.parse(template.defaultData); if (Object.keys(parsed).length) d = parsed; } catch {}
 
-    // Inject demo data into cover placeholders server-side
     const coverReplacements: Record<string, string> = {};
+
+    const brideName = v(d, 'brideName', 'bride-nick');
+    const groomName = v(d, 'groomName', 'groom-nick');
+    const heroDate = v(d, 'heroDate', 'date-text');
+
+    // Elite Wedding (kebab-case, e- prefix)
     if (d['bride-nick']) coverReplacements['id="e-bride-nick">Bride'] = `id="e-bride-nick">${d['bride-nick']}`;
     if (d['groom-nick']) coverReplacements['id="e-groom-nick">Groom'] = `id="e-groom-nick">${d['groom-nick']}`;
     if (d['date-text']) coverReplacements['id="e-date-text">Date'] = `id="e-date-text">${d['date-text']}`;
-    if (d.brideName) coverReplacements['id="bride-nick">Bride'] = `id="bride-nick">${d.brideName}`;
-    if (d.groomName) coverReplacements['id="groom-nick">Groom'] = `id="groom-nick">${d.groomName}`;
-    if (d.heroDate) coverReplacements['id="date-text">Saturday, October 24 2026'] = `id="date-text">${d.heroDate}`;
-    if (d.brideName) coverReplacements['id="e-bride-name">Elena'] = `id="e-bride-name">${d.brideName}`;
-    if (d.groomName) coverReplacements['id="e-groom-name">Arthur'] = `id="e-groom-name">${d.groomName}`;
+
+    // Honey Wedding (camelCase, e- prefix)
+    if (brideName) coverReplacements['id="e-bride-name">Sienna'] = `id="e-bride-name">${brideName}`;
+    if (groomName) coverReplacements['id="e-groom-name">Arka'] = `id="e-groom-name">${groomName}`;
+    if (heroDate) coverReplacements['id="e-hero-date">20 . 12 . 2025'] = `id="e-hero-date">${heroDate}`;
+
+    // Forest Nature (camelCase, no date in cover)
+    if (brideName) coverReplacements['id="e-bride-name">Elena'] = `id="e-bride-name">${brideName}`;
+    if (groomName) coverReplacements['id="e-groom-name">Arthur'] = `id="e-groom-name">${groomName}`;
+
+    // Java Batik (camelCase, e- prefix)
+    if (brideName) coverReplacements['id="e-bride-name">Sekarwangi'] = `id="e-bride-name">${brideName}`;
+    if (groomName) coverReplacements['id="e-groom-name">Baskoro'] = `id="e-groom-name">${groomName}`;
+    if (heroDate) coverReplacements['id="e-hero-date">Sabtu, 20 Desember 2025'] = `id="e-hero-date">${heroDate}`;
+
+    // West Sumatra (no id attributes — text-based fallback)
+    if (v(d, 'heroDate', 'hero-date')) coverReplacements['>Sabtu, 20 Desember 2025<'] = `>${v(d, 'heroDate', 'hero-date')}<`;
+
+    // Parallax Video Cover (kebab-case, e-groom-nick / e-bride-nick / e-date-text)
+    if (d['bride-nick']) coverReplacements['id="e-bride-nick">Amanda'] = `id="e-bride-nick">${d['bride-nick']}`;
+    if (d['groom-nick']) coverReplacements['id="e-groom-nick">Rizky'] = `id="e-groom-nick">${d['groom-nick']}`;
+    if (d['date-text']) coverReplacements['id="e-date-text">12 . 12 . 2026'] = `id="e-date-text">${d['date-text']}`;
 
     for (const [key, value] of Object.entries(coverReplacements)) {
       html = html.replace(key, value);
     }
 
-    // Also inject via postMessage for the sections below the fold
+    // Inject via postMessage for sections below the fold
     const demoData = JSON.stringify(d);
     const injectScript = `
 <script>

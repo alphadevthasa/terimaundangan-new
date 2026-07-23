@@ -5,6 +5,28 @@ import { useRouter, useParams } from 'next/navigation';
 import { TEMPLATE_CONFIGS, DEFAULT_TEMPLATE_CONFIG } from '@/app/lib/templates-config';
 import { getTemplateSections, BACKGROUND_DEFAULTS, kebabToCamel } from '@/app/lib/editor-sections';
 
+interface Feature { icon: string; label: string; }
+
+const formatPrice = (v: string) => { const n = parseInt(v.replace(/\D/g, ''), 10); return isNaN(n) ? '' : n.toLocaleString('id-ID'); };
+
+const SECTION_ICONS: Record<string, string> = {
+  cover: 'fas fa-image', countdown: 'fas fa-clock', 'the-couple': 'fas fa-heart',
+  'the-groom': 'fas fa-user', 'the-bride': 'fas fa-user', verse: 'fas fa-book',
+  'love-story': 'fas fa-scroll', events: 'fas fa-calendar-check', gallery: 'fas fa-camera',
+  rsvp: 'fas fa-envelope', gifts: 'fas fa-gift', backgrounds: 'fas fa-image',
+  'live-stream': 'fas fa-tv', wishes: 'fas fa-pen', closing: 'fas fa-file',
+};
+
+const ICONS = [
+  'fas fa-heart', 'fas fa-clock', 'fas fa-book', 'fas fa-scroll',
+  'fas fa-calendar-check', 'fas fa-camera', 'fas fa-envelope', 'fas fa-gift',
+  'fas fa-tv', 'fas fa-pen', 'fas fa-music', 'fas fa-mobile-screen-button',
+  'fas fa-user', 'fas fa-crown', 'fas fa-star', 'fas fa-image',
+  'fas fa-video', 'fas fa-location-dot', 'fas fa-bell', 'fas fa-share-nodes',
+  'fas fa-qrcode', 'fas fa-cloud', 'fas fa-wifi', 'fas fa-check',
+  'fas fa-map', 'fas fa-cake-candles', 'fas fa-building', 'fas fa-file',
+];
+
 interface TemplateRecord {
   id: string;
   name: string;
@@ -12,11 +34,12 @@ interface TemplateRecord {
   type: string;
   category?: string;
   theme: string;
-  price: string;
+  price: number;
   thumbnail: string;
   isPopular: boolean;
   html?: string;
   defaultData?: string | Record<string, any>;
+  features?: string | Feature[];
   createdAt: Date;
 }
 
@@ -39,6 +62,11 @@ function EditTemplateContent() {
   const [staticTemplateName, setStaticTemplateName] = useState('');
   const [previewKey, setPreviewKey] = useState(0);
   const [leftTab, setLeftTab] = useState<'sections' | 'config'>('sections');
+  const [checkedSections, setCheckedSections] = useState<string[]>([]);
+  const [additionalFeatures, setAdditionalFeatures] = useState<Feature[]>([]);
+  const [showAddFeature, setShowAddFeature] = useState(false);
+  const [newIcon, setNewIcon] = useState('');
+  const [newLabel, setNewLabel] = useState('');
 
   const templateConfig = staticTemplateName ? (TEMPLATE_CONFIGS[staticTemplateName] || DEFAULT_TEMPLATE_CONFIG) : DEFAULT_TEMPLATE_CONFIG;
   const templateHtml = templateConfig.html;
@@ -79,15 +107,33 @@ function EditTemplateContent() {
         type: t.type || 'wedding',
         category: t.category || 'wedding',
         theme: t.theme || '',
-        price: t.price || '',
+        price: String(t.price ?? ''),
         thumbnail: t.thumbnail || '',
         isPopular: !!t.isPopular,
       });
-
       const parsed = typeof t.defaultData === 'string' ? JSON.parse(t.defaultData || '{}') : (t.defaultData || {});
       const tmplName = t.name || '';
       const bgDefaults = BACKGROUND_DEFAULTS[tmplName] || {};
       const sections = getTemplateSections(tmplName);
+      const hasBg = !!BACKGROUND_DEFAULTS[tmplName];
+      const visSections = !hasBg ? sections.filter(s => s.id !== 'backgrounds') : sections;
+
+      const existing: Feature[] = t.features ? (typeof t.features === 'string' ? JSON.parse(t.features) : t.features) : [];
+      const checked: string[] = [];
+      const additional: Feature[] = [];
+      if (existing.length === 0) {
+        visSections.forEach(s => checked.push(s.id));
+      } else {
+        existing.forEach(f => {
+          const norm = f.label.replace(/^\d+\.\s*/, '').toLowerCase().trim();
+          const match = visSections.find(s => s.title.toLowerCase().trim() === norm);
+          if (match) { if (!checked.includes(match.id)) checked.push(match.id); }
+          else additional.push(f);
+        });
+      }
+      setCheckedSections(checked);
+      setAdditionalFeatures(additional);
+
       const fields: Record<string, string> = {};
       sections.forEach(section => {
         section.fields.forEach(field => {
@@ -107,17 +153,24 @@ function EditTemplateContent() {
       setSaveStatus('saving');
 
       const sections = getTemplateSections(staticTemplateName);
+      const hasBg = !!BACKGROUND_DEFAULTS[staticTemplateName];
+      const visSects = !hasBg ? sections.filter(s => s.id !== 'backgrounds') : sections;
       const defaultData: Record<string, string> = {};
       sections.forEach(section => {
         section.fields.forEach(field => {
           defaultData[field.id] = formData[field.id] || '';
         });
       });
+      const defaultFeatures: Feature[] = checkedSections.map(id => {
+        const sec = visSects.find(s => s.id === id);
+        return { icon: SECTION_ICONS[id] || 'fas fa-check', label: sec?.title || id };
+      });
 
       const body = {
         ...meta,
-        thumbnail: formData.thumbnail || meta.thumbnail,
+        thumbnail: meta.thumbnail || '',
         defaultData,
+        features: [...defaultFeatures, ...additionalFeatures],
       };
 
       const res = await fetch(`/api/admin/templates/${id}`, {
@@ -262,8 +315,11 @@ function EditTemplateContent() {
               <textarea value={meta.description} onChange={e => setMeta(m => ({ ...m, description: e.target.value }))} style={{ width: '100%', padding: '0.5rem 0.65rem', background: '#060b14', border: '1px solid rgba(212,175,55,.15)', borderRadius: '4px', color: '#fdf6e3', fontSize: '0.85rem', outline: 'none', boxSizing: 'border-box', minHeight: '60px', resize: 'vertical' }} />
             </div>
             <div style={{ marginBottom: '0.5rem' }}>
-              <label style={{ fontSize: '0.75rem', color: 'rgba(253,246,227,.6)', marginBottom: '0.25rem', display: 'block' }}>Price</label>
-              <input value={meta.price} onChange={e => setMeta(m => ({ ...m, price: e.target.value }))} style={{ width: '100%', padding: '0.5rem 0.65rem', background: '#060b14', border: '1px solid rgba(212,175,55,.15)', borderRadius: '4px', color: '#fdf6e3', fontSize: '0.85rem', outline: 'none', boxSizing: 'border-box' }} />
+              <label style={{ fontSize: '0.75rem', color: 'rgba(253,246,227,.6)', marginBottom: '0.25rem', display: 'block' }}>Price (Rp)</label>
+              <div style={{ position: 'relative' }}>
+                <span style={{ position: 'absolute', left: '.65rem', top: '50%', transform: 'translateY(-50%)', color: 'rgba(253,246,227,.4)', fontSize: '.85rem', pointerEvents: 'none', zIndex: 1 }}>Rp</span>
+                <input type="text" inputMode="numeric" value={formatPrice(meta.price)} onChange={e => setMeta(m => ({ ...m, price: e.target.value.replace(/\D/g, '') }))} placeholder="0" style={{ width: '100%', padding: '0.5rem 0.65rem 0.5rem 2rem', background: '#060b14', border: '1px solid rgba(212,175,55,.15)', borderRadius: '4px', color: '#fdf6e3', fontSize: '0.85rem', outline: 'none', boxSizing: 'border-box' }} />
+              </div>
             </div>
             <div style={{ marginBottom: '0.5rem' }}>
               <label style={{ fontSize: '0.75rem', color: 'rgba(253,246,227,.6)', marginBottom: '0.25rem', display: 'block' }}>Category</label>
@@ -304,6 +360,56 @@ function EditTemplateContent() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.5rem' }}>
               <input type="checkbox" id="isPopular" checked={meta.isPopular} onChange={e => setMeta(m => ({ ...m, isPopular: e.target.checked }))} style={{ accentColor: '#d4af37' }} />
               <label htmlFor="isPopular" style={{ fontSize: '0.75rem', color: 'rgba(253,246,227,.6)', cursor: 'pointer' }}>Popular</label>
+            </div>
+            <div style={{ borderTop: '1px solid rgba(212,175,55,.1)', marginTop: '0.75rem', paddingTop: '0.75rem' }}>
+              <div style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#d4af37', marginBottom: '0.5rem' }}>Fitur Default</div>
+              {visibleSections.map(sec => {
+                const isChecked = checkedSections.includes(sec.id);
+                return (
+                  <label key={sec.id} style={{ display: 'flex', alignItems: 'center', gap: '.5rem', padding: '.3rem .35rem', borderRadius: '4px', cursor: 'pointer', marginBottom: '.2rem', fontSize: '.8rem', color: '#fdf6e3' }}>
+                    <input type="checkbox" checked={isChecked} onChange={() => setCheckedSections(p => isChecked ? p.filter(id => id !== sec.id) : [...p, sec.id])} style={{ accentColor: '#d4af37' }} />
+                    <i className={SECTION_ICONS[sec.id] || 'fas fa-check'} style={{ width: '16px', textAlign: 'center', color: '#d4af37', fontSize: '.8rem' }}></i>
+                    <span>{sec.title}</span>
+                  </label>
+                );
+              })}
+              <div style={{ borderTop: '1px solid rgba(212,175,55,.08)', marginTop: '.5rem', paddingTop: '.5rem' }}>
+                <div style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#d4af37', marginBottom: '0.35rem' }}>Fitur Tambahan</div>
+                {additionalFeatures.map((f, i) => (
+                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '.5rem', padding: '.3rem .4rem', background: 'rgba(212,175,55,.05)', borderRadius: '4px', marginBottom: '.3rem', border: '1px solid rgba(212,175,55,.08)' }}>
+                    <i className={f.icon} style={{ width: '16px', textAlign: 'center', color: '#d4af37', fontSize: '.8rem' }}></i>
+                    <span style={{ flex: 1, fontSize: '.8rem', color: '#fdf6e3' }}>{f.label}</span>
+                    <button type="button" onClick={() => setAdditionalFeatures(p => p.filter((_, idx) => idx !== i))} style={{ background: 'none', border: 'none', color: 'rgba(239,68,68,.6)', cursor: 'pointer', fontSize: '.75rem', padding: '.15rem' }}><i className="fas fa-xmark"></i></button>
+                  </div>
+                ))}
+                {showAddFeature ? (
+                  <div style={{ background: '#060b14', border: '1px solid rgba(212,175,55,.15)', borderRadius: '6px', padding: '.65rem', marginTop: '.35rem' }}>
+                    <label style={{ fontSize: '.65rem', color: 'rgba(253,246,227,.5)', textTransform: 'uppercase', letterSpacing: '.1em', marginBottom: '.35rem', display: 'block' }}>Pilih Icon</label>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '.3rem', marginBottom: '.65rem' }}>
+                      {ICONS.map(ic => (
+                        <button key={ic} type="button" onClick={() => setNewIcon(ic)}
+                          style={{
+                            width: '30px', height: '30px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            background: newIcon === ic ? '#d4af37' : 'transparent',
+                            border: '1px solid ' + (newIcon === ic ? '#d4af37' : 'rgba(212,175,55,.2)'),
+                            borderRadius: '3px', color: newIcon === ic ? '#0a0807' : 'rgba(253,246,227,.7)',
+                            cursor: 'pointer', fontSize: '.75rem', transition: 'all .15s',
+                          }}
+                        ><i className={ic}></i></button>
+                      ))}
+                    </div>
+                    <input value={newLabel} onChange={e => setNewLabel(e.target.value)} placeholder="Nama fitur..." style={{ width: '100%', padding: '.45rem .6rem', background: '#060b14', border: '1px solid rgba(212,175,55,.15)', borderRadius: '4px', color: '#fdf6e3', fontSize: '.8rem', outline: 'none', marginBottom: '.45rem', boxSizing: 'border-box' }} />
+                    <div style={{ display: 'flex', gap: '.4rem' }}>
+                      <button type="button" onClick={() => { if (newIcon && newLabel.trim()) { setAdditionalFeatures(p => [...p, { icon: newIcon, label: newLabel.trim() }]); setNewIcon(''); setNewLabel(''); setShowAddFeature(false); } }} style={{ padding: '.35rem .75rem', background: '#d4af37', border: 'none', color: '#0a0807', borderRadius: '4px', fontSize: '.72rem', cursor: 'pointer' }}>Add</button>
+                      <button type="button" onClick={() => { setShowAddFeature(false); setNewIcon(''); setNewLabel(''); }} style={{ padding: '.35rem .75rem', background: 'transparent', border: '1px solid rgba(212,175,55,.2)', color: 'rgba(253,246,227,.5)', borderRadius: '4px', fontSize: '.72rem', cursor: 'pointer' }}>Cancel</button>
+                    </div>
+                  </div>
+                ) : (
+                  <button type="button" onClick={() => setShowAddFeature(true)} style={{ marginTop: '.35rem', padding: '.35rem .75rem', background: 'transparent', border: '1px dashed rgba(212,175,55,.25)', color: '#d4af37', borderRadius: '4px', fontSize: '.72rem', cursor: 'pointer', width: '100%' }}>
+                    <i className="fas fa-plus" style={{ marginRight: '.25rem' }}></i>Add Fitur Tambahan
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         )}

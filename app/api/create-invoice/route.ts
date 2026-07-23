@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Determine price in IDR (minimum 1000 for Xendit)
-    const amount = templatePrice === 'Premium' ? 150000 : 0; // Free or Premium pricing
+    const amount = parseInt(templatePrice) || 0;
     const isFree = amount === 0;
 
     // If free, skip Xendit and return success immediately

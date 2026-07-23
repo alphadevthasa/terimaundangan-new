@@ -354,7 +354,7 @@ function KelolaTemplateContent() {
   }, [templateId]);
 
   if (!templateId) {
-    const priceColors: Record<string, string> = { Free: '#34d399', Premium: '#f59e0b' };
+    const priceColor = (p: number) => p === 0 ? '#34d399' : '#f59e0b';
     const iconMap: Record<string, string> = { wedding: 'fas fa-heart', birthday: 'fas fa-cake-candles', corporate: 'fas fa-building' };
     const [thumbnails, setThumbnails] = useState<Record<string, string>>({});
 
@@ -408,7 +408,7 @@ function KelolaTemplateContent() {
                 <div key={template.id} style={{ background: 'var(--bg-2)', border: hasIt ? '1px solid var(--gold)' : '1px solid var(--line)', borderRadius: 'var(--radius)', overflow: 'hidden', opacity: hasIt ? 0.7 : 1 }}>
                   <div style={{ height: '160px', background: 'linear-gradient(135deg, #0a0807 0%, #1a1611 50%, #0a0807 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', borderBottom: '1px solid var(--line)' }}>
                     <div style={{ fontSize: '3.5rem', opacity: 0.6 }}><i className={icon}></i></div>
-                    <div style={{ position: 'absolute', top: '0.75rem', right: '0.75rem', padding: '0.2rem 0.6rem', borderRadius: '100px', background: `${priceColors[template.price] || '#6b7280'}15`, border: `1px solid ${priceColors[template.price] || '#6b7280'}30`, color: priceColors[template.price] || '#6b7280', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{template.price}</div>
+                    <div style={{ position: 'absolute', top: '0.75rem', right: '0.75rem', padding: '0.2rem 0.6rem', borderRadius: '100px', background: `${priceColor(template.price)}15`, border: `1px solid ${priceColor(template.price)}30`, color: priceColor(template.price), fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{template.price === 0 ? 'Gratis' : `Rp ${template.price.toLocaleString('id-ID')}`}</div>
                     {template.isPopular && <div style={{ position: 'absolute', top: '0.75rem', left: '0.75rem', padding: '0.2rem 0.6rem', borderRadius: '100px', background: 'rgba(201, 169, 97, 0.15)', border: '1px solid rgba(201, 169, 97, 0.3)', color: 'var(--gold)', fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.1em' }}><i className="fas fa-star" style={{fontSize:'.6rem',marginRight:'.25rem'}}></i> Popular</div>}
                     {hasIt && <div style={{ position: 'absolute', bottom: '0.75rem', left: '0.75rem', padding: '0.2rem 0.6rem', borderRadius: '100px', background: 'rgba(34,197,94,.15)', border: '1px solid rgba(34,197,94,.3)', color: '#34d399', fontSize: '0.65rem' }}>✓ Dimiliki</div>}
                   </div>

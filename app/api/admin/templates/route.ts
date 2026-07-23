@@ -31,11 +31,12 @@ export async function POST(request: NextRequest) {
         category: catSlug,
         categoryId: categoryRecord?.id ?? null,
         thumbnail: body.thumbnail ?? '',
-        price: body.price ?? 'Free',
+        price: body.price || 'Free',
         isPopular: body.isPopular ?? false,
         isPublished: body.isPublished ?? true,
         html: body.html ?? '',
         defaultData: body.defaultData ?? '{}',
+        features: body.features !== undefined ? (typeof body.features === 'string' ? body.features : JSON.stringify(body.features)) : '[]',
       },
     });
     return NextResponse.json({ template }, { status: 201 });

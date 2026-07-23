@@ -49,7 +49,7 @@ async function main() {
           type: 'wedding',
           theme: 'Elegant',
           thumbnail: '',
-          price: 'Free',
+          price: 0,
           isPopular: true,
           defaultData: JSON.stringify({
             "bride-nick": "Sophia", "groom-nick": "Alexander", "date-text": "Saturday, October 24th, 2026",
@@ -73,7 +73,7 @@ async function main() {
           type: 'wedding',
           theme: 'Romantic',
           thumbnail: '',
-          price: 'Free',
+          price: 0,
           isPopular: false,
           defaultData: JSON.stringify({
             "bride-nick": "Sienna", "groom-nick": "Arka",
@@ -89,7 +89,7 @@ async function main() {
           type: 'wedding',
           theme: 'Traditional',
           thumbnail: '',
-          price: 'Free',
+          price: 0,
           isPopular: false,
           defaultData: JSON.stringify({
             "bride-nick": "Sekarwangi", "groom-nick": "Baskoro",
@@ -107,7 +107,7 @@ async function main() {
           type: 'wedding',
           theme: 'Nature',
           thumbnail: '',
-          price: 'Free',
+          price: 0,
           isPopular: false,
           defaultData: JSON.stringify({
             "bride-nick": "Elena", "groom-nick": "Arthur",
@@ -124,7 +124,7 @@ async function main() {
           type: 'wedding',
           theme: 'Traditional',
           thumbnail: '',
-          price: 'Free',
+          price: 0,
           isPopular: false,
           defaultData: JSON.stringify({
             "bride-nick": "Sri", "groom-nick": "Raka",
@@ -139,7 +139,7 @@ async function main() {
           type: 'wedding',
           theme: 'Modern',
           thumbnail: '',
-          price: 'Premium',
+          price: 150000,
           isPopular: false,
           defaultData: JSON.stringify({
             "bride-nick": "Juliet", "groom-nick": "Romeo",
@@ -156,7 +156,7 @@ async function main() {
           type: 'wedding',
           theme: 'Modern',
           thumbnail: '',
-          price: 'Free',
+          price: 0,
           isPopular: true,
           defaultData: JSON.stringify({
             "bride-nick": "Amanda", "groom-nick": "Rizky",
@@ -173,7 +173,7 @@ async function main() {
           type: 'wedding',
           theme: 'Modern',
           thumbnail: '',
-          price: 'Free',
+          price: 0,
           isPopular: false,
           defaultData: JSON.stringify({
             "bride-nick": "Amanda", "groom-nick": "Rizky",

@@ -1,18 +1,13 @@
-# Graph Report - enginetemplate  (2026-07-23)
+# Graph Report - .  (2026-07-22)
 
 ## Corpus Check
-- 112 files · ~268,533 words
+- 102 files · ~233,012 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 650 nodes · 818 edges · 65 communities (47 shown, 18 thin omitted)
-- Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 14 edges (avg confidence: 0.83)
-- Token cost: 0 input · 0 output
-
-## Graph Freshness
-- Built from commit: `d2a5f1a2`
-- Run `git rev-parse HEAD` and compare to check if the graph is stale.
-- Run `graphify update .` after code changes (no API cost).
+- 413 nodes · 453 edges · 65 communities (44 shown, 21 thin omitted)
+- Extraction: 96% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 14 edges (avg confidence: 0.83)
+- Token cost: 45,200 input · 3,800 output
 
 ## Community Hubs (Navigation)
 - Template Config & Detail Pages
@@ -38,28 +33,15 @@
 - Admin Templates Page
 - Admin Layout Shell
 - User Detail Page
-- Customer API Endpoints
-- Template API Endpoints
 - Homepage
 - Portfolio & Gallery Templates
 - Route Middleware
 - OpenCode Plugin Config
-- Order API Endpoints
-- Template CRUD API
-- Customer API
-- Wishes API
+- Template List Page
 - Root Layout & Metadata
 - Graphify Plugin
 - Database Seed Script
 - Admin Seed Script
-- Create Template Page
-- Mark Paid API
-- Admin Stats API
-- Auth Profile API
-- Reset Password API
-- Upload API
-- Recent Wishes API
-- Xendit Webhook
 - Next.js Config
 - Next.js Env Types
 - Cinematic Dark Theme
@@ -74,16 +56,16 @@
 - Wedding Invitation Editor Agent
 
 ## God Nodes (most connected - your core abstractions)
-1. `requireAdmin()` - 30 edges
-2. `compilerOptions` - 16 edges
-3. `Security & Auth Harness — Implementation Plan` - 15 edges
-4. `Panduan Seed Template Birthday` - 15 edges
-5. `AI Agent: Birthday Invitation Template Generator & Editor` - 15 edges
-6. `3. Mandatory Section Structure (Birthday)` - 11 edges
-7. `TEMPLATE_CONFIGS` - 9 edges
-8. `DEFAULT_TEMPLATE_CONFIG` - 9 edges
-9. `checkRateLimit()` - 9 edges
-10. `CI/CD Setup Guide - VPS Hetzner Deployment` - 9 edges
+1. `compilerOptions` - 16 edges
+2. `TEMPLATE_CONFIGS` - 8 edges
+3. `DEFAULT_TEMPLATE_CONFIG` - 8 edges
+4. `verifyTurnstile()` - 7 edges
+5. `scripts` - 7 edges
+6. `Wedding Invitation Template` - 7 edges
+7. `AI Agent: Wedding Invitation Editor (Original)` - 6 edges
+8. `Theme & Animation Engine` - 6 edges
+9. `3D Fogging Wedding Cinematic Template` - 6 edges
+10. `Wedding Cover Video Template` - 6 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `AI Agent: Wedding Invitation Editor & Preview` --semantically_similar_to--> `AI Agent: Wedding Invitation Editor (Original)`  [INFERRED] [semantically similar]
@@ -94,8 +76,8 @@
   promp_helper/CREATE_UNIQUE_TEMPLATE.txt → template_generator_agents/TEMPLATE_AGENT.md
 - `Template Customization Query` --conceptually_related_to--> `Theme & Animation Engine`  [INFERRED]
   promp_helper/unique__template_prompt.txt → template_generator_agents/TEMPLATE_AGENT.md
-- `GET()` --calls--> `requireAdmin()`  [EXTRACTED]
-  app/api/admin/categories/[id]/route.ts → lib/auth.ts
+- `POST()` --calls--> `verifyTurnstile()`  [EXTRACTED]
+  app/api/auth/forgot-password/route.ts → lib/turnstile.ts
 
 ## Import Cycles
 - None detected.
@@ -111,23 +93,27 @@
 - **Editor templates use identical architecture: form panel + iframe preview + postMessage for live data binding** — templates_honey_wdd_template, templates_rustic_template, concept_editor_with_live_preview, concept_postmessage_editor_iframe [EXTRACTED 1.00]
 - **Parallax 3D tilt effect is used across both modern cinematic and traditional cultural templates with mouse-tracking transforms** — concept_parallax_3d_tilt, templates_3d_fogging_wed_cinematic, templates_honey_wdd_template, templates_traditional_java_batik_template, templates_traditional_west_sumatra_template [EXTRACTED 1.00]
 
-## Communities (65 total, 18 thin omitted)
+## Communities (65 total, 21 thin omitted)
 
 ### Community 0 - "Template Config & Detail Pages"
-Cohesion: 0.06
-Nodes (41): EditTemplateContent(), TemplateRecord, generateRandomDigits(), PATCH(), sanitizeSlug(), savePublishedHtml(), KelolaTemplateContent(), TemplateData (+33 more)
+Cohesion: 0.09
+Nodes (20): BACKGROUND_DEFAULTS, editorSections, kebabToCamel(), KelolaTemplateContent(), TemplateData, StaticTemplate, CheckoutContent(), StaticTemplate (+12 more)
 
 ### Community 1 - "TypeScript Configuration"
 Cohesion: 0.07
 Nodes (26): dom, dom.iterable, esnext, next-env.d.ts, .next/types/**/*.ts, node_modules, **/*.ts, **/*.tsx (+18 more)
 
 ### Community 2 - "NPM Dependencies"
-Cohesion: 0.06
-Nodes (30): @aws-sdk/client-s3, bcryptjs, dotenv, jose, next, dependencies, @aws-sdk/client-s3, bcryptjs (+22 more)
+Cohesion: 0.08
+Nodes (25): bcryptjs, dotenv, next, dependencies, bcryptjs, dotenv, next, react (+17 more)
 
 ### Community 3 - "Agent Documentation & Branding"
 Cohesion: 0.13
 Nodes (20): Terima Undangan Branding, Template HTML Rules, build_template.js Escaping Script, Panduan Integrasi Template Baru, Key Map (kebab-case to camelCase), Cinematic Dark Theme, AI Agent: Wedding Invitation Editor & Preview, AI Agent: Generate Cover Thumbnails (+12 more)
+
+### Community 4 - "Template Editor System"
+Cohesion: 0.14
+Nodes (14): EditTemplateContent(), TemplateRecord, BACKGROUND_DEFAULTS, EditorField, EditorSection, editorSections, getTemplateSections(), kebabToCamel() (+6 more)
 
 ### Community 5 - "Dashboard Layout & Navigation"
 Cohesion: 0.14
@@ -142,16 +128,12 @@ Cohesion: 0.11
 Nodes (20): Animation Engine, Dynamic CSS Variable Binding, Global Theme & Visual Effects Form Group, Live Visual Binding JS, Overlay Effect Options, Overlay Particle System, Template Engine Upgrade Agent, Theme Presets (+12 more)
 
 ### Community 8 - "Dev Dependencies & Tooling"
-Cohesion: 0.10
-Nodes (20): devDependencies, playwright, prisma, @prisma/client, @types/bcryptjs, @types/node, @types/react, @types/react-dom (+12 more)
-
-### Community 9 - "Admin & Customer API Routes"
-Cohesion: 0.06
-Nodes (8): PUT(), POST(), PUT(), PATCH(), removePublishedHtml(), VALID_TEMPLATE_DATA_FIELDS, requireCustomer(), globalForPrisma
+Cohesion: 0.11
+Nodes (18): devDependencies, playwright, prisma, @prisma/client, @types/bcryptjs, @types/node, @types/react, @types/react-dom (+10 more)
 
 ### Community 10 - "Auth Security & Rate Limiting"
-Cohesion: 0.16
-Nodes (18): POST(), POST(), POST(), POST(), POST(), checkRateLimit(), DEFAULT_CONFIG, getClientIp() (+10 more)
+Cohesion: 0.29
+Nodes (6): POST(), checkRateLimit(), DEFAULT_CONFIG, getClientIp(), store, sendPasswordResetEmail()
 
 ### Community 11 - "Wishes Dashboard"
 Cohesion: 0.20
@@ -170,16 +152,16 @@ Cohesion: 0.29
 Nodes (7): badge(), card, dangerBtn, goldBtn, td, th, UsersPage()
 
 ### Community 15 - "Checkout Flow"
-Cohesion: 0.14
-Nodes (11): CheckoutContent(), FEATURES, iconMap, PRICE_MAP, StaticTemplate, useIsMobile(), CATEGORY_LABEL, HomePage() (+3 more)
+Cohesion: 0.29
+Nodes (6): CheckoutContent(), FEATURES, iconMap, PRICE_MAP, StaticTemplate, useIsMobile()
 
 ### Community 16 - "Order Detail Page"
 Cohesion: 0.38
 Nodes (6): badge(), card, formatRupiah(), goldBtn, OrderDetailPage(), selectStyle
 
 ### Community 17 - "Authentication Routes"
-Cohesion: 0.06
-Nodes (32): 10.1 Seed Template Baru, 10.2 Sync Schema, 10.3 Typecheck, 10.4 Verifikasi di Browser, 10. Menjalankan Seed & Verifikasi, 11. Side-by-Side: Birthday vs Wedding, 1.1 Buat File HTML, 1.2 Struktur HTML yang Diperlukan (+24 more)
+Cohesion: 0.67
+Nodes (4): POST(), POST(), getClientIp(), verifyTurnstile()
 
 ### Community 18 - "Template Build Pipeline"
 Cohesion: 0.29
@@ -193,101 +175,37 @@ Nodes (5): card, formatRupiah(), RevenuePage(), td, th
 Cohesion: 0.33
 Nodes (4): goldBtn, redBtn, tdStyle, thStyle
 
-### Community 23 - "Customer API Endpoints"
-Cohesion: 0.07
-Nodes (41): DELETE(), GET(), PUT(), GET(), POST(), GET(), PATCH(), GET() (+33 more)
-
-### Community 24 - "Template API Endpoints"
-Cohesion: 0.08
-Nodes (24): 1. CI (Continuous Integration), 1. Persiapan VPS, 2. CD (Continuous Deployment), 2. Setup SSH Key untuk GitHub Actions, 3. Setup GitHub Secrets, 4. Deploy Aplikasi Pertama Kali, 5. Konfigurasi Nginx (Recommended), 6. Setup Firewall (+16 more)
-
 ### Community 25 - "Homepage"
-Cohesion: 0.12
-Nodes (15): Bagian A — Foundation: Session library (`lib/session.ts`) + env, Bagian B — Route helpers (`lib/auth.ts`), Bagian C — Perbaiki middleware (stop bypass semua `/api/*`), Bagian D — Auth routes (login, signup, logout, profile, reset), Bagian E — 9 Admin API routes: add `requireAdmin`, Bagian F — Upload hardening (`app/api/upload/route.ts`), Bagian G — Turnstile fail-closed (`lib/turnstile.ts`), Bagian H — Rate limiter robustness (`lib/rate-limiter.ts`) (+7 more)
+Cohesion: 0.67
+Nodes (3): HomePage(), StaticTemplate, useMediaQuery()
 
 ### Community 26 - "Portfolio & Gallery Templates"
 Cohesion: 0.67
 Nodes (4): Portfolio Filter Gallery, Template Gallery Browser, Website Frontend Reference Template, Website Template Gallery
 
-### Community 27 - "Route Middleware"
-Cohesion: 0.18
-Nodes (11): 10. Thank You / Closing, 1. Cover (Hero), 2. Profile & Opening Message, 3. Countdown Timer, 3. Mandatory Section Structure (Birthday), 4. Event Details, 5. Google Maps, 6. Photo Gallery (+3 more)
-
 ### Community 28 - "OpenCode Plugin Config"
 Cohesion: 0.50
 Nodes (3): plugin, $schema, .opencode/plugins/graphify.js
 
-### Community 29 - "Order API Endpoints"
-Cohesion: 0.22
-Nodes (9): 1. Cover, 2. Profile, 3. Countdown, 4. Editor Form UI Requirements (Left Pane), 4. Event Details, 5. Gallery, 6. Gifts, 7. Closing (+1 more)
-
-### Community 30 - "Template CRUD API"
-Cohesion: 0.25
-Nodes (6): cardBase, Category, goldBtn, inputStyle, tdStyle, thStyle
-
-### Community 31 - "Customer API"
-Cohesion: 0.36
-Nodes (7): extractSchemaFields(), extractTemplateElements(), main(), SCHEMA_DIR, TEMPLATE_DIR, validateTemplate(), ValidationResult
-
-### Community 32 - "Wishes API"
-Cohesion: 0.25
-Nodes (7): 11. Background Images, 1. Perbedaan Fundamental dengan Wedding, 9.1 Mapping Convention, 9. Key Mapping System, AI Agent: Birthday Invitation Template Generator & Editor, 📋 Daftar Isi, 📚 Referensi
-
-### Community 39 - "Database Seed Script"
-Cohesion: 0.50
-Nodes (4): DEFAULT_CATEGORIES, main(), prisma, seedCategories()
-
-### Community 44 - "Mark Paid API"
-Cohesion: 0.33
-Nodes (6): 5.1 Global Theme, 5.2 Typography, 5.3 Form Inputs Styling, 5.4 Accordion Sections, 5.5 Buttons, 5. Editor UI Theme & Layout
-
-### Community 45 - "Admin Stats API"
-Cohesion: 0.33
-Nodes (6): 7.1 Struktur Dasar, 7.2 ID Convention (WAJIB), 7.3 Fungsi `updateInvitation` (WAJIB), 7.4 PostMessage Listener (WAJIB), 7.5 Countdown Logic, 7. HTML Template Requirements
-
-### Community 47 - "Reset Password API"
-Cohesion: 0.50
-Nodes (4): 2.1 Layout, 2.2 Warna & Font Wajib, 2.3 Dekorasi, 2. Arsitektur & UI Rules
-
-### Community 49 - "Upload API"
-Cohesion: 0.57
-Nodes (5): POST(), deleteFromR2(), PUBLIC_URL, R2, uploadToR2()
-
-### Community 50 - "Recent Wishes API"
-Cohesion: 0.67
-Nodes (3): 10.1 Current Schema Limitations, 10.2 Solusi Praktis (Tanpa Migrasi DB), 10. Database Schema Considerations
-
-### Community 51 - "Xendit Webhook"
-Cohesion: 0.67
-Nodes (3): 12. Compliance Checklist, ❌ Larangan:, 🎯 Wajib untuk setiap birthday template baru:
-
-### Community 59 - "Cover Image 1"
-Cohesion: 0.67
-Nodes (3): 6.1 Theme Presets, 6.2 Animasi, 6. Theme & Animation System
-
-### Community 60 - "Cover Image 2"
-Cohesion: 0.67
-Nodes (3): 8.1 Editor-to-Iframe Data Flow, 8.2 Key Transform (buildIframePayload), 8. Live Visual Binding JS
-
 ## Knowledge Gaps
-- **280 isolated node(s):** `$schema`, `.opencode/plugins/graphify.js`, `PageProps`, `Category`, `thStyle` (+275 more)
+- **157 isolated node(s):** `$schema`, `.opencode/plugins/graphify.js`, `PageProps`, `NAV`, `AdminUser` (+152 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **18 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **21 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `Cover Image (df12372d)` connect `Dev Dependencies & Tooling` to `Template Config & Detail Pages`?**
-  _High betweenness centrality (0.049) - this node is a cross-community bridge._
 - **Why does `devDependencies` connect `Dev Dependencies & Tooling` to `NPM Dependencies`?**
-  _High betweenness centrality (0.047) - this node is a cross-community bridge._
+  _High betweenness centrality (0.063) - this node is a cross-community bridge._
+- **Why does `main()` connect `Dev Dependencies & Tooling` to `Template Config & Detail Pages`?**
+  _High betweenness centrality (0.061) - this node is a cross-community bridge._
 - **What connects `$schema`, `.opencode/plugins/graphify.js`, `PageProps` to the rest of the system?**
-  _280 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _157 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Template Config & Detail Pages` be split into smaller, more focused modules?**
-  _Cohesion score 0.05875706214689266 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.08870967741935484 - nodes in this community are weakly interconnected._
 - **Should `TypeScript Configuration` be split into smaller, more focused modules?**
   _Cohesion score 0.07407407407407407 - nodes in this community are weakly interconnected._
 - **Should `NPM Dependencies` be split into smaller, more focused modules?**
-  _Cohesion score 0.06451612903225806 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.07692307692307693 - nodes in this community are weakly interconnected._
 - **Should `Agent Documentation & Branding` be split into smaller, more focused modules?**
   _Cohesion score 0.13157894736842105 - nodes in this community are weakly interconnected._

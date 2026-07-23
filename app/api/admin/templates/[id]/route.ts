@@ -34,11 +34,12 @@ export async function PUT(
       ...(body.type !== undefined && { type: body.type }),
       ...(body.theme !== undefined && { theme: body.theme }),
       ...(body.thumbnail !== undefined && { thumbnail: body.thumbnail }),
-      ...(body.price !== undefined && { price: body.price }),
+      ...(body.price !== undefined && { price: parseInt(body.price) || 0 }),
       ...(body.isPopular !== undefined && { isPopular: body.isPopular }),
       ...(body.isPublished !== undefined && { isPublished: body.isPublished }),
       ...(body.html !== undefined && { html: body.html }),
       ...(body.defaultData !== undefined && { defaultData: typeof body.defaultData === 'string' ? body.defaultData : JSON.stringify(body.defaultData) }),
+      ...(body.features !== undefined && { features: typeof body.features === 'string' ? body.features : JSON.stringify(body.features) }),
     };
     if (body.category !== undefined) {
       data.category = body.category;

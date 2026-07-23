@@ -113,8 +113,8 @@ export default function AdminTemplates() {
                   <td style={tdStyle}>
                     <span style={{
                       padding: '.2rem .55rem', borderRadius: '99px', fontSize: '.7rem', display: 'inline-block',
-                      ...(t.price === 'Free' ? { background: 'rgba(34,197,94,.12)', color: '#22c55e' } : { background: 'rgba(212,175,55,.15)', color: '#d4af37' }),
-                    }}>{t.price}</span>
+                      ...(t.price === 0 ? { background: 'rgba(34,197,94,.12)', color: '#22c55e' } : { background: 'rgba(212,175,55,.15)', color: '#d4af37' }),
+                    }}>{t.price === 0 ? 'Gratis' : `Rp ${t.price.toLocaleString('id-ID')}`}</span>
                   </td>
                   <td style={tdStyle}>
                     {t.isPopular ? <span style={{ padding: '.2rem .55rem', borderRadius: '99px', fontSize: '.7rem', display: 'inline-block', background: 'rgba(212,175,55,.15)', color: '#d4af37' }}>Popular</span> : '-'}
