@@ -5,7 +5,7 @@ echo "🚀 Starting deployment..."
 
 # Configuration
 APP_NAME="enginetemplate"
-APP_DIR="/opt/enginetemplate"
+APP_DIR="/opt/terimaundangan"
 BACKUP_DIR="$APP_DIR/backup"
 
 # Create backup directory if not exists

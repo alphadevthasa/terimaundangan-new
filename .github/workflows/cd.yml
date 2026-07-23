@@ -48,13 +48,13 @@ jobs:
 
       - name: Upload to VPS
         run: |
-          scp deploy.tar.gz ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/opt/enginetemplate/
+          scp deploy.tar.gz ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/opt/terimaundangan/
 
       - name: Deploy on VPS
         run: |
           ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
             set -e
-            cd /opt/enginetemplate
+            cd /opt/terimaundangan
             
             # Backup current version
             if [ -d .next ]; then
