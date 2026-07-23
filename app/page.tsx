@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import SessionNavbar from '@/components/SessionNavbar';
 
@@ -55,7 +55,10 @@ export default function HomePage() {
   const [scrolled, setScrolled] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [activeTheme, setActiveTheme] = useState<string>('all');
+  const [indicator, setIndicator] = useState({ left: 0, width: 0, opacity: 0 });
   const isMobile = useMediaQuery('(max-width: 767px)');
+  const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     fetchTemplates();
@@ -75,6 +78,11 @@ export default function HomePage() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleCategoryClick = (category: string) => {
+    setActiveCategory(category);
+    setActiveTheme('all');
   };
 
   const grouped = templates.reduce<Record<string, Record<string, StaticTemplate[]>>>((acc, t) => {
@@ -97,6 +105,19 @@ export default function HomePage() {
       setActiveCategory(sortedCategories[0]);
     }
   }, [sortedCategories]);
+
+  useEffect(() => {
+    if (!activeCategory || !tabRefs.current[activeCategory] || !containerRef.current) return;
+    const tab = tabRefs.current[activeCategory];
+    const container = containerRef.current;
+    if (!tab) return;
+    const containerRect = container.getBoundingClientRect();
+    const tabRect = tab.getBoundingClientRect();
+    const left = tabRect.left - containerRect.left;
+    const width = tabRect.width;
+    setIndicator({ left, width, opacity: 1 });
+    tab.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+  }, [activeCategory]);
 
   const activeThemes = activeCategory ? Object.keys(grouped[activeCategory] || {}) : [];
   const activeTemplates = activeCategory && grouped[activeCategory] && activeTheme !== 'all'
@@ -214,24 +235,32 @@ export default function HomePage() {
             <div>
               {/* Category tabs */}
               {showCategoryTabs && (
-                <div style={{ display: 'flex', gap: '.5rem', marginBottom: '1.25rem', flexWrap: 'wrap' }}>
-                  {sortedCategories.map((category) => {
-                    const label = CATEGORY_LABEL[category] || category;
-                    const isActive = activeCategory === category;
-                    return (
-                      <button key={category} onClick={() => { setActiveCategory(category); setActiveTheme('all'); }}
-                        style={{
-                          padding: '.45rem 1rem', borderRadius: '100px', border: '1px solid ' + (isActive ? 'rgba(201,169,97,.4)' : 'rgba(201,169,97,.15)'),
-                          background: isActive ? 'rgba(201,169,97,.12)' : 'transparent',
-                          color: isActive ? '#c9a961' : 'rgba(245,236,217,.6)',
-                          fontSize: '.8rem', cursor: 'pointer', transition: 'all .2s',
-                          fontFamily: "'Jost', sans-serif", letterSpacing: '.04em',
-                        }}
-                      >
-                        {label}
-                      </button>
-                    );
-                  })}
+                <div style={{ position: 'relative', marginBottom: '1.5rem' }}>
+                  <div ref={containerRef} style={{ display: 'flex', gap: '.5rem', overflowX: 'auto', paddingBottom: '.5rem' }} className="hide-scrollbar">
+                    {sortedCategories.map((category) => {
+                      const label = CATEGORY_LABEL[category] || category;
+                      const isActive = activeCategory === category;
+                      return (
+                        <button key={category} ref={(el) => { tabRefs.current[category] = el; }} onClick={() => handleCategoryClick(category)}
+                          style={{
+                            padding: '.45rem 1rem', borderRadius: '100px', border: '1px solid ' + (isActive ? 'rgba(201,169,97,.4)' : 'rgba(201,169,97,.15)'),
+                            background: isActive ? 'rgba(201,169,97,.12)' : 'transparent',
+                            color: isActive ? '#c9a961' : 'rgba(245,236,217,.6)',
+                            fontSize: '.8rem', cursor: 'pointer', transition: 'all .2s',
+                            fontFamily: "'Jost', sans-serif", letterSpacing: '.04em', whiteSpace: 'nowrap',
+                          }}
+                        >
+                          {label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <div style={{
+                    position: 'absolute', bottom: 0, height: '2px',
+                    background: '#c9a961', borderRadius: '2px',
+                    transition: 'left .25s ease, width .25s ease, opacity .25s ease',
+                    pointerEvents: 'none',
+                  }} />
                 </div>
               )}
 
