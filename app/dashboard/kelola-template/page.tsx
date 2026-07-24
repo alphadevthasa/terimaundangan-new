@@ -464,7 +464,7 @@ function KelolaTemplateContent() {
       <div style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2rem' }}>
           <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.8rem', fontWeight: 400, color: 'var(--cream)', fontStyle: 'italic' }}>Template Saya</h2>
-          <button onClick={() => setBrowseMode(true)} style={{
+          <button onClick={() => { window.location.href = '/#templates'; }} style={{
             padding: '0.6rem 1.2rem', background: 'var(--gold)', border: 'none', color: 'var(--bg)', borderRadius: 'var(--radius-sm)', fontSize: '0.8rem', fontWeight: 500, cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.1em', display: 'flex', alignItems: 'center', gap: '0.5rem',
           }}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
