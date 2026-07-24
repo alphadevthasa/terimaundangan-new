@@ -367,7 +367,7 @@ export default function HomePage() {
                           border: '1px solid rgba(201,169,97,.2)', color: '#c9a961',
                           fontSize: isMobile ? '.7rem' : '.75rem', fontWeight: 500, letterSpacing: '.05em',
                         }}>
-                          Rp 150.000
+                          {template.price > 0 ? `Rp ${template.price.toLocaleString('id-ID')}` : 'Gratis'}
                         </div>
                         {template.isPopular && (
                           <div style={{
