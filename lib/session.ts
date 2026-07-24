@@ -20,6 +20,7 @@ const SESSION_MAX_AGE_SECONDS = 60 * 60 * 24; // 24h
 export interface SessionPayload {
   sub: string; // Customer.id
   email: string;
+  name: string;
   isAdmin: boolean;
 }
 
@@ -71,6 +72,7 @@ export async function verifySession(
     return {
       sub,
       email,
+      name: typeof payload.name === 'string' ? payload.name : email.split('@')[0],
       isAdmin: payload.isAdmin === true,
     };
   } catch {

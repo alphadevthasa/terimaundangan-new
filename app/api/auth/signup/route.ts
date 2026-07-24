@@ -80,8 +80,9 @@ export async function POST(request: NextRequest) {
     const salt = await bcrypt.genSalt(12);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Generate verification token
+    // Generate verification token (24h expiry)
     const verificationToken = crypto.randomUUID();
+    const verificationTokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
     // Create customer
     await prisma.customer.create({
@@ -91,6 +92,7 @@ export async function POST(request: NextRequest) {
         password: hashedPassword,
         status: 'active',
         verificationToken,
+        verificationTokenExpiry,
       },
     });
 

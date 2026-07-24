@@ -420,7 +420,7 @@ function KelolaTemplateContent() {
                     <div style={{ fontSize: '3.5rem', opacity: 0.6 }}><i className={icon}></i></div>
                     <div style={{ position: 'absolute', top: '0.75rem', right: '0.75rem', padding: '0.2rem 0.6rem', borderRadius: '100px', background: `${priceColor(template.price)}15`, border: `1px solid ${priceColor(template.price)}30`, color: priceColor(template.price), fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{template.price === 0 ? 'Gratis' : `Rp ${template.price.toLocaleString('id-ID')}`}</div>
                     {template.isPopular && <div style={{ position: 'absolute', top: '0.75rem', left: '0.75rem', padding: '0.2rem 0.6rem', borderRadius: '100px', background: 'rgba(201, 169, 97, 0.15)', border: '1px solid rgba(201, 169, 97, 0.3)', color: 'var(--gold)', fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.1em' }}><i className="fas fa-star" style={{fontSize:'.6rem',marginRight:'.25rem'}}></i> Popular</div>}
-                    {hasIt && <div style={{ position: 'absolute', bottom: '0.75rem', left: '0.75rem', padding: '0.2rem 0.6rem', borderRadius: '100px', background: 'rgba(34,197,94,.15)', border: '1px solid rgba(34,197,94,.3)', color: '#34d399', fontSize: '0.65rem' }}>✓ Dimiliki</div>}
+                    {hasIt && <div style={{ position: 'absolute', bottom: '0.75rem', left: '0.75rem', padding: '0.2rem 0.6rem', borderRadius: '100px', background: 'rgba(34,197,94,.15)', border: '1px solid rgba(34,197,94,.3)', color: '#34d399', fontSize: '0.65rem' }}><i className="fas fa-check-circle" style={{fontSize:'.6rem',marginRight:'.25rem'}}></i> Dimiliki</div>}
                   </div>
                   <div style={{ padding: '1.25rem' }}>
                     <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.2rem', color: 'var(--gold)', marginBottom: '0.5rem', fontStyle: 'italic' }}>{template.name}</h3>
@@ -782,7 +782,7 @@ function KelolaTemplateContent() {
                       transition: 'all 0.15s',
                     }}
                   >
-                    {publishState.copied ? '✓ Copied' : 'Copy'}
+                    {publishState.copied ? <><i className="fas fa-check" style={{marginRight:'.35rem'}} />Copied</> : 'Copy'}
                   </button>
                 </div>
                 {/* Action buttons: Unpublish & Regenerate */}

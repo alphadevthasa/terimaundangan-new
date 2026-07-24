@@ -53,7 +53,7 @@ export default function GuestWishes({ templateDataId, title, description }: Gues
         setSubmitError(data.error || 'Gagal mengirim');
         return;
       }
-      setSubmitSuccess('Ucapan berhasil dikirim! 🎉');
+      setSubmitSuccess('Ucapan berhasil dikirim!');
       setWishes(prev => [{ ...data.wish, createdAt: new Date().toISOString() }, ...prev]);
       setTotal(prev => prev + 1);
       setName('');

@@ -225,7 +225,7 @@ export default function DashboardWishesPage() {
                 fontSize: '.78rem',
               }}
             >
-              ✕
+              <i className="fas fa-xmark"></i>
             </button>
           )}
           <button type="submit"

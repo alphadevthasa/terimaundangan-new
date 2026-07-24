@@ -37,6 +37,8 @@ function CheckoutContent() {
   const [scrolled, setScrolled] = useState(false);
   const [featuresOpen, setFeaturesOpen] = useState(false);
   const [owned, setOwned] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [previewActive, setPreviewActive] = useState(false);
 
   useEffect(() => {
@@ -53,6 +55,7 @@ function CheckoutContent() {
     if (id) fetchTemplate(id);
     const handleScroll = () => setScrolled(window.scrollY > 60);
     window.addEventListener('scroll', handleScroll);
+    fetch('/api/auth/session', { credentials: 'include' }).then(r => r.json()).then(d => { if (d.session?.email) setIsLoggedIn(true); }).catch(() => {});
     return () => window.removeEventListener('scroll', handleScroll);
   }, [params?.id]);
 
@@ -106,6 +109,7 @@ function CheckoutContent() {
 
   const handleProceedToCheckout = () => {
     if (!template) return;
+    if (!isLoggedIn) { setShowLoginPrompt(true); return; }
     if (owned) { router.push(`/dashboard/kelola-template?id=${template.id}`); return; }
     router.push(`/checkout/${template.id}`);
   };
@@ -444,6 +448,49 @@ function CheckoutContent() {
             </div>
         )}
       </div>
+
+      {/* Login prompt modal */}
+      {showLoginPrompt && (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 9999,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          background: 'rgba(0,0,0,.7)', backdropFilter: 'blur(4px)',
+        }} onClick={() => setShowLoginPrompt(false)}>
+          <div style={{
+            background: '#14110d', border: '1px solid rgba(201,169,97,.15)',
+            borderRadius: '16px', padding: isMobile ? '2rem' : '2.5rem',
+            maxWidth: '400px', width: '90%', textAlign: 'center',
+            position: 'relative',
+          }} onClick={e => e.stopPropagation()}>
+            <button onClick={() => setShowLoginPrompt(false)} style={{
+              position: 'absolute', top: '.75rem', right: '.75rem',
+              background: 'none', border: 'none', color: 'rgba(245,236,217,.4)',
+              fontSize: '1.2rem', cursor: 'pointer', padding: '.25rem',
+            }}><i className="fas fa-xmark"></i></button>
+            <div style={{ fontSize: '2.5rem', marginBottom: '1rem', color: '#c9a961' }}>
+              <i className="fas fa-circle-exclamation"></i>
+            </div>
+            <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.3rem', color: '#f5ecd9', fontStyle: 'italic', margin: '0 0 .5rem' }}>
+              Login Diperlukan
+            </h3>
+            <p style={{ fontSize: '.9rem', color: 'rgba(245,236,217,.6)', lineHeight: 1.6, margin: '0 0 1.5rem' }}>
+              Silakan login terlebih dahulu untuk melanjutkan ke pembelian atau membuka template di dashboard.
+            </p>
+            <div style={{ display: 'flex', gap: '.75rem', justifyContent: 'center' }}>
+              <button onClick={() => setShowLoginPrompt(false)} style={{
+                padding: '.65rem 1.5rem', background: 'transparent',
+                border: '1px solid rgba(201,169,97,.3)', color: '#c9a961',
+                borderRadius: '6px', fontSize: '.85rem', cursor: 'pointer',
+              }}>Batal</button>
+              <button onClick={() => router.push('/login')} style={{
+                padding: '.65rem 1.5rem', background: 'linear-gradient(135deg,#c9a961,#b8942e)',
+                border: 'none', color: '#0a0807', borderRadius: '6px',
+                fontSize: '.85rem', fontWeight: 500, cursor: 'pointer',
+              }}><i className="fas fa-arrow-right-to-bracket" style={{marginRight:'.35rem'}}></i> Login</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -274,7 +274,7 @@ export default function DashboardRsvpPage() {
                 background: 'var(--bg-3)', border: '1px solid var(--line)', color: 'var(--cream-dim)',
                 padding: '.6rem .75rem', borderRadius: 'var(--radius-sm)', cursor: 'pointer', fontSize: '.78rem',
               }}
-            >✕</button>
+            ><i className="fas fa-xmark"></i></button>
           )}
           <button type="submit"
             style={{

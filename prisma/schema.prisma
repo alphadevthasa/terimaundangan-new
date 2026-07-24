@@ -80,9 +80,11 @@ model Customer {
   resetTokenExpiry  DateTime?
   emailVerifiedAt   DateTime?
   verificationToken String?         @db.Text
+  verificationTokenExpiry DateTime?
   createdAt         DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
   templateData    TemplateData[]
+  notificationReads NotificationRead[]
 }
 
 /// Wedding invitation data (one per template installation, customer can have many)
@@ -215,4 +217,30 @@ model Rsvp {
   templateData   TemplateData @relation(fields: [templateDataId], references: [id])
 
   @@index([templateDataId])
+}
+
+/// Admin-created notifications shown to customers
+model Notification {
+  id        String   @id @default(uuid())
+  title     String   @default("")
+  message   String   @default("")
+  type      String   @default("info") /// info | warning | success | promo
+  link      String   @default("")
+  createdAt DateTime @default(now())
+
+  reads     NotificationRead[]
+}
+
+/// Per-customer read tracking for notifications
+model NotificationRead {
+  id             String       @id @default(uuid())
+  notificationId String
+  customerId     String
+  readAt         DateTime     @default(now())
+
+  notification   Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+  customer       Customer     @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@unique([notificationId, customerId])
+  @@index([customerId])
 }

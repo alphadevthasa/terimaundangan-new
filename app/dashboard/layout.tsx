@@ -43,6 +43,12 @@ export default function DashboardLayout({
   const pollingRef = useRef<NodeJS.Timeout | null>(null);
   const toastTimerRef = useRef<NodeJS.Timeout | null>(null);
 
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [unreadNotifCount, setUnreadNotifCount] = useState(0);
+  const [notifDropdownOpen, setNotifDropdownOpen] = useState(false);
+  const [notifLoading, setNotifLoading] = useState(false);
+  const notifDropdownRef = useRef<HTMLDivElement>(null);
+
   const fetchUser = async (email: string) => {
     try {
       const res = await fetch(`/api/customer?email=${encodeURIComponent(email)}`);
@@ -171,6 +177,54 @@ export default function DashboardLayout({
       localStorage.setItem('lastWishesVisit', new Date().toISOString());
     }
   }, [pathname]);
+
+  // Fetch notifications
+  const fetchNotifications = async () => {
+    const email = user?.email || localStorage.getItem('sessionEmail');
+    if (!email) return;
+    setNotifLoading(true);
+    try {
+      const res = await fetch(`/api/notifications?email=${encodeURIComponent(email)}`);
+      if (res.ok) {
+        const data = await res.json();
+        setNotifications(data.notifications || []);
+        setUnreadNotifCount(data.unreadCount || 0);
+      }
+    } catch {} finally { setNotifLoading(false); }
+  };
+
+  useEffect(() => { if (authed) fetchNotifications(); }, [authed, user?.email]);
+
+  // Close notification dropdown on click outside
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (notifDropdownRef.current && !notifDropdownRef.current.contains(e.target as Node)) {
+        setNotifDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, []);
+
+  const markNotifRead = async (id: string) => {
+    const email = user?.email || localStorage.getItem('sessionEmail');
+    if (!email) return;
+    try {
+      await fetch(`/api/notifications/${id}/read?email=${encodeURIComponent(email)}`, { method: 'PUT' });
+      setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
+      setUnreadNotifCount(prev => Math.max(0, prev - 1));
+    } catch {}
+  };
+
+  const markAllNotifRead = async () => {
+    const email = user?.email || localStorage.getItem('sessionEmail');
+    if (!email) return;
+    try {
+      await fetch(`/api/notifications/read-all?email=${encodeURIComponent(email)}`, { method: 'PUT' });
+      setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+      setUnreadNotifCount(0);
+    } catch {}
+  };
 
   // Detect mobile
   useEffect(() => {
@@ -365,6 +419,122 @@ export default function DashboardLayout({
                 </div>
               ) : (
                 <>
+                  {/* Notification Bell */}
+                  <div ref={notifDropdownRef} style={{ position: 'relative' }}>
+                    <button onClick={() => { setNotifDropdownOpen(!notifDropdownOpen); if (!notifDropdownOpen) fetchNotifications(); }}
+                      style={{
+                        background: 'transparent', border: '1px solid var(--line)', color: 'var(--cream-dim)',
+                        padding: '0.4rem 0.6rem', borderRadius: 'var(--radius-sm)', fontSize: '.85rem',
+                        cursor: 'pointer', position: 'relative', display: 'flex', alignItems: 'center',
+                        transition: 'all .2s',
+                      }}
+                      onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(201,169,97,.4)'; e.currentTarget.style.color = 'var(--gold)'; }}
+                      onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--line)'; e.currentTarget.style.color = 'var(--cream-dim)'; }}
+                    >
+                      <i className="fas fa-bell"></i>
+                      {unreadNotifCount > 0 && (
+                        <span style={{
+                          position: 'absolute', top: '-4px', right: '-4px',
+                          width: '16px', height: '16px', borderRadius: '50%',
+                          background: '#ef4444', color: '#fff',
+                          fontSize: '.5rem', fontWeight: 600,
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        }}>{unreadNotifCount > 9 ? '9+' : unreadNotifCount}</span>
+                      )}
+                    </button>
+
+                    {notifDropdownOpen && (
+                      <div style={{
+                        position: 'absolute', top: '100%', right: '-0.5rem', marginTop: '.5rem',
+                        width: '360px', maxHeight: '400px', overflow: 'auto',
+                        background: 'var(--bg-3)', border: '1px solid var(--line)',
+                        borderRadius: 'var(--radius)', boxShadow: '0 8px 32px rgba(0,0,0,.5)',
+                        zIndex: 1000,
+                      }}>
+                        <div style={{
+                          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                          padding: '.75rem 1rem', borderBottom: '1px solid var(--line)',
+                        }}>
+                          <span style={{ fontSize: '.85rem', color: 'var(--cream)', fontWeight: 500 }}>
+                            <i className="fas fa-bell" style={{ fontSize: '.7rem', marginRight: '.35rem', color: 'var(--gold)' }}></i>
+                            Notifications
+                          </span>
+                          {unreadNotifCount > 0 && (
+                            <button onClick={markAllNotifRead} style={{
+                              background: 'none', border: 'none', color: 'var(--gold)',
+                              fontSize: '.7rem', cursor: 'pointer', padding: '.2rem .4rem',
+                              borderRadius: '4px',
+                            }}
+                              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(201,169,97,.1)'; }}
+                              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+                            >
+                              Mark all read
+                            </button>
+                          )}
+                        </div>
+
+                        {notifLoading ? (
+                          <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--muted)', fontSize: '.8rem' }}>
+                            <i className="fas fa-spinner fa-pulse" style={{ marginRight: '.35rem' }}></i>Loading...
+                          </div>
+                        ) : notifications.length === 0 ? (
+                          <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--muted)', fontSize: '.8rem' }}>
+                            <i className="fas fa-bell-slash" style={{ fontSize: '1.5rem', display: 'block', marginBottom: '.5rem', opacity: 0.3 }}></i>
+                            No notifications
+                          </div>
+                        ) : (
+                          notifications.map(n => (
+                            <div key={n.id} onClick={() => { if (!n.read) markNotifRead(n.id); if (n.link) router.push(n.link); }}
+                              style={{
+                                padding: '.75rem 1rem', borderBottom: '1px solid var(--line-light)',
+                                cursor: n.link ? 'pointer' : 'default',
+                                background: n.read ? 'transparent' : 'rgba(201,169,97,.04)',
+                                transition: 'background .15s',
+                              }}
+                              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(201,169,97,.08)'; }}
+                              onMouseLeave={e => { e.currentTarget.style.background = n.read ? 'transparent' : 'rgba(201,169,97,.04)'; }}
+                            >
+                              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '.5rem' }}>
+                                <span style={{
+                                  fontSize: '.7rem', color: n.type === 'warning' ? '#f59e0b' : n.type === 'success' ? '#34d399' : n.type === 'promo' ? '#a78bfa' : '#60a5fa',
+                                  marginTop: '.1rem', flexShrink: 0,
+                                }}>
+                                  <i className={`fas ${n.type === 'warning' ? 'fa-triangle-exclamation' : n.type === 'success' ? 'fa-check-circle' : n.type === 'promo' ? 'fa-tag' : 'fa-circle-info'}`}></i>
+                                </span>
+                                <div style={{ flex: 1, minWidth: 0 }}>
+                                  <div style={{ fontSize: '.82rem', color: 'var(--cream)', fontWeight: n.read ? 400 : 500, marginBottom: '.15rem' }}>
+                                    {n.title}
+                                  </div>
+                                  {n.message && (
+                                    <div style={{ fontSize: '.75rem', color: 'var(--muted)', lineHeight: 1.4, marginBottom: '.2rem' }}>
+                                      {n.message}
+                                    </div>
+                                  )}
+                                  <div style={{ fontSize: '.65rem', color: 'var(--muted)' }}>
+                                    {new Date(n.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                                  </div>
+                                </div>
+                                {!n.read && (
+                                  <button onClick={(e) => { e.stopPropagation(); markNotifRead(n.id); }}
+                                    style={{
+                                      background: 'none', border: 'none', color: 'var(--muted)',
+                                      fontSize: '.65rem', cursor: 'pointer', padding: '.15rem .3rem',
+                                      borderRadius: '3px', flexShrink: 0, marginTop: '.1rem',
+                                    }}
+                                    onMouseEnter={e => { e.currentTarget.style.color = 'var(--gold)'; }}
+                                    onMouseLeave={e => { e.currentTarget.style.color = 'var(--muted)'; }}
+                                  >
+                                    <i className="fas fa-check"></i>
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    )}
+                  </div>
+
                   {user && (
                     <div style={{
                       display: 'flex', alignItems: 'center', gap: '0.5rem',

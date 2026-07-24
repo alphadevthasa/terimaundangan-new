@@ -111,6 +111,7 @@ export async function POST(request: NextRequest) {
     const token = await signSession({
       sub: customer.id,
       email: customer.email,
+      name: customer.name,
       isAdmin: customer.isAdmin,
     });
 

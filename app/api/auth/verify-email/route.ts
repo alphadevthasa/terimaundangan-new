@@ -17,6 +17,10 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Token verifikasi tidak valid atau sudah kadaluarsa' }, { status: 400 });
     }
 
+    if (customer.verificationTokenExpiry && new Date() > customer.verificationTokenExpiry) {
+      return NextResponse.json({ error: 'Token verifikasi sudah kadaluarsa. Silakan kirim ulang verifikasi.' }, { status: 400 });
+    }
+
     if (customer.emailVerifiedAt) {
       return NextResponse.redirect(new URL('/login?verified=already', request.url));
     }

@@ -136,7 +136,7 @@ export default function ForgotPasswordPage() {
           </form>
         ) : (
           <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>✅</div>
+            <div style={{ fontSize: '3rem', marginBottom: '1rem', color: '#22c55e' }}><i className="fas fa-check-circle"></i></div>
             <p style={{ fontSize: '0.8rem', color: 'rgba(245,236,217,0.5)', marginBottom: '1.5rem' }}>
               Email terkirim ke <strong style={{ color: '#c9a961' }}>{email}</strong>
             </p>

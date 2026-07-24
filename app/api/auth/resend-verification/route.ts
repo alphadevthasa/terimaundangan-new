@@ -21,9 +21,10 @@ export async function POST(request: NextRequest) {
     }
 
     const verificationToken = crypto.randomUUID();
+    const verificationTokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000);
     await prisma.customer.update({
       where: { id: customer.id },
-      data: { verificationToken },
+      data: { verificationToken, verificationTokenExpiry },
     });
 
     sendVerificationEmail(email, verificationToken, customer.name).catch((err) =>

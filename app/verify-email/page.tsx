@@ -43,7 +43,7 @@ function VerifyEmailInner() {
         )}
         {status === 'error' && (
           <>
-            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>❌</div>
+            <div style={{ fontSize: '3rem', marginBottom: '1rem', color: '#ef4444' }}><i className="fas fa-circle-exclamation"></i></div>
             <h2 style={{ fontFamily: "'Italiana', serif", fontSize: '1.3rem', color: '#c9a961', margin: '0 0 0.75rem' }}>Verifikasi Gagal</h2>
             <p style={{ fontSize: '0.85rem', color: 'rgba(245,236,217,0.6)', margin: '0 0 1.5rem' }}>{message}</p>
             <button onClick={() => router.push('/login')} style={{ background: 'linear-gradient(135deg,#c9a961,#b8942e)', border: 'none', color: '#0a0807', padding: '0.75rem 1.5rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 500 }}>

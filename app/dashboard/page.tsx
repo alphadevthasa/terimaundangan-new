@@ -243,7 +243,7 @@ export default function DashboardPage() {
               {coupleName}
             </div>
             <div style={{ fontSize: '0.8rem', color: 'var(--cream-dim)', marginTop: '0.25rem' }}>
-              {groomNick && brideNick ? `${groomNick} ❤️ ${brideNick}` : ''}
+              {groomNick && brideNick ? <>{groomNick} <i className="fas fa-heart" style={{color:'#c9a961',fontSize:'.7rem',margin:'0 .2rem'}} /> {brideNick}</> : ''}
             </div>
           </div>
         )}
@@ -305,7 +305,7 @@ export default function DashboardPage() {
               onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--gold)'; e.currentTarget.style.color = 'var(--gold)'; }}
               onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--line)'; e.currentTarget.style.color = 'var(--cream-dim)'; }}
             >
-              {copied ? '✓ Tersalin' : '📋 Salin'}
+              {copied ? <><i className="fas fa-check" style={{marginRight:'.35rem'}} />Tersalin</> : <><i className="fas fa-copy" style={{marginRight:'.35rem'}} />Salin</>}
             </button>
           </div>
         )}
@@ -379,7 +379,6 @@ export default function DashboardPage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
             {[
               { label: 'Template', value: hasTemplate ? templateName : 'Belum dipilih' },
-              { label: 'Status', value: hasTemplate ? '✅ Active & Published' : '⏳ Belum aktif' },
               ...(createdAt ? [{ label: 'Created', value: createdAt }] : []),
               ...(lastEdited ? [{ label: 'Last Edited', value: lastEdited }] : []),
             ].map((info) => (
@@ -391,6 +390,12 @@ export default function DashboardPage() {
                 <span style={{ fontSize: '0.85rem', color: 'var(--cream)' }}>{info.value}</span>
               </div>
             ))}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.5rem 0', borderBottom: '1px solid var(--line-light)' }}>
+              <span style={{ fontSize: '0.85rem', color: 'var(--cream-dim)' }}>Status</span>
+              <span style={{ fontSize: '0.85rem', color: 'var(--cream)' }}>
+                {hasTemplate ? <><i className="fas fa-check-circle" style={{marginRight:'.35rem'}} />Active & Published</> : <><i className="fas fa-clock" style={{marginRight:'.35rem'}} />Belum aktif</>}
+              </span>
+            </div>
           </div>
 
           {hasTemplate && (

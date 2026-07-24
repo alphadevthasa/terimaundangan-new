@@ -19,7 +19,7 @@ export default function SessionNavbar({ scrolled, isMobile, onNavigate, subtitle
           const data = await res.json();
           if (data.session?.email) {
             setIsLoggedIn(true);
-            setCustomerName(data.session.email.split('@')[0]);
+            setCustomerName(data.session.name || data.session.email.split('@')[0]);
           }
         }
       } catch {
@@ -137,7 +137,7 @@ export default function SessionNavbar({ scrolled, isMobile, onNavigate, subtitle
         ) : (
           isLoggedIn ? (
             <>
-              <span style={{ fontSize: '.8rem', color: 'rgba(245,236,217,.7)' }}>{customerName}</span>
+              <span style={{ fontSize: '1.2rem', fontWeight: '500', color: 'rgba(245,236,217,.9)' }}>{customerName}</span>
               <button onClick={handleLogout}
                 style={{ padding: '.5rem 1.25rem', background: 'transparent', border: '1px solid rgba(201,169,97,.4)', color: '#c9a961', borderRadius: '4px', fontSize: '.8rem', cursor: 'pointer', transition: 'all .2s', letterSpacing: '.1em' }}
                 onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(201,169,97,.1)'; e.currentTarget.style.borderColor = '#c9a961'; }}

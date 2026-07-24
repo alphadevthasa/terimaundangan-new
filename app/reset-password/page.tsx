@@ -184,7 +184,7 @@ function ResetPasswordForm() {
           </form>
         ) : (
           <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>✅</div>
+            <div style={{ fontSize: '3rem', marginBottom: '1rem', color: '#22c55e' }}><i className="fas fa-check-circle"></i></div>
             <p style={{ fontSize: '0.9rem', color: 'rgba(245,236,217,0.7)', lineHeight: 1.6, marginBottom: '1.5rem' }}>
               {successMessage}
             </p>

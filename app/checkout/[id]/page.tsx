@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useState, useEffect, useRef } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import SessionNavbar from '@/components/SessionNavbar';
 
@@ -45,8 +45,7 @@ function CheckoutContent() {
   const [iframeError, setIframeError] = useState(false);
   const [customerName, setCustomerName] = useState('');
   const [customerEmail, setCustomerEmail] = useState('');
-  const [formErrors, setFormErrors] = useState<{name?: string; email?: string}>({});
-  const nameRef = useRef<HTMLInputElement>(null);
+  const [isSignedIn, setIsSignedIn] = useState(false);
 
   const templateId = params?.id as string;
 
@@ -71,11 +70,8 @@ function CheckoutContent() {
           const data = await res.json();
           if (data.session?.email) {
             setCustomerEmail(data.session.email);
-            const namePart = data.session.email.split('@')[0];
-            const formatted = namePart
-              .replace(/[._-]/g, ' ')
-              .replace(/\b\w/g, (c: string) => c.toUpperCase());
-            setCustomerName(formatted);
+            setCustomerName(data.session.name || data.session.email.split('@')[0]);
+            setIsSignedIn(true);
           }
         }
       } catch {
@@ -98,17 +94,8 @@ function CheckoutContent() {
     }
   };
 
-  const validateForm = () => {
-    const errors: {name?: string; email?: string} = {};
-    if (!customerName.trim()) errors.name = 'Name is required';
-    if (!customerEmail.trim()) errors.email = 'Email is required';
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail)) errors.email = 'Invalid email format';
-    setFormErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
-
   const createInvoice = async (tmpl: StaticTemplate) => {
-    if (!validateForm()) return;
+    if (!customerEmail) { setError('Silakan login terlebih dahulu'); return; }
     try {
       setIsCreating(true);
       setError(null);
@@ -252,31 +239,21 @@ function CheckoutContent() {
                   </div>
                 </div>
 
-                <div style={{ background: '#1a1611', border: '1px solid rgba(201,169,97,.12)', borderRadius: '12px', padding: isMobile ? '1.25rem' : '1.5rem', marginTop: '1rem' }}>
-                  <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: isMobile ? '.85rem' : '.9rem', color: '#c9a961', fontStyle: 'italic', marginBottom: '.75rem', letterSpacing: '.02em' }}><i className="fas fa-user" style={{fontSize:'.75rem',marginRight:'.35rem'}}></i> Your Details</h3>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '.75rem' }}>
-                    <div>
-                      <label style={{ display: 'block', fontSize: isMobile ? '.72rem' : '.75rem', color: 'rgba(245,236,217,.5)', marginBottom: '.3rem', letterSpacing: '.05em', textTransform: 'uppercase' }}>Name</label>
-                      <input ref={nameRef} type="text" value={customerName}
-                        onChange={(e) => { setCustomerName(e.target.value); if (formErrors.name) setFormErrors(prev => ({...prev, name: undefined})); }}
-                        placeholder="Your full name"
-                        style={{ width: '100%', padding: '.7rem .85rem', boxSizing: 'border-box', background: '#0a0807', border: `1px solid ${formErrors.name ? '#ef4444' : 'rgba(201,169,97,.15)'}`, color: '#f5ecd9', borderRadius: '6px', fontSize: isMobile ? '.9rem' : '.95rem', fontFamily: "'Jost', sans-serif", outline: 'none', transition: 'border-color .2s' }}
-                        onFocus={(e) => { if (!formErrors.name) e.target.style.borderColor = 'rgba(201,169,97,.5)'; }}
-                        onBlur={(e) => { if (!formErrors.name) e.target.style.borderColor = 'rgba(201,169,97,.15)'; }} />
-                      {formErrors.name && <span style={{ fontSize: '.7rem', color: '#ef4444', marginTop: '.2rem', display: 'block' }}>{formErrors.name}</span>}
-                    </div>
-                    <div>
-                      <label style={{ display: 'block', fontSize: isMobile ? '.72rem' : '.75rem', color: 'rgba(245,236,217,.5)', marginBottom: '.3rem', letterSpacing: '.05em', textTransform: 'uppercase' }}>Email</label>
-                      <input type="email" value={customerEmail}
-                        onChange={(e) => { setCustomerEmail(e.target.value); if (formErrors.email) setFormErrors(prev => ({...prev, email: undefined})); }}
-                        placeholder="your@email.com"
-                        style={{ width: '100%', padding: '.7rem .85rem', boxSizing: 'border-box', background: '#0a0807', border: `1px solid ${formErrors.email ? '#ef4444' : 'rgba(201,169,97,.15)'}`, color: '#f5ecd9', borderRadius: '6px', fontSize: isMobile ? '.9rem' : '.95rem', fontFamily: "'Jost', sans-serif", outline: 'none', transition: 'border-color .2s' }}
-                        onFocus={(e) => { if (!formErrors.email) e.target.style.borderColor = 'rgba(201,169,97,.5)'; }}
-                        onBlur={(e) => { if (!formErrors.email) e.target.style.borderColor = 'rgba(201,169,97,.15)'; }} />
-                      {formErrors.email && <span style={{ fontSize: '.7rem', color: '#ef4444', marginTop: '.2rem', display: 'block' }}>{formErrors.email}</span>}
+                {isSignedIn && (
+                  <div style={{ background: '#1a1611', border: '1px solid rgba(201,169,97,.12)', borderRadius: '12px', padding: isMobile ? '1.25rem' : '1.5rem', marginTop: '1rem' }}>
+                    <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: isMobile ? '.85rem' : '.9rem', color: '#c9a961', fontStyle: 'italic', marginBottom: '.75rem', letterSpacing: '.02em' }}><i className="fas fa-user" style={{fontSize:'.75rem',marginRight:'.35rem'}}></i> Your Details</h3>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '.75rem' }}>
+                      <div>
+                        <label style={{ display: 'block', fontSize: isMobile ? '.72rem' : '.75rem', color: 'rgba(245,236,217,.5)', marginBottom: '.3rem', letterSpacing: '.05em', textTransform: 'uppercase' }}>Name</label>
+                        <div style={{ padding: '.7rem .85rem', color: '#f5ecd9', fontSize: isMobile ? '.9rem' : '.95rem', background: '#0a0807', borderRadius: '6px', border: '1px solid rgba(201,169,97,.15)' }}>{customerName}</div>
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', fontSize: isMobile ? '.72rem' : '.75rem', color: 'rgba(245,236,217,.5)', marginBottom: '.3rem', letterSpacing: '.05em', textTransform: 'uppercase' }}>Email</label>
+                        <div style={{ padding: '.7rem .85rem', color: '#f5ecd9', fontSize: isMobile ? '.9rem' : '.95rem', background: '#0a0807', borderRadius: '6px', border: '1px solid rgba(201,169,97,.15)' }}>{customerEmail}</div>
+                      </div>
                     </div>
                   </div>
-                </div>
+                )}
               </div>
               <div style={{ flexShrink: 0, padding: isMobile ? '0 1rem 1rem' : '0 1.5rem 1.5rem', background: '#14110d' }}>
                 <button onClick={() => createInvoice(template)} disabled={isCreating}

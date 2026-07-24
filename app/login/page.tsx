@@ -262,7 +262,7 @@ function AuthForm() {
 
         {signupSuccess ? (
           <div style={{ textAlign: 'center', padding: '1rem 0' }}>
-            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>✉️</div>
+            <div style={{ fontSize: '3rem', marginBottom: '1rem', color: '#c9a961' }}><i className="fas fa-envelope"></i></div>
             <h2 style={{ fontFamily: "'Italiana', serif", fontSize: '1.3rem', color: '#c9a961', margin: '0 0 0.75rem' }}>
               Cek Email Anda
             </h2>
